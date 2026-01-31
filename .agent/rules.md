@@ -9,6 +9,27 @@ If conflicts exist, resolve in this order:
 3) code
 4) docs text
 
+## 0.1 Backlog state tracking (non-negotiable)
+The agent MUST maintain accurate status for every backlog item.
+
+- Canonical backlog is `/.agent/backlog.json`.
+- Status enum is exactly: `New`, `InProgress`, `Done`.
+- **WIP limit = 1**: there must be exactly one `InProgress` item at a time.
+- When starting work on an item:
+  - set `status=InProgress`
+  - set `startedAt` (ISO 8601 UTC)
+  - ensure no other item remains InProgress (if it exists, stop and resolve)
+- When finishing an item:
+  - ensure DoD is satisfied
+  - set `status=Done`
+  - set `doneAt` (ISO 8601 UTC)
+  - add/append to `evidence.commandsRun` with commands + results summary
+
+The agent MUST always know:
+- what is Done (all status Done)
+- what is current (the single InProgress item)
+- what is next (lowest ID New item whose `dependsOn` are all Done)
+
 ## 1) Scope control
 - Implement ONLY what the task requires.
 - No "while I'm here" refactors.

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "1.0.0",
+  "statusEnum": [
+    "New",
+    "InProgress",
+    "Done"
+  ],
+  "wipLimit": 1,
+  "canonicalOrdering": "lowest-id-first",
+  "selectionRule": "next = lowest-id New item where all dependsOn are Done",
+  "items": [
+    {
+      "id": "FL-0001",
+      "epic": "E0",
+      "milestone": "M0",
+      "title": "Create solution + project skeletons",
+      "status": "New",
+      "dependsOn": [],
+      "deliverables": [
+        "Floodline.Core (netstandard2.1;net8.0)",
+        "Floodline.Core.Tests (net8.0)",
+        "Floodline.Cli (net8.0)",
+        "Floodline.Levels (optional shared schema/helpers)"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet restore",
+        "dotnet build -c Release",
+        "dotnet test -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0002",
+      "epic": "E0",
+      "milestone": "M0",
+      "title": "Enable Central Package Management + locked restore",
+      "status": "New",
+      "dependsOn": [
+        "FL-0001"
+      ],
+      "deliverables": [
+        "Directory.Packages.props (pinned versions)",
+        "Directory.Build.props: ManagePackageVersionsCentrally=true, lock files enabled",
+        "packages.lock.json generated + CI uses --locked-mode"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet restore --use-lock-file",
+        "dotnet restore --locked-mode",
+        "dotnet build -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0003",
+      "epic": "E0",
+      "milestone": "M0",
+      "title": "Strict analyzers + formatting gates (warnings-as-errors)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0002"
+      ],
+      "deliverables": [
+        ".editorconfig (strict)",
+        "TreatWarningsAsErrors=true, EnforceCodeStyleInBuild=true, Nullable=enable",
+        "dotnet format verify gate"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet build -c Release",
+        "dotnet format --verify-no-changes",
+        "dotnet test -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0101",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Core primitives: coords, gravity, ordering",
+      "status": "New",
+      "dependsOn": [
+        "FL-0003"
+      ],
+      "deliverables": [
+        "Int3 coordinate type",
+        "Gravity directions + right-axis table",
+        "Ordering helper for (gravElev, tieCoord)"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet test -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0102",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Grid model + occupancy types",
+      "status": "New",
+      "dependsOn": [
+        "FL-0101"
+      ],
+      "deliverables": [
+        "Cell/voxel occupancy model with enum/material IDs",
+        "Single occupancy invariant enforced"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet test -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0110",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "CLI runner (level + scripted inputs)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0102"
+      ],
+      "deliverables": [
+        "CLI loads level JSON + seed + scripted inputs",
+        "Runs until win/lose or max ticks",
+        "Prints summary metrics"
+      ],
+      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "validation": [
+        "dotnet run --project Floodline.Cli -- --help",
+        "dotnet run --project Floodline.Cli -- --level <path> --inputs <path>"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    }
+  ]
+}
