@@ -125,8 +125,9 @@
       "epic": "E0",
       "milestone": "M0",
       "title": "Add proper .gitignore file",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-01T01:02:34Z",
+      "doneAt": "2026-02-01T01:08:00Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#milestone-m0",
       "rationale": "Prevent build artifacts and IDE-specific files from entering the repo.",
@@ -139,8 +140,14 @@
         "git status"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "git rm -r --cached src/**/bin src/**/obj tests/**/bin tests/**/obj",
+          "git add .gitignore"
+        ],
+        "notes": [
+          "Cleaned up accidentally committed build artifacts from FL-0001.",
+          "Added standard .NET .gitignore."
+        ]
       }
     },
     {
