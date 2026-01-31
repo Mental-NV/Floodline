@@ -56,8 +56,8 @@ function IsEligible($item) {
 [array]$eligibleNew = $new | Where-Object { IsEligible $_ }
 
 if ($eligibleNew) {
-    # Sort and pick first
-    $sorted = $eligibleNew | Sort-Object id
+    # Sort and pick first (numeric-aware)
+    $sorted = $eligibleNew | Sort-Object { [int]($_.id -replace '\D','') }, id
     $next = $sorted[0]
 } else {
     $next = $null
