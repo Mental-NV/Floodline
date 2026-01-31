@@ -161,27 +161,697 @@
       }
     },
     {
+      "id": "FL-0103",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Deterministic tick constants + PRNG utilities",
+      "status": "New",
+      "dependsOn": [
+        "FL-0102"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Centralize tick rate and deterministic RNG to avoid ad-hoc randomness and time conversions.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Core constant: TICK_HZ = 60 (authoritative)",
+        "Deterministic PRNG: XorShift/PCG with explicit seed; no System.Random in Core",
+        "Unit tests: PRNG sequence stable"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0104",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Level data model + loader (ticks-only, no floats)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0103"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Establish the canonical serialized inputs to the simulation while enforcing the no-floats contract (durations in integer ticks).",
+      "sizeHint": "M",
+      "deliverables": [
+        "Level model types in Floodline.Core (POCO/record) with explicit version fields",
+        "JSON loader with strict validation errors (file + path + message)",
+        "Authoring rule: any time/duration stored as integer ticks; reject floats",
+        "One minimal level fixture used by tests"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0105",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Piece library + canonical rotations (from Content Pack)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0104"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Pieces must be defined as data with canonical orientation ordering for deterministic movement and collision.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Piece definitions loaded from data (or compiled) matching Content_Pack_v0_2",
+        "Rotation states canonicalized; orientation indexing stable",
+        "Unit tests: each piece has expected voxel counts and unique rotations"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0106",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Active piece movement + collision (tick-driven)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0105"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Implement deterministic per-tick input application and collision rules for the falling piece.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Per-tick input command model (left/right/forward/back/rotate/softdrop/harddrop/rotateWorld)",
+        "Collision checks vs grid occupancy",
+        "Unit tests: movement blocked/allowed cases"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0107",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Piece rotation + kick rules (deterministic)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0106"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Rotation must be deterministic with a canonical kick order to avoid divergent outcomes.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Rotation operation applies kick list in canonical order",
+        "Level constraints respected (allowed axes/directions)",
+        "Unit tests: representative rotation+kicks scenarios"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0108",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "World rotation (snap 90°) + gravity direction model",
+      "status": "New",
+      "dependsOn": [
+        "FL-0107"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "World rotation changes gravity; must be implemented as integer coordinate transforms with stable tie-break rules.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Gravity direction enum and tie-break coordinate helpers (per Simulation_Rules)",
+        "World rotation updates gravity + transforms active piece as specified",
+        "Unit tests: rotation transforms and invariants"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0109",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Tick pipeline + resolve loop skeleton (phase order)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0108"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Define the canonical step order per tick to avoid hidden side effects and ensure deterministic simulation.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Core step function: ApplyInputs → Gravity/Lock → Resolve (solids/water/drains/freeze) → Objectives",
+        "Canonical iteration orders implemented as utilities",
+        "Unit tests: step order observable via small fixtures"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FL-0110",
       "epic": "E1",
       "milestone": "M1",
       "title": "CLI runner (level + scripted inputs)",
       "status": "New",
       "dependsOn": [
-        "FL-0102"
+        "FL-0113"
       ],
       "requirementRef": "/docs/specs/Input_Feel_v0_2.md#input-model",
-      "rationale": "Headless CLI is required for golden tests, replay verification, and automation.",
+      "rationale": "Provide an executable reference runner for Core sim once the full tick+resolve pipeline exists.",
       "sizeHint": "M",
       "deliverables": [
-        "CLI loads level JSON + seed + scripted inputs",
-        "Runs until win/lose or max ticks",
-        "Prints summary metrics"
+        "Floodline.Cli runs: load level JSON, apply scripted inputs, step ticks, print final summary + determinism hash placeholder",
+        "CLI exit codes: 0 success; non-zero on validation failure",
+        "At least one minimal level fixture in /levels (or similar) used by CLI tests"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
         "pwsh ./scripts/ci.ps1 -Scope M1",
-        "dotnet run --project Floodline.Cli -- --help",
-        "dotnet run --project Floodline.Cli -- --level <path> --inputs <path>"
+        "dotnet run --project src/Floodline.Cli -- --help"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0111",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Solids stability: connected components + drop distance",
+      "status": "New",
+      "dependsOn": [
+        "FL-0109"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Settled solids must obey stability rules and deterministic dropping after gravity changes.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Connected components detection for solids",
+        "Component drop distance computation with canonical ordering",
+        "Displaced water handling hook points (no Unity)",
+        "Unit tests: multi-component drop cases"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0112",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Water equilibrium solver (exact) + displacement integration",
+      "status": "New",
+      "dependsOn": [
+        "FL-0111"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Water is the core mechanic; solver must match Water_Algorithm_v0_2 exactly and be deterministic.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Water solver implementation (integer units) per Water_Algorithm_v0_2",
+        "Integration into resolve loop",
+        "Unit tests: small basins and spill cases"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0113",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Drains + Freeze actions + objective evaluation",
+      "status": "New",
+      "dependsOn": [
+        "FL-0112"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m1",
+      "rationale": "Complete the MVP resolve phase with drains/freeze and objective checks so CLI can run end-to-end.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Drain rules implemented per Simulation_Rules",
+        "Freeze/ice rules implemented per Simulation_Rules",
+        "Objective evaluation order and result structure",
+        "Unit tests: one test per subsystem"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0200",
+      "epic": "E2",
+      "milestone": "M2",
+      "title": "Golden test harness + stable state snapshot format",
+      "status": "New",
+      "dependsOn": [
+        "FL-0110"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m2",
+      "rationale": "Golden fixtures are required to lock down behavior across resolve, water, and objectives.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Stable textual snapshot format for Core state (sorted, deterministic)",
+        "Golden fixture loader/saver under tests/",
+        "Golden runner that diffs expected vs actual with helpful output"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M2",
+        "dotnet test -c Release"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0201",
+      "epic": "E2",
+      "milestone": "M2",
+      "title": "Golden suite: solids resolve + stability",
+      "status": "New",
+      "dependsOn": [
+        "FL-0200"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m2",
+      "rationale": "Lock down stability and resolve ordering with deterministic snapshots.",
+      "sizeHint": "M",
+      "deliverables": [
+        "At least 5 golden fixtures covering stability edge cases",
+        "At least 1 negative test (expected failure/exception or invariant violation)"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M2"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0202",
+      "epic": "E2",
+      "milestone": "M2",
+      "title": "Golden suite: water equilibrium + displacement",
+      "status": "New",
+      "dependsOn": [
+        "FL-0201"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m2",
+      "rationale": "Water solver correctness is central; golden fixtures protect against regressions.",
+      "sizeHint": "M",
+      "deliverables": [
+        "At least 5 golden fixtures for basins/spills/displacement",
+        "At least 1 negative test"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M2"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0203",
+      "epic": "E2",
+      "milestone": "M2",
+      "title": "Golden suite: objectives evaluation order",
+      "status": "New",
+      "dependsOn": [
+        "FL-0202"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m2",
+      "rationale": "Objectives must be evaluated deterministically with explicit timing.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Golden fixtures for 2+ objective types",
+        "At least 1 negative test"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M2"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0204",
+      "epic": "E2",
+      "milestone": "M2",
+      "title": "Turn on CI -Golden switch (enforce golden execution)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0203"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m2",
+      "rationale": "Make golden suite mechanically enforced via scripts/ci.ps1 so the agent cannot 'pass CI' without goldens.",
+      "sizeHint": "S",
+      "deliverables": [
+        "scripts/ci.ps1: when -Golden is set, runs golden suite explicitly and fails if unavailable",
+        "Optional optimization: default test run excludes golden category unless -Golden"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M2 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0300",
+      "epic": "E3",
+      "milestone": "M3",
+      "title": "Replay file format v0.1 (header + inputs)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0204"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m3",
+      "rationale": "Replays are the canonical reproducer for determinism and debugging.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Replay header includes: rulesVersion, levelHash, seed, tickRate, platform",
+        "Inputs stored as per-tick commands in a stable format",
+        "Unit tests for replay parse/roundtrip"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M3"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0301",
+      "epic": "E3",
+      "milestone": "M3",
+      "title": "Determinism hash function for Core state",
+      "status": "New",
+      "dependsOn": [
+        "FL-0300"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m3",
+      "rationale": "A stable determinism hash provides a single-line parity check between runs/clients.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Hash computed from canonical snapshot (no floats, stable ordering)",
+        "Hash included in CLI output",
+        "Unit tests: hash stable for same inputs"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M3"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0302",
+      "epic": "E3",
+      "milestone": "M3",
+      "title": "Replay recorder + replayer (CLI integration)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0301"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m3",
+      "rationale": "Record and replay must produce identical hashes in CI for determinism enforcement.",
+      "sizeHint": "L",
+      "deliverables": [
+        "CLI: record replay from a run; replay from file",
+        "Replay uses only replay contents (self-contained) per contract-policy",
+        "Tests: record→replay parity"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M3"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0303",
+      "epic": "E3",
+      "milestone": "M3",
+      "title": "Turn on CI -Replay switch (record/replay parity gate)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0302"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m3",
+      "rationale": "Make replay parity a mechanical CI gate so determinism regressions are caught immediately.",
+      "sizeHint": "S",
+      "deliverables": [
+        "scripts/ci.ps1: when -Replay is set, runs a record→replay parity check and fails on mismatch",
+        "At least 1 CI replay fixture (tiny level + scripted inputs)"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M3 -Replay"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0400",
+      "epic": "E4",
+      "milestone": "M4",
+      "title": "Define level JSON schemas (level + campaign)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0303"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m4",
+      "rationale": "Schema validation prevents content drift and enables autonomous content iteration safely.",
+      "sizeHint": "M",
+      "deliverables": [
+        "schemas/level.schema.v0.2.x.json stored in repo",
+        "schemas/campaign.schema.v0.2.x.json stored in repo",
+        "Docs updated to reflect ticks-only durations"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M4"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0401",
+      "epic": "E4",
+      "milestone": "M4",
+      "title": "Level validator CLI tool (actionable errors)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0400"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m4",
+      "rationale": "Validator must produce actionable errors to enable autonomous content production.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Validator: validates JSON against schema + semantic rules",
+        "Error format: file + JSON pointer path + rule id + message",
+        "Unit tests for key rule failures"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M4"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0402",
+      "epic": "E4",
+      "milestone": "M4",
+      "title": "Campaign validation in CI (-ValidateLevels)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0401"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m4",
+      "rationale": "Campaign-wide validation must be a CI gate before any Unity work begins.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Repository stores campaign levels list + all level JSONs",
+        "scripts/ci.ps1: -ValidateLevels runs validator on the whole campaign and fails on any error"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0500",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity project scaffold + Core integration (no Core->Unity refs)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0402"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m5",
+      "rationale": "Create the Unity shell only after Core + validation tooling are locked down.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Unity project created under /unity (or /client) with git-friendly settings",
+        "Unity layer references Core via assembly definition/package, not vice versa",
+        "Minimal scene to load a level and run the sim headlessly"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M5"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0501",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity input feel implementation (per Input_Feel_v0_2)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0500"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m5",
+      "rationale": "Implement deterministic input sampling and buffering aligned with tick model and feel spec.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Input system maps to per-tick commands used by Core",
+        "Buffering rules implemented per Input_Feel spec"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M5"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0502",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity camera + basic visualization loop",
+      "status": "New",
+      "dependsOn": [
+        "FL-0501"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m5",
+      "rationale": "Achieve minimal playability for early campaign levels with readable visuals.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Camera supports world rotation and readability constraints",
+        "Minimal rendering for solids + water + drains/freeze markers"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M5"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0503",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Turn on CI -Unity switch (CLI vs Unity parity hash)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0502"
+      ],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m5",
+      "rationale": "Parity gate ensures Unity client remains a pure view/controller over the deterministic Core.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Unity can run a replay and emit determinism hash",
+        "scripts/ci.ps1: -Unity runs a parity check (Unity vs CLI) on at least one replay"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M5 -Unity"
       ],
       "evidence": {
         "commandsRun": [],

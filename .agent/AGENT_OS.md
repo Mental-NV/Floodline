@@ -42,6 +42,7 @@
 
 - Core simulation must be deterministic given `(level, seed, per-tick inputs, rulesVersion)`.
 - **No floating-point** in Core gameplay solver logic (solids/water/objectives).
+- **No floating-point in serialized gameplay data** (level JSON, replay). Store time/durations as integer ticks (`TICK_HZ=60`).
 - Canonical ordering and tie-breaks are **mandatory**; do not invent orderings.
 - Resolve Phase ordering must match the GDD and any explicit tie-break rules referenced by the backlog.
 

@@ -45,6 +45,7 @@ Core solver (solids, water, objectives) uses:
 - integer coordinates,
 - integer comparisons,
 - deterministic iteration order.
+- **Serialized gameplay data rule:** level JSON and replay must not contain floating-point numbers; store time/durations as integer ticks.
 
 ### 1.3 Canonical Tie-Break
 Whenever ordering is needed, sort by the tuple:
@@ -452,17 +453,20 @@ Rationale:
   "type": "WIND_GUST",
   "enabled": true,
   "params": {
-    "intervalSeconds": 10,
+    "intervalTicks": 600,
     "pushStrength": 1,
     "directionMode": "ALTERNATE_EW",
-    "firstGustOffsetSeconds": 3
+    "firstGustOffsetTicks": 180
   }
 }
 ```
 
+> Authoring note: **tick rate is 60 TPS** (`TICK_HZ=60`). `intervalTicks=600` means 10 seconds.
+
+
 #### 2.1 Parameters
-- `intervalSeconds` (float, converted to ticks deterministically)
-- `firstGustOffsetSeconds` (optional; if absent, computed from seed)
+- `intervalTicks` (int, **≥ 1**): gust period in ticks (**no floats in JSON**)
+- `firstGustOffsetTicks` (optional int): initial offset in ticks (if absent, computed from seed)
 - `pushStrength` (int): number of cells to attempt to shove (MVP: 1)
 - `directionMode`:
   - `ALTERNATE_EW`: East, West, East, West…
@@ -472,19 +476,19 @@ Rationale:
 ---
 
 ### 3) Tick Scheduling (Deterministic)
-Convert seconds to ticks:
-- `intervalTicks = round(intervalSeconds * 60)`
-- `offsetTicks = round(firstGustOffsetSeconds * 60)` (or seeded)
+Tick rate is **60 ticks/second**. Scheduling uses integer tick values stored in level JSON.
+
+Let:
+- `intervalTicks` = `max(1, intervalTicks)`
+- `offsetTicks` = `firstGustOffsetTicks` (or computed)
 
 Event fires at ticks:
 - `t = offsetTicks + k * intervalTicks` for k = 0,1,2,...
 
-If `intervalTicks < 1`, clamp to 1.
-
 #### 3.1 Seeded offset (if not provided)
-If `firstGustOffsetSeconds` is missing:
+If `firstGustOffsetTicks` is missing:
 - `offsetTicks = PRNG(seed).NextInt(0, intervalTicks)`  
-(where PRNG is the same deterministic generator used for piece bag, with a separate stream or a jumped state.)
+(where PRNG is the same deterministic generator used for piece bag, with a separate stream label for hazards)
 
 ---
 

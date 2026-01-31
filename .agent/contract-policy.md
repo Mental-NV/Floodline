@@ -24,6 +24,9 @@ This policy complements:
 
 ### 1.2 Level data
 - Level JSON schema and all semantics used by the rules engine.
+- **Numeric representation rule:** any numeric value that participates in Core gameplay logic must be an integer.
+- **Time rule:** all durations/intervals stored in level JSON are **integer ticks** at `TICK_HZ=60`.
+- **Floats are forbidden** in level JSON for Core logic (authoring prose may refer to seconds).
 
 ### 1.3 Replay data
 - Per-tick input stream format + header metadata needed to reproduce.
@@ -59,6 +62,9 @@ Examples:
 - any change to input application order or lock rules
 - any change to objective evaluation semantics
 
+Additional breaking examples:
+- Changing serialized time fields from seconds↔ticks or introducing floats into level JSON.
+
 ### 3.2 Allowed patch changes (RulesVersion PATCH)
 PATCH changes are allowed only if:
 - golden tests confirm no output changes for all existing golden scenarios, AND
@@ -92,6 +98,11 @@ If `LevelSchemaVersion` is bumped in a breaking way:
   - input: old level JSON
   - output: new level JSON
 - The migrator must be tested with golden fixtures.
+
+### 4.4 No floats in level JSON (hard rule)
+- Level JSON must not contain floating-point numbers for Core logic.
+- Store time/durations as **integer ticks** (60 TPS). Example: prefer `intervalTicks` over `intervalSeconds`.
+- Introducing a seconds-based numeric field in schema is considered **breaking** unless it is purely UI/Unity-side.
 
 ---
 
