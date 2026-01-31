@@ -203,8 +203,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Grid model + occupancy types",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-01T01:46:46Z",
+      "doneAt": "2026-02-01T01:52:00Z",
       "dependsOn": [
         "FL-0101"
       ],
@@ -220,8 +221,14 @@
         "pwsh ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Implemented OccupancyType, Voxel, and Grid class.",
+          "Added GridTests.cs with coverage for bounds and occupancy.",
+          "Fixed CA2201, IDE0046, IDE0005, CA1707, IDE0008, IDE0058 analyzer errors."
+        ]
       }
     },
     {
