@@ -121,6 +121,29 @@
       }
     },
     {
+      "id": "FL-0004",
+      "epic": "E0",
+      "milestone": "M0",
+      "title": "Add proper .gitignore file",
+      "status": "InProgress",
+      "startedAt": "2026-02-01T01:02:34Z",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m0",
+      "rationale": "Prevent build artifacts and IDE-specific files from entering the repo.",
+      "sizeHint": "S",
+      "deliverables": [
+        ".gitignore"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "git status"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FL-0101",
       "epic": "E1",
       "milestone": "M1",
