@@ -236,8 +236,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Deterministic tick constants + PRNG utilities",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-01-31T23:30:00Z",
+      "doneAt": "2026-02-01T02:00:00Z",
       "dependsOn": [
         "FL-0102"
       ],
@@ -254,8 +255,15 @@
         "pwsh ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Implemented Constants.TickHz = 60.",
+          "Implemented IRandom and Pcg32 (PCG-XSH-RR).",
+          "Added unit tests verifying determinism and regression stability.",
+          "Locked in canonical regression values for Pcg32 sequence: 3270867926, 1795671209, 1924641435, 1143034755."
+        ]
       }
     },
     {
