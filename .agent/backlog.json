@@ -106,8 +106,8 @@
       "epic": "E0",
       "milestone": "M0",
       "title": "Strict analyzers + formatting gates (warnings-as-errors)",
-      "status": "InProgress",
-      "startedAt": "2026-02-01T01:23:44Z",
+      "status": "Done",
+      "doneAt": "2026-02-01T01:27:00Z",
       "dependsOn": [
         "FL-0002"
       ],
@@ -124,8 +124,14 @@
         "pwsh ./scripts/ci.ps1 -Scope M0 -IncludeFormat"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell ./scripts/ci.ps1 -Scope M0 -IncludeFormat"
+        ],
+        "notes": [
+          "Implemented strict analyzers and formatting gates.",
+          "Updated Directory.Build.props and .editorconfig.",
+          "Cleaned up boilerplate files to satisfy analyzers."
+        ]
       }
     },
     {
