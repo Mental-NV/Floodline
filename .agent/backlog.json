@@ -106,7 +106,8 @@
       "epic": "E0",
       "milestone": "M0",
       "title": "Strict analyzers + formatting gates (warnings-as-errors)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-01T01:23:44Z",
       "dependsOn": [
         "FL-0002"
       ],
