@@ -24,7 +24,11 @@ $backlog = $raw | ConvertFrom-Json
 
 # Expect either { items: [...] } or [...] (tolerate both)
 $items = $null
-if ($backlog.PSObject.Properties.Name -contains "items") { $items = $backlog.items } else { $items = $backlog }
+if ($backlog.PSObject.Properties.Name -contains "items") { 
+    $items = $backlog.items 
+} else { 
+    $items = $backlog 
+}
 
 if (-not $items) { Fail "Backlog contains no items." }
 
@@ -36,31 +40,40 @@ $done = @($items | Where-Object { $_.status -eq "Done" })
 $new  = @($items | Where-Object { $_.status -eq "New" })
 
 # 4) compute NEXT = lowest ID New with all dependsOn Done
-$doneIds = New-Object System.Collections.Generic.HashSet[string]
-foreach ($d in $done) { [void]$doneIds.Add([string]$d.id) }
+$doneIds = @($done | ForEach-Object { [string]$_.id })
 
 function IsEligible($item) {
-  if (-not $item.dependsOn) { return $true }
-  foreach ($dep in $item.dependsOn) {
-    if (-not $doneIds.Contains([string]$dep)) { return $false }
+  # In PS 5.1, sometimes property access is safer with .id directly
+  $deps = $item.dependsOn
+  if (-not $deps) { return $true }
+  foreach ($dep in $deps) {
+    if ([string]$dep -notin $doneIds) { return $false }
   }
   return $true
 }
 
-$eligible = @($new | Where-Object { IsEligible $_ } | Sort-Object { [int]($_.id -replace '\D','') }, id)
-$next = if ($eligible.Count -gt 0) { $eligible[0] } else { $null }
+# Explicitly filter and force array
+[array]$eligibleNew = $new | Where-Object { IsEligible $_ }
+
+if ($eligibleNew) {
+    # Sort and pick first (numeric-aware)
+    $sorted = $eligibleNew | Sort-Object { [int]($_.id -replace '\D','') }, id
+    $next = $sorted[0]
+} else {
+    $next = $null
+}
 
 # 5) print summary (agent-friendly)
 Write-Host "DONE:    $($done.Count)"
 if ($inProgress.Count -eq 1) {
   $cur = $inProgress[0]
-  Write-Host "CURRENT: $($cur.id) — $($cur.title)"
+  Write-Host "CURRENT: $($cur.id) - $($cur.title)"
 } else {
   Write-Host "CURRENT: (none)"
 }
 
 if ($next) {
-  Write-Host "NEXT:    $($next.id) — $($next.title)"
+  Write-Host "NEXT:    $($next.id) - $($next.title)"
 } else {
   Write-Host "NEXT:    (none eligible)"
 }
