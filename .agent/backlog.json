@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.0",
   "statusEnum": [
     "New",
     "InProgress",
@@ -11,15 +11,15 @@
   "backlogEvolution": {
     "editWindows": [
       "before-starting-new-item",
-      "when-blocked"
+      "blocked-current-item"
     ],
     "allowedReasons": [
       "missing-infrastructure",
-      "test-discovered-bug",
+      "bug-found-by-tests",
       "task-too-large-split",
       "spec-mismatch-change-proposal"
     ],
-    "requiredFieldsForNewItems": [
+    "requiredFields": [
       "id",
       "title",
       "milestone",
@@ -39,7 +39,7 @@
       "title": "Create solution + project skeletons",
       "status": "New",
       "dependsOn": [],
-      "requirementRef": "/.agent/milestones.md#M0",
+      "requirementRef": "/.agent/AGENT_OS.md#milestone-m0",
       "rationale": "Establish stable module boundaries and toolchain gates before implementing gameplay logic.",
       "sizeHint": "S",
       "deliverables": [
@@ -48,11 +48,9 @@
         "Floodline.Cli (net8.0)",
         "Floodline.Levels (optional shared schema/helpers)"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "dotnet restore",
-        "dotnet build -c Release",
-        "dotnet test -c Release"
+        "pwsh ./scripts/ci.ps1 -Scope M0 -Configuration Release -LockedRestore:$false"
       ],
       "evidence": {
         "commandsRun": [],
@@ -68,19 +66,17 @@
       "dependsOn": [
         "FL-0001"
       ],
-      "requirementRef": "/.agent/context.md#3-strict-net-baseline-repo-policy",
-      "rationale": "Deterministic dependency graph is critical for autonomous agents and stable CI.",
+      "requirementRef": "/.agent/AGENT_OS.md#strict-net-baseline",
+      "rationale": "Enforce pinned package graph and deterministic restores to support strict CI gates.",
       "sizeHint": "S",
       "deliverables": [
         "Directory.Packages.props (pinned versions)",
         "Directory.Build.props: ManagePackageVersionsCentrally=true, lock files enabled",
-        "packages.lock.json generated + CI uses --locked-mode"
+        "packages.lock.json created and committed"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "dotnet restore --use-lock-file",
-        "dotnet restore --locked-mode",
-        "dotnet build -c Release"
+        "pwsh ./scripts/ci.ps1 -Scope M0 -Configuration Release"
       ],
       "evidence": {
         "commandsRun": [],
@@ -96,19 +92,16 @@
       "dependsOn": [
         "FL-0002"
       ],
-      "requirementRef": "/.agent/context.md#3-strict-net-baseline-repo-policy",
-      "rationale": "Make correctness and style mechanically enforced to reduce agent-induced regressions.",
-      "sizeHint": "M",
+      "requirementRef": "/.agent/AGENT_OS.md#strict-net-baseline",
+      "rationale": "Prevent lint/nullable/style debt from accumulating in an autonomous pipeline.",
+      "sizeHint": "S",
       "deliverables": [
         ".editorconfig (strict)",
-        "TreatWarningsAsErrors=true, EnforceCodeStyleInBuild=true, Nullable=enable",
-        "dotnet format verify gate"
+        "TreatWarningsAsErrors=true, EnforceCodeStyleInBuild=true, Nullable=enable"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "dotnet build -c Release",
-        "dotnet format --verify-no-changes",
-        "dotnet test -c Release"
+        "pwsh ./scripts/ci.ps1 -Scope M0 -Configuration Release -IncludeFormat"
       ],
       "evidence": {
         "commandsRun": [],
@@ -124,17 +117,17 @@
       "dependsOn": [
         "FL-0003"
       ],
-      "requirementRef": "/.agent/context.md#2-hard-invariants-must-never-drift",
-      "rationale": "Deterministic ordering is a foundation for water/solid solvers and replay stability.",
+      "requirementRef": "/.agent/AGENT_OS.md#hard-invariants",
+      "rationale": "Create deterministic primitives and canonical ordering required for all later mechanics.",
       "sizeHint": "M",
       "deliverables": [
         "Int3 coordinate type",
         "Gravity directions + right-axis table",
-        "Ordering helper for (gravElev, tieCoord)"
+        "Deterministic iteration helpers (stable ordering)"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "dotnet test -c Release"
+        "pwsh ./scripts/ci.ps1 -Scope M1 -Configuration Release"
       ],
       "evidence": {
         "commandsRun": [],
@@ -151,15 +144,16 @@
         "FL-0101"
       ],
       "requirementRef": "/docs/GDD_v0_2.md",
-      "rationale": "Canonical grid state is required for deterministic resolve, objectives, and hashing.",
+      "rationale": "Represent the playfield deterministically, supporting solids, water, drains, and objectives.",
       "sizeHint": "M",
       "deliverables": [
         "Cell/voxel occupancy model with enum/material IDs",
-        "Single occupancy invariant enforced"
+        "Single occupancy invariant enforced",
+        "Deterministic hashing of grid state"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "dotnet test -c Release"
+        "pwsh ./scripts/ci.ps1 -Scope M1 -Configuration Release"
       ],
       "evidence": {
         "commandsRun": [],
@@ -175,16 +169,17 @@
       "dependsOn": [
         "FL-0102"
       ],
-      "requirementRef": "/.agent/context.md#5-mvp-acceptance-criteria-autonomy-targets",
-      "rationale": "Headless CLI is required for golden tests, replay verification, and automation.",
+      "requirementRef": "/.agent/AGENT_OS.md#autonomy-acceptance",
+      "rationale": "Enable headless execution + determinism evidence without Unity.",
       "sizeHint": "M",
       "deliverables": [
         "CLI loads level JSON + seed + scripted inputs",
         "Runs until win/lose or max ticks",
-        "Prints summary metrics"
+        "Outputs final metrics + determinism hash summary"
       ],
-      "definitionOfDoneRef": "/.agent/definition-of-done.md",
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
+        "pwsh ./scripts/ci.ps1 -Scope M1 -Configuration Release",
         "dotnet run --project Floodline.Cli -- --help",
         "dotnet run --project Floodline.Cli -- --level <path> --inputs <path>"
       ],

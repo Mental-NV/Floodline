@@ -1,48 +1,24 @@
-# Floodline (Working Title)
+# Floodline
 
-This repo is designed for **fully autonomous development** using coding AI agents with strict, test-first, contract-first gates.
+Floodline is a deterministic puzzle/strategy game implemented with a **Unity client** on top of a **headless .NET Core simulation**.
 
-## Source of truth
-- Game Design Document: `/docs/GDD_v0_2.md`
+## Canonical documents (read first)
 
-## Agent operating system
-The agent must follow `/.agent/` as the repo constitution.
+1) `docs/GDD_v0_2.md` — game rules + mechanics (gameplay source of truth)  
+2) `.agent/AGENT_OS.md` — agent constitution: workflow, gates, milestone order  
+3) `.agent/backlog.json` — canonical work state (DONE / CURRENT / NEXT) + evidence
 
-### Core rules
-- `/.agent/README.md` — execution loop (includes backlog status updates)
-- `/.agent/rules.md` — hard constraints (artifact precedence, change control, backlog tracking)
-- `/.agent/roles.md` — Planner/Architect/Implementer/Verifier role split
-- `/.agent/definition-of-done.md` — Definition of Done
+The agent should open any other file only if the current backlog item’s `requirementRef` points to it.
 
-### Project-specific layer (derived from the GDD)
-- `/.agent/context.md` — glossary, invariants, out-of-scope, acceptance criteria
-- `/.agent/milestones.md` — dependency graph and exit criteria aligned to the autonomy-first sequence
-- `/.agent/contract-policy.md` — versioning rules for levels/replays/determinism hashes
-- `/.agent/backlog.json` — canonical backlog with statuses (New/InProgress/Done)
+## Repo structure
 
-### Operational templates
-- `/.agent/change-proposal-template.md` — required for any spec/architecture change
-- `/.agent/commands-windows.md` — canonical Windows commands (dotnet + Unity batchmode)
-- `/.agent/ci-gates.md` — CI gates (must pass)
+- `.agent/` — autonomous agent operating system + backlog
+- `docs/` — game design document(s)
+- `scripts/` — canonical validation entrypoints
+- (future) `src/` / `tests/` — created by backlog items
 
-## Implementation sequence (autonomy-maximizing)
-1. Core sim library + CLI runner
-2. Golden tests for resolve + water + objectives
-3. Replay format + determinism hash
-4. Level validator + campaign validation
-5. Only then: Unity client UI loop + camera + input feel
+## Validation entrypoints
 
-## Local development (Windows)
-Typical:
-- `dotnet restore`
-- `dotnet build -c Release`
-- `dotnet test -c Release`
-
-Formatting gate (if enabled):
-- `dotnet format --verify-no-changes`
-
-## Backlog discipline (non-negotiable)
-The agent must keep `/.agent/backlog.json` accurate:
-- exactly one item `InProgress`
-- when starting: set InProgress
-- when done: set Done with evidence (commands + results)
+Preflight (must be clean tree + prints DONE/CURRENT/NEXT):
+```powershell
+pwsh ./scripts/preflight.ps1

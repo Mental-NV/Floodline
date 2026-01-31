@@ -41,7 +41,7 @@ Step 2 — Start work (backlog-only commit)
 
 Step 3 — Implement + verify
 - Implement only what the item requires (no refactors).
-- Run the item’s validation.commands exactly (prefer scripts/ci.ps1).
+- Run the item’s `validation` commands exactly (ordered list on the backlog item; prefer scripts/ci.ps1).
 - Record commands + results into evidence.
 
 Step 4 — Finish

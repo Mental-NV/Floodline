@@ -1,6 +1,8 @@
 # Floodline — AGENT_OS (Canonical Agent Operating System)
 
-**Purpose:** minimize context switching while keeping autonomous execution strict, deterministic, and verifiable.
+*...one order.*
+
+<a id="canon"></a>
 
 ---
 
@@ -32,6 +34,8 @@ If any conflict exists, resolve in this order:
 
 ## 2) Non-negotiable constraints
 
+<a id="hard-invariants"></a>
+
 ### 2.1 Determinism (Core simulation)
 - Core sim must be deterministic given `(level, seed, per-tick inputs, rulesVersion)`.
 - **No floating point** in Core gameplay solver logic (solids / water / objectives).
@@ -43,6 +47,8 @@ If any conflict exists, resolve in this order:
 - Unity work is forbidden until milestone **M5** (after M0–M4 are green).
 
 ### 2.3 Strict .NET quality gates (high strictness)
+<a id="strict-net-baseline"></a>
+
 - Central Package Management is mandatory (`Directory.Packages.props`).
 - Lock files mandatory; CI uses locked restore.
 - Nullable enabled and enforced.
@@ -81,9 +87,12 @@ If design/architecture must change:
 ---
 
 ## 3) Milestones (order is mandatory)
+<a id="milestones"></a>
 
 **Do not reorder milestones:** `M0 → M1 → M2 → M3 → M4 → M5`  
 You may NOT start `M(N+1)` until `M(N)` exit criteria are satisfied.
+
+<a id="milestone-m0"></a>
 
 ### M0 — Repo Baseline (strict .NET + CI)
 **Exit criteria**
@@ -92,25 +101,35 @@ You may NOT start `M(N+1)` until `M(N)` exit criteria are satisfied.
 - `dotnet test -c Release` passes
 - formatting gate passes once introduced (`dotnet format --verify-no-changes`)
 
+<a id="milestone-m1"></a>
+
 ### M1 — Core Sim + CLI Runner (no visuals)
 **Exit criteria**
 - CLI runs a minimal level end-to-end and outputs a final state summary
 - Core remains Unity-free
+
+<a id="milestone-m2"></a>
 
 ### M2 — Golden Tests (Resolve + Water + Objectives)
 **Exit criteria**
 - Golden suite passes in Release on Windows
 - At least one negative test per subsystem
 
+<a id="milestone-m3"></a>
+
 ### M3 — Replay Format + Determinism Hash
 **Exit criteria**
 - Recorded replay replays to identical determinism hash in CI
 - Replay versioning rules enforced (see contract policy if referenced)
 
+<a id="milestone-m4"></a>
+
 ### M4 — Level Schema + Validator + Campaign Validation
 **Exit criteria**
 - Validator passes for all campaign levels in CI
 - Errors actionable (file + JSON path + rule id)
+
+<a id="milestone-m5"></a>
 
 ### M5 — Unity Client Shell (last)
 **Exit criteria**
@@ -120,6 +139,7 @@ You may NOT start `M(N+1)` until `M(N)` exit criteria are satisfied.
 ---
 
 ## 4) Backlog item requirements (for adding/splitting)
+<a id="backlog-item-format"></a>
 
 You may add/split backlog items ONLY:
 - before starting a new item (Plan window), OR
@@ -135,8 +155,8 @@ Every new backlog item MUST include:
 - `id`, `title`, `milestone`, `status`, `dependsOn`
 - `requirementRef` (exact GDD section anchor preferred; or failing test reference)
 - `rationale`
-- `validation.commands` (prefer the scripts in `scripts/`)
-- `dodRef` (this AGENT_OS section or a specific gate list)
+- `validation` (prefer the scripts in `scripts/`)
+- `definitionOfDoneRef` (this AGENT_OS section or a specific gate list)
 - evidence fields (`evidence.commandsRun`, `evidence.notes`)
 
 **No `requirementRef` = scope creep = do not add.**
@@ -186,6 +206,7 @@ Prohibitions:
 ---
 
 ## 6) Execution loop (repeat until backlog complete)
+<a id="execution-loop"></a>
 
 ### Step 0 — Preflight (each session)
 - Ensure working tree is clean (no uncommitted changes).
@@ -205,8 +226,7 @@ Prohibitions:
 
 ### Step 3 — Implement and verify
 - Implement per constraints.
-- Run validation commands exactly as listed in backlog item:
-  - prefer `pwsh ./scripts/ci.ps1 ...`
+- Run validation commands exactly as listed on the backlog item in `validation`.
 - Record commands + results in item evidence.
 
 ### Step 4 — Finish
@@ -228,6 +248,7 @@ Only if gates are satisfied:
 ---
 
 ## 7) Gates (canonical)
+<a id="dod"></a>
 
 ### Always (once solution exists)
 - restore (locked mode when applicable)
@@ -257,6 +278,20 @@ Use scripts to reduce per-item command drift:
 - `pwsh ./scripts/ci.ps1 -Scope M4 -ValidateLevels`
 - `pwsh ./scripts/ci.ps1 -Scope M5 -Unity`
 
-Backlog items should reference these script calls in `validation.commands`.
+Backlog items should reference these script calls in `validation`.
 
 ---
+
+## 9) Autonomy acceptance criteria (MVP targets)
+<a id="autonomy-acceptance"></a>
+
+The autonomous build is considered "MVP complete" when **milestone exit criteria** for **M1–M4** are satisfied, and Unity work starts only at **M5**.
+
+In practice this means:
+- Headless deterministic sim exists (Core + CLI) and produces stable outcome summaries.
+- Golden tests lock Resolve + Water + Objectives behavior.
+- Replay format exists and replays to identical determinism hash.
+- Level schema + validator exists; campaign validates in CI.
+- Unity shell (M5) matches determinism hashes with Core/CLI for the same replay/seed/level.
+
+(These criteria intentionally mirror the Milestones section to avoid introducing a second rules bible.)
