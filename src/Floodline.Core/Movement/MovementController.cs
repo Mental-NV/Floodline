@@ -34,21 +34,57 @@ public sealed class MovementController(Grid grid)
     /// Per Input_Feel_v0_2.md §2, commands are applied in canonical order.
     /// </summary>
     /// <param name="command">The input command to process.</param>
-    /// <returns>True if the command was successfully applied; otherwise, false.</returns>
-    public bool ProcessInput(InputCommand command) =>
-        CurrentPiece is not null && command switch
+    /// <returns>A result describing the outcome of the command.</returns>
+    public InputApplyResult ProcessInput(InputCommand command) =>
+        CurrentPiece is null
+            ? new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
+            : command switch
+            {
+                InputCommand.MoveLeft =>
+                    ResultFromMove(CurrentPiece.TryTranslate(new Int3(-1, 0, 0), Grid)),
+
+                InputCommand.MoveRight =>
+                    ResultFromMove(CurrentPiece.TryTranslate(new Int3(1, 0, 0), Grid)),
+
+                InputCommand.MoveForward =>
+                    ResultFromMove(CurrentPiece.TryTranslate(new Int3(0, 0, -1), Grid)),
+
+                InputCommand.MoveBack =>
+                    ResultFromMove(CurrentPiece.TryTranslate(new Int3(0, 0, 1), Grid)),
+
+                InputCommand.SoftDrop =>
+                    ResultFromMove(ApplyGravityStep()),
+
+                InputCommand.HardDrop =>
+                    ApplyHardDropResult(),
+
+                InputCommand.RotatePiece =>
+                    new InputApplyResult(Accepted: false, Moved: false, LockRequested: false), // Placeholder for FL-0107
+
+                InputCommand.RotateWorld =>
+                    new InputApplyResult(Accepted: false, Moved: false, LockRequested: false), // Placeholder for FL-0108
+
+                InputCommand.None =>
+                    new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
+
+                _ =>
+                    new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
+            };
+
+    private static InputApplyResult ResultFromMove(bool moved) =>
+        new(Accepted: true, Moved: moved, LockRequested: false);
+
+    private InputApplyResult ApplyHardDropResult()
+    {
+        bool movedAtLeastOnce = false;
+        while (ApplyGravityStep())
         {
-            InputCommand.MoveLeft => CurrentPiece.TryTranslate(new Int3(-1, 0, 0), Grid),
-            InputCommand.MoveRight => CurrentPiece.TryTranslate(new Int3(1, 0, 0), Grid),
-            InputCommand.MoveForward => CurrentPiece.TryTranslate(new Int3(0, 0, -1), Grid),
-            InputCommand.MoveBack => CurrentPiece.TryTranslate(new Int3(0, 0, 1), Grid),
-            InputCommand.SoftDrop => ApplyGravityStep(),
-            InputCommand.HardDrop => ApplyHardDrop(),
-            InputCommand.RotatePiece => false, // Placeholder for FL-0107
-            InputCommand.RotateWorld => false, // Placeholder for FL-0108
-            InputCommand.None => true,
-            _ => false
-        };
+            movedAtLeastOnce = true;
+        }
+
+        // Hard drop semantics: accepted => lock requested even if it didn't move collision-wise
+        return new InputApplyResult(Accepted: true, Moved: movedAtLeastOnce, LockRequested: true);
+    }
 
     /// <summary>
     /// Applies a single gravity step to the active piece.
@@ -66,24 +102,5 @@ public sealed class MovementController(Grid grid)
         return CurrentPiece.TryTranslate(gravityVector, Grid);
     }
 
-    /// <summary>
-    /// Applies hard drop: moves the piece as far as possible in gravity direction.
-    /// Per Input_Feel_v0_2.md §4.4, hard drop locks immediately (no lock delay).
-    /// </summary>
-    /// <returns>True if at least one step was taken; otherwise, false.</returns>
-    private bool ApplyHardDrop()
-    {
-        if (CurrentPiece is null)
-        {
-            return false;
-        }
 
-        bool movedAtLeastOnce = false;
-        while (ApplyGravityStep())
-        {
-            movedAtLeastOnce = true;
-        }
-
-        return movedAtLeastOnce;
-    }
 }

@@ -251,10 +251,11 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.MoveLeft);
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveLeft);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
         Assert.Equal(new Int3(4, 10, 5), controller.CurrentPiece.Origin);
     }
 
@@ -270,10 +271,11 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.MoveRight);
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveRight);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
         Assert.Equal(new Int3(6, 10, 5), controller.CurrentPiece.Origin);
     }
 
@@ -289,10 +291,11 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.MoveForward);
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveForward);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
         Assert.Equal(new Int3(5, 10, 4), controller.CurrentPiece.Origin);
     }
 
@@ -308,10 +311,11 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.MoveBack);
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveBack);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
         Assert.Equal(new Int3(5, 10, 6), controller.CurrentPiece.Origin);
     }
 
@@ -367,10 +371,11 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.SoftDrop);
+        InputApplyResult result = controller.ProcessInput(InputCommand.SoftDrop);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
         Assert.Equal(new Int3(5, 9, 5), controller.CurrentPiece.Origin);
     }
 
@@ -388,10 +393,12 @@ public sealed class MovementTests
         controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.HardDrop);
+        InputApplyResult result = controller.ProcessInput(InputCommand.HardDrop);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.Accepted);
+        Assert.True(result.Moved);
+        Assert.True(result.LockRequested);
         Assert.Equal(new Int3(5, 3, 5), controller.CurrentPiece.Origin); // Stopped at y=3 (above solid at y=2)
     }
 
@@ -403,9 +410,54 @@ public sealed class MovementTests
         MovementController controller = new(grid);
 
         // Act
-        bool result = controller.ProcessInput(InputCommand.MoveLeft);
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveLeft);
 
         // Assert
-        Assert.False(result);
+        Assert.False(result.Accepted);
+    }
+
+    [Fact]
+    public void MovementController_ProcessInput_MoveLeft_Blocked_ReturnsAcceptedButNotMoved()
+    {
+        // Arrange
+        Grid grid = new(new Int3(10, 20, 10));
+        grid.SetVoxel(new Int3(4, 10, 5), new Voxel(OccupancyType.Solid, "STANDARD")); // Block left movement
+
+        MovementController controller = new(grid);
+        List<Int3> voxels = [new(0, 0, 0)];
+        OrientedPiece piece = new(PieceId.O2, voxels, 0);
+        controller.SetGravity(GravityDirection.Down);
+        controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
+
+        // Act
+        InputApplyResult result = controller.ProcessInput(InputCommand.MoveLeft);
+
+        // Assert
+        Assert.True(result.Accepted);
+        Assert.False(result.Moved);
+        Assert.False(result.LockRequested);
+        Assert.Equal(new Int3(5, 10, 5), controller.CurrentPiece.Origin); // Did not move
+    }
+
+    [Fact]
+    public void MovementController_ProcessInput_HardDrop_Grounded_RequestsLock()
+    {
+        // Arrange
+        Grid grid = new(new Int3(10, 20, 10));
+        grid.SetVoxel(new Int3(5, 9, 5), new Voxel(OccupancyType.Solid, "STANDARD")); // Block gravity (grounded)
+
+        MovementController controller = new(grid);
+        List<Int3> voxels = [new(0, 0, 0)];
+        OrientedPiece piece = new(PieceId.O2, voxels, 0);
+        controller.SetGravity(GravityDirection.Down);
+        controller.CurrentPiece = new ActivePiece(piece, new Int3(5, 10, 5));
+
+        // Act
+        InputApplyResult result = controller.ProcessInput(InputCommand.HardDrop);
+
+        // Assert
+        Assert.True(result.Accepted);
+        Assert.False(result.Moved); // Already grounded, so no movement
+        Assert.True(result.LockRequested); // BUT, lock is requested
     }
 }
