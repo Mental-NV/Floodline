@@ -25,10 +25,7 @@ public sealed class Pcg32 : IRandom
         Step();
     }
 
-    private void Step()
-    {
-        _state = (_state * 6364136223846793005UL) + Inc;
-    }
+    private void Step() => _state = (_state * 6364136223846793005UL) + Inc;
 
     /// <inheritdoc/>
     public uint Nextuint()
@@ -45,7 +42,7 @@ public sealed class Pcg32 : IRandom
     {
         if (max <= 0)
         {
-            throw new System.ArgumentOutOfRangeException(nameof(max), "Max must be greater than 0");
+            throw new ArgumentOutOfRangeException(nameof(max), "Max must be greater than 0");
         }
 
         // Simple rejection sampling to avoid bias
@@ -66,7 +63,7 @@ public sealed class Pcg32 : IRandom
     {
         if (max <= min)
         {
-            throw new System.ArgumentOutOfRangeException(nameof(max), "Max must be greater than min");
+            throw new ArgumentOutOfRangeException(nameof(max), "Max must be greater than min");
         }
 
         // Use uint to allow ranges larger than int.MaxValue (e.g. min=int.MinValue, max=int.MaxValue)
