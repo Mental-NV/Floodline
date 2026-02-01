@@ -172,6 +172,65 @@ public sealed class MovementTests
     }
 
     [Fact]
+    public void ActivePiece_TryTranslate_CollidesWithPorous_ReturnsFalse()
+    {
+        // Arrange
+        Grid grid = new(new Int3(10, 20, 10));
+        grid.SetVoxel(new Int3(6, 10, 5), new Voxel(OccupancyType.Porous, "STANDARD"));
+
+        List<Int3> voxels = [new(0, 0, 0)];
+        OrientedPiece piece = new(PieceId.O2, voxels, 0);
+        ActivePiece activePiece = new(piece, new Int3(5, 10, 5));
+
+        // Act
+        bool result = activePiece.TryTranslate(new Int3(1, 0, 0), grid);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(new Int3(5, 10, 5), activePiece.Origin);
+    }
+
+    [Fact]
+    public void ActivePiece_TryTranslate_CollidesWithSolid_OnNonOriginVoxel_ReturnsFalse()
+    {
+        // Arrange
+        Grid grid = new(new Int3(10, 20, 10));
+        // Block the *second voxel* destination after MoveRight
+        grid.SetVoxel(new Int3(6, 10, 5), new Voxel(OccupancyType.Solid, "STANDARD"));
+
+        List<Int3> voxels = [new(0, 0, 0), new(1, 0, 0)];
+        OrientedPiece piece = new(PieceId.O2, voxels, 0);
+        // Start at x=4 so origin moves to x=5 (empty), but second voxel moves to x=6 (solid)
+        ActivePiece activePiece = new(piece, new Int3(4, 10, 5));
+
+        // Act
+        bool result = activePiece.TryTranslate(new Int3(1, 0, 0), grid);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(new Int3(4, 10, 5), activePiece.Origin);
+    }
+
+    [Fact]
+    public void ActivePiece_TryTranslate_OutOfBounds_OnNonOriginVoxel_ReturnsFalse()
+    {
+        // Arrange
+        Grid grid = new(new Int3(10, 20, 10));
+        List<Int3> voxels = [new(0, 0, 0), new(1, 0, 0)];
+        OrientedPiece piece = new(PieceId.O2, voxels, 0);
+
+        // Origin chosen so origin voxel stats in-bounds after move (x=8 -> x=9), but the second voxel goes OOB (x=9 -> x=10).
+        ActivePiece activePiece = new(piece, new Int3(8, 10, 5));
+
+        // Act
+        bool result = activePiece.TryTranslate(new Int3(1, 0, 0), grid);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(new Int3(8, 10, 5), activePiece.Origin);
+    }
+
+    [Fact]
     public void ActivePiece_CanAdvanceInGravity_EmptyBelow_ReturnsTrue()
     {
         // Arrange
