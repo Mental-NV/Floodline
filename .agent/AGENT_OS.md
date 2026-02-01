@@ -232,8 +232,10 @@ Prohibitions:
 Only if gates are satisfied:
 - set `status=Done`, set `doneAt` (UTC ISO 8601)
 - append evidence
+- Create a separate git branch
 - commit:
   - `FL-XXXX: <short title>`
+- Create a PR (GitHub)
 
 ### Step 5 — If blocked
 - Keep `status=InProgress`.

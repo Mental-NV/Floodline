@@ -47,7 +47,9 @@ Step 3 — Implement + verify
 
 Step 4 — Finish
 - Only if gates pass: set status=Done; set doneAt; append evidence.
+- Create a separate git branch.
 - Commit: “FL-XXXX: <short title>”.
+- Create a PR (GitHub).
 
 Step 5 — Blocked
 - Keep status=InProgress.
