@@ -61,6 +61,13 @@ Grid cells are integer coordinates:
 - `c = (x, y, z)` where `x∈[0..X-1]`, `z∈[0..Z-1]`, `y∈[0..H-1]`
 - Base footprint is square or rectangular; MVP uses square.
 
+**Coordinate system (Unity-style):**
+- **X-axis:** `+X = EAST/right`, `-X = WEST/left`
+- **Y-axis:** `+Y = UP`, `-Y = DOWN` (default gravity)
+- **Z-axis:** `+Z = SOUTH/back`, `-Z = NORTH/forward`
+
+This aligns with Input_Feel_v0_2.md §2.1 and Unity's left-handed coordinate system.
+
 <a id="cell-occupancy-types"></a>
 ### 2.2 Cell Occupancy Types
 Each cell contains **exactly one** of:

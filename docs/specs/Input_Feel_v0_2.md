@@ -36,6 +36,14 @@ Actions are sampled each tick and applied in canonical order:
 
 If multiple inputs of the same class occur, apply in the order they were received this tick (or by fixed priority).
 
+### 2.1 Grid Coordinate Convention (MVP)
+**Coordinate system:**
+- **+X** = right, **-X** = left
+- **-Z** = north/forward (into playfield), **+Z** = south/back (toward camera)
+- **-Y** = down (gravity), **+Y** = up
+
+This aligns with Unity's coordinate system and Simulation_Rules_v0_2.md (NORTH = (0,0,-1)).
+
 ---
 
 ## 3) Movement Repeat (DAS/ARR Equivalent)
@@ -111,7 +119,7 @@ On spawn, camera recenters to keep the active piece and the top of the structure
 
 <a id="input-defaults-pc"></a>
 ## 8) Input Defaults (PC)
-- Move: A/D (x-) / (x+), W/S (z+) / (z-)
+- Move: A/D (x-/left) / (x+/right), W/S (z-/forward/north) / (z+/back/south)
 - Local piece rotation:
   - yaw: Q/E
   - pitch: R/F
