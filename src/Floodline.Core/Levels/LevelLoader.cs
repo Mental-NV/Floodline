@@ -107,5 +107,30 @@ public static class LevelLoader
         {
             throw new ArgumentException("Level bounds must be positive.");
         }
+
+        if (level.InitialVoxels == null)
+        {
+            throw new ArgumentException("InitialVoxels list is missing.");
+        }
+
+        if (level.Objectives == null)
+        {
+            throw new ArgumentException("Objectives list is missing.");
+        }
+
+        if (level.Rotation == null)
+        {
+            throw new ArgumentException("Rotation configuration is missing.");
+        }
+
+        if (level.Bag == null)
+        {
+            throw new ArgumentException("Bag configuration is missing.");
+        }
+
+        if (level.Hazards == null)
+        {
+            throw new ArgumentException("Hazards list is missing.");
+        }
     }
 }

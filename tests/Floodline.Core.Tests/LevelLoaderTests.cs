@@ -49,4 +49,34 @@ public class LevelLoaderTests
 
     [Fact]
     public void LoadMissingMetaThrowsArgumentException() => _ = Assert.Throws<ArgumentException>(() => LevelLoader.Load(@"{ ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 } }"));
+
+    [Fact]
+    public void LoadMissingRotationThrowsArgumentException()
+    {
+        string json = @"{
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
+            ""initialVoxels"": [],
+            ""objectives"": [],
+            ""bag"": { ""type"": ""Fixed"" },
+            ""hazards"": []
+        }";
+        ArgumentException ex = Assert.Throws<ArgumentException>(() => LevelLoader.Load(json));
+        Assert.Contains("Rotation configuration is missing", ex.Message);
+    }
+
+    [Fact]
+    public void LoadMissingInitialVoxelsThrowsArgumentException()
+    {
+        string json = @"{
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
+            ""objectives"": [],
+            ""rotation"": { ""cooldownTicks"": 60 },
+            ""bag"": { ""type"": ""Fixed"" },
+            ""hazards"": []
+        }";
+        ArgumentException ex = Assert.Throws<ArgumentException>(() => LevelLoader.Load(json));
+        Assert.Contains("InitialVoxels list is missing", ex.Message);
+    }
 }
