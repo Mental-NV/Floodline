@@ -74,12 +74,9 @@ public static class DeterministicOrdering
 
     public static int GetGravElev(Int3 c, GravityDirection dir) => c.Dot(GravityTable.GetUpVector(dir));
 
-    public static Comparison<Int3> GetComparison(GravityDirection dir)
+    public static Comparison<Int3> GetComparison(GravityDirection dir) => (a, b) =>
     {
-        return (a, b) =>
-        {
-            int elevComp = GetGravElev(a, dir).CompareTo(GetGravElev(b, dir));
-            return elevComp != 0 ? elevComp : GetTieCoord(a, dir).CompareTo(GetTieCoord(b, dir));
-        };
-    }
+        int elevComp = GetGravElev(a, dir).CompareTo(GetGravElev(b, dir));
+        return elevComp != 0 ? elevComp : GetTieCoord(a, dir).CompareTo(GetTieCoord(b, dir));
+    };
 }

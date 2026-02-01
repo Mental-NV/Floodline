@@ -30,11 +30,8 @@ public class GridTests
     [InlineData(1, 0, 1)]
     [InlineData(1, 1, 0)]
     [InlineData(-1, 10, 10)]
-    public void GridConstructorThrowsOnInvalidSize(int x, int y, int z)
-    {
-        // Act & Assert
-        _ = Assert.Throws<System.ArgumentOutOfRangeException>(() => new Grid(new Int3(x, y, z)));
-    }
+    public void GridConstructorThrowsOnInvalidSize(int x, int y, int z) =>
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => new Grid(new Int3(x, y, z)));
 
     [Fact]
     public void GridGetSetVoxelWorksInBounds()
@@ -68,8 +65,8 @@ public class GridTests
         Int3 pos = new(x, y, z);
 
         // Act & Assert
-        _ = Assert.Throws<System.ArgumentOutOfRangeException>(() => grid.GetVoxel(pos));
-        _ = Assert.Throws<System.ArgumentOutOfRangeException>(() => grid.SetVoxel(pos, Voxel.Water));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => grid.GetVoxel(pos));
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() => grid.SetVoxel(pos, Voxel.Water));
     }
 
     [Fact]

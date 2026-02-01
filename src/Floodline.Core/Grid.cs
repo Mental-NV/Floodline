@@ -16,12 +16,12 @@ public sealed class Grid
     /// Initializes a new instance of the <see cref="Grid"/> class with specified dimensions.
     /// </summary>
     /// <param name="size">The grid dimensions (X, Y, Z).</param>
-    /// <exception cref="System.ArgumentOutOfRangeException">Thrown if any dimension is less than or equal to zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if any dimension is less than or equal to zero.</exception>
     public Grid(Int3 size)
     {
         if (size.X <= 0 || size.Y <= 0 || size.Z <= 0)
         {
-            throw new System.ArgumentOutOfRangeException(nameof(size), "Grid dimensions must be positive.");
+            throw new ArgumentOutOfRangeException(nameof(size), "Grid dimensions must be positive.");
         }
 
         Size = size;
@@ -45,41 +45,36 @@ public sealed class Grid
     /// </summary>
     /// <param name="pos">The position to check.</param>
     /// <returns>True if within bounds; otherwise, false.</returns>
-    public bool IsInBounds(Int3 pos)
-    {
-        return pos.X >= 0 && pos.X < Size.X &&
-               pos.Y >= 0 && pos.Y < Size.Y &&
-               pos.Z >= 0 && pos.Z < Size.Z;
-    }
+    public bool IsInBounds(Int3 pos) =>
+        pos.X >= 0 && pos.X < Size.X &&
+        pos.Y >= 0 && pos.Y < Size.Y &&
+        pos.Z >= 0 && pos.Z < Size.Z;
 
     /// <summary>
     /// Attempts to get the voxel at the specified position.
     /// </summary>
     /// <param name="pos">The position to query.</param>
     /// <returns>The voxel at the position.</returns>
-    /// <exception cref="System.ArgumentOutOfRangeException">Thrown if pos is out of bounds.</exception>
-    public Voxel GetVoxel(Int3 pos)
-    {
-        return IsInBounds(pos)
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if pos is out of bounds.</exception>
+    public Voxel GetVoxel(Int3 pos) => IsInBounds(pos)
             ? _cells[pos.X, pos.Y, pos.Z]
-            : throw new System.ArgumentOutOfRangeException(nameof(pos), $"Position {pos} is out of grid bounds {Size}.");
-    }
+            : throw new ArgumentOutOfRangeException(nameof(pos), $"Position {pos} is out of grid bounds {Size}.");
 
     /// <summary>
     /// Sets the voxel at the specified position.
     /// </summary>
     /// <param name="pos">The position to update.</param>
     /// <param name="voxel">The new voxel content.</param>
-    /// <exception cref="System.ArgumentOutOfRangeException">Thrown if pos is out of bounds.</exception>
-    /// <exception cref="System.ArgumentNullException">Thrown if voxel is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if pos is out of bounds.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if voxel is null.</exception>
     public void SetVoxel(Int3 pos, Voxel voxel)
     {
         if (!IsInBounds(pos))
         {
-            throw new System.ArgumentOutOfRangeException(nameof(pos), $"Position {pos} is out of grid bounds {Size}.");
+            throw new ArgumentOutOfRangeException(nameof(pos), $"Position {pos} is out of grid bounds {Size}.");
         }
 
-        _cells[pos.X, pos.Y, pos.Z] = voxel ?? throw new System.ArgumentNullException(nameof(voxel));
+        _cells[pos.X, pos.Y, pos.Z] = voxel ?? throw new ArgumentNullException(nameof(voxel));
     }
 
     /// <summary>

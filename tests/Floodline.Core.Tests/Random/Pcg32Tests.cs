@@ -5,10 +5,7 @@ namespace Floodline.Core.Tests.Random;
 public class Pcg32Tests
 {
     [Fact]
-    public void TickRateIsCanonical()
-    {
-        Assert.Equal(60, Floodline.Core.Constants.TickHz);
-    }
+    public void TickRateIsCanonical() => Assert.Equal(60, Constants.TickHz);
 
     [Fact]
     public void ConstructionIsDeterministic()
