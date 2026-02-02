@@ -1,3 +1,6 @@
+using System.Linq;
+using Floodline.Core.Levels;
+
 namespace Floodline.Core.Movement;
 
 /// <summary>
@@ -5,8 +8,11 @@ namespace Floodline.Core.Movement;
 /// Implements movement logic per Input_Feel_v0_2.md §2.
 /// </summary>
 /// <param name="grid">The grid.</param>
-public sealed class MovementController(Grid grid)
+/// <param name="rotationConfig">The rotation configuration for the level.</param>
+public sealed class MovementController(Grid grid, RotationConfig? rotationConfig = null)
 {
+    private static readonly RotationAxis[] DefaultAllowedAxes = [RotationAxis.Yaw];
+
     /// <summary>
     /// Gets or sets the current active piece.
     /// </summary>
@@ -16,6 +22,11 @@ public sealed class MovementController(Grid grid)
     /// Gets the grid.
     /// </summary>
     public Grid Grid { get; } = grid ?? throw new ArgumentNullException(nameof(grid));
+
+    /// <summary>
+    /// Gets the rotation configuration.
+    /// </summary>
+    public RotationConfig RotationConfig { get; } = rotationConfig ?? new RotationConfig();
 
     /// <summary>
     /// Gets the current world gravity direction.
@@ -28,6 +39,12 @@ public sealed class MovementController(Grid grid)
     /// </summary>
     /// <param name="gravity">The new gravity direction.</param>
     public void SetGravity(GravityDirection gravity) => Gravity = gravity;
+
+    private bool IsRotationAxisAllowed(RotationAxis axis)
+    {
+        RotationAxis[] allowed = RotationConfig.AllowedPieceRotationAxes ?? DefaultAllowedAxes;
+        return allowed.Length == 0 || allowed.Contains(axis);
+    }
 
     /// <summary>
     /// Processes a single input command for the current tick.
@@ -59,22 +76,34 @@ public sealed class MovementController(Grid grid)
                     ApplyHardDropResult(),
 
                 InputCommand.RotatePieceYawCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.YawCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Yaw)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.YawCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotatePieceYawCCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.YawCCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Yaw)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.YawCCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotatePiecePitchCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.PitchCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Pitch)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.PitchCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotatePiecePitchCCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.PitchCCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Pitch)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.PitchCCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotatePieceRollCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.RollCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Roll)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.RollCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotatePieceRollCCW =>
-                    ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.RollCCW, Grid)),
+                    IsRotationAxisAllowed(RotationAxis.Roll)
+                        ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.RollCCW, Grid))
+                        : Reject(),
 
                 InputCommand.RotateWorld =>
                     new InputApplyResult(Accepted: false, Moved: false, LockRequested: false), // Placeholder for FL-0108
@@ -88,6 +117,9 @@ public sealed class MovementController(Grid grid)
 
     private static InputApplyResult ResultFromMove(bool moved) =>
         new(Accepted: true, Moved: moved, LockRequested: false);
+
+    private static InputApplyResult Reject() =>
+        new(Accepted: false, Moved: false, LockRequested: false);
 
     private InputApplyResult ApplyHardDropResult()
     {

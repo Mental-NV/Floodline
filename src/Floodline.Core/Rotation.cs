@@ -1,5 +1,26 @@
 namespace Floodline.Core;
 
+/// <summary>
+/// Defines the local axes for piece rotation.
+/// </summary>
+public enum RotationAxis
+{
+    /// <summary>
+    /// Around the Y-axis (Standard 2D rotation).
+    /// </summary>
+    Yaw,
+
+    /// <summary>
+    /// Around the X-axis.
+    /// </summary>
+    Pitch,
+
+    /// <summary>
+    /// Around the Z-axis.
+    /// </summary>
+    Roll
+}
+
 public readonly record struct Matrix3x3(
     int M11, int M12, int M13,
     int M21, int M22, int M23,

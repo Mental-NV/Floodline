@@ -16,7 +16,8 @@ public record RotationConfig(
     int? MaxRotations = null,
     int? TiltBudget = null,
     int? CooldownTicks = null,
-    string[]? AllowedDirections = null
+    string[]? AllowedDirections = null,
+    RotationAxis[]? AllowedPieceRotationAxes = null
 );
 
 /// <summary>
