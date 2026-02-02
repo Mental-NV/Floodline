@@ -1025,6 +1025,59 @@
         "commandsRun": [],
         "notes": []
       }
+    },
+    {
+      "id": "FU-0110",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Simulation Timing (Gravity ticks / Lock delay) + Bag logic",
+      "status": "New",
+      "dependsOn": [
+        "FL-0109"
+      ],
+      "requirementRef": "/docs/specs/Input_Feel_v0_2.md#lock-behavior",
+      "rationale": "Ensure deterministic timing for piece falling and locking, including DAS/ARR equivalent logic and bag-based piece sequences.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Internal tick counters for Gravity and Lock Delay",
+        "Lock reset logic (grounded -> ungrounded transitions)",
+        "Implementation of Bag-based piece selection in Simulation.SpawnNextPiece",
+        "Unit tests for lock delay limits and bag sequences"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FU-0111",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Core Sorting Utilities (Canonical Ordering)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0109"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#gravity-dependent-tie-coordinates",
+      "rationale": "Strictly enforce deterministic cell iteration across all solvers (solids, water, drains).",
+      "sizeHint": "S",
+      "deliverables": [
+        "Deterministic sorting utility (gravElev + tieCoord)",
+        "Unified Matrix/Transformation helpers for cardinal gravity directions",
+        "Unit tests verifying tie-break order for all 6 gravity directions"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
     }
   ]
 }
