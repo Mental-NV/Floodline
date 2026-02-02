@@ -525,12 +525,10 @@
       "rationale": "Settled solids must obey stability rules and deterministic dropping after gravity changes.",
       "sizeHint": "L",
       "deliverables": [
-        "Simulation.ResolveTilt() and internal gravity/lock timing logic",
-        "Canonical sorting utilities (gravElev, tieCoord) for deterministic iteration",
         "Connected components detection for solids",
         "Component drop distance computation with canonical ordering",
-        "BagConfig alignment in SpawnNextPiece",
-        "Unit tests: multi-component drop cases and tilt-rotation non-locking behavior"
+        "Displaced water handling hook points (no Unity)",
+        "Unit tests: multi-component drop cases"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
@@ -996,6 +994,32 @@
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
         "powershell -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FU-0109",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Tilt Resolve vs. Full Resolve architectural alignment",
+      "status": "New",
+      "dependsOn": [
+        "FL-0109"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#rotation-effects",
+      "rationale": "Correct architectural drift where world rotation incorrectly triggered a full piece-locking resolve instead of a non-locking Tilt Resolve.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Simulation.ResolveTilt() method",
+        "Simulation.Tick updated to call ResolveTilt on world rotation",
+        "SimulationTests updated to verify piece remains active after tilt"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
         "commandsRun": [],
