@@ -453,7 +453,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Tick pipeline + resolve loop skeleton (phase order)",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-03T01:20:00Z",
+      "doneAt": "2026-02-03T01:21:40Z",
       "dependsOn": [
         "FL-0108"
       ],
@@ -471,8 +473,16 @@
         "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Implemented Simulation class and deterministic tick pipeline.",
+          "Implemented SimulationStatus and SimulationState.",
+          "Implemented RandomExtensions.NextChoice.",
+          "Added SimulationTests.cs covering core pipeline steps.",
+          "Successfully passed CI with 98 tests and strict formatting gates."
+        ]
       }
     },
     {
@@ -984,6 +994,32 @@
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
         "powershell -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FU-0109",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Tilt Resolve vs. Full Resolve architectural alignment",
+      "status": "New",
+      "dependsOn": [
+        "FL-0109"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#rotation-effects",
+      "rationale": "Correct architectural drift where world rotation incorrectly triggered a full piece-locking resolve instead of a non-locking Tilt Resolve.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Simulation.ResolveTilt() method",
+        "Simulation.Tick updated to call ResolveTilt on world rotation",
+        "SimulationTests updated to verify piece remains active after tilt"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
         "commandsRun": [],
