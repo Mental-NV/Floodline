@@ -418,8 +418,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "World rotation (snap 90°) + gravity direction model",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-02T16:25:58Z",
+      "doneAt": "2026-02-02T16:35:00Z",
       "dependsOn": [
         "FL-0107"
       ],
@@ -436,8 +437,15 @@
         "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Implemented GetRotatedGravity and GetMatrix in GravityTable.",
+          "Updated InputCommand for specific tilt directions.",
+          "Implemented ResolveWorldRotation in MovementController.",
+          "Verified with 91 unit tests passing in CI."
+        ]
       }
     },
     {

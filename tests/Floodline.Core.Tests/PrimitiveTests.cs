@@ -46,4 +46,30 @@ public class PrimitiveTests
         // EAST (1,0,0): U=(-1,0,0), R=(0,0,1)
         Assert.Equal(new Int3(0, 0, 1), GravityTable.GetRightVector(GravityDirection.East));
     }
+
+    [Fact]
+    public void GravityRotationIsCorrect()
+    {
+        // Start with Down (0, -1, 0)
+        // Tilt Forward (PitchCW) -> rotates Down (Y=-1) to North (Z=-1)
+        Assert.Equal(GravityDirection.North, GravityTable.GetRotatedGravity(GravityDirection.Down, Matrix3x3.PitchCW));
+
+        // Start with South (0, 0, 1)
+        // Tilt Right (RollCCW) -> rotates Z to -X? No, Roll is around Z.
+        // Wait, RollCCW transforms X to -Y. 
+        // Let's re-verify: RollCCW = (0, 1, 0, -1, 0, 0, 0, 0, 1)
+        // [0 1 0] [0]   [0]
+        // [-1 0 0] [0] = [0]
+        // [0 0 1] [1]   [1]
+        // (0,0,1) transformed by RollCCW is (0,0,1). Correct, rotation around Z doesn't change Z.
+
+        // Let's try Tilt Left (RollCW) from East (1, 0, 0)
+        // RollCW = (0, -1, 0, 1, 0, 0, 0, 0, 1)
+        // [0 -1 0] [1]   [0]
+        // [1 0 0] [0] = [1]
+        // [0 0 1] [0]   [0]
+        // Gravity (1,0,0) becomes (0,1,0) which is Up.
+        // Wait, in my GetRotatedGravity I throw if it's Up.
+        Assert.Throws<InvalidOperationException>(() => GravityTable.GetRotatedGravity(GravityDirection.East, Matrix3x3.RollCW));
+    }
 }

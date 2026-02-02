@@ -72,9 +72,24 @@ public enum InputCommand
     HardDrop,
 
     /// <summary>
-    /// Rotate the world (snap 90°) - implementation in FL-0108.
+    /// Rotate the world Forward (Tilt Forward).
     /// </summary>
-    RotateWorld
+    RotateWorldForward,
+
+    /// <summary>
+    /// Rotate the world Back (Tilt Back).
+    /// </summary>
+    RotateWorldBack,
+
+    /// <summary>
+    /// Rotate the world Left (Tilt Left).
+    /// </summary>
+    RotateWorldLeft,
+
+    /// <summary>
+    /// Rotate the world Right (Tilt Right).
+    /// </summary>
+    RotateWorldRight
 }
 
 /// <summary>

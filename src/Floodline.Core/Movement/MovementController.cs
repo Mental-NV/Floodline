@@ -105,8 +105,17 @@ public sealed class MovementController(Grid grid, RotationConfig? rotationConfig
                         ? ResultFromMove(CurrentPiece.AttemptRotation(Matrix3x3.RollCCW, Grid))
                         : Reject(),
 
-                InputCommand.RotateWorld =>
-                    new InputApplyResult(Accepted: false, Moved: false, LockRequested: false), // Placeholder for FL-0108
+                InputCommand.RotateWorldForward =>
+                    ResultFromMove(ResolveWorldRotation(WorldRotationDirection.TiltForward)),
+
+                InputCommand.RotateWorldBack =>
+                    ResultFromMove(ResolveWorldRotation(WorldRotationDirection.TiltBack)),
+
+                InputCommand.RotateWorldLeft =>
+                    ResultFromMove(ResolveWorldRotation(WorldRotationDirection.TiltLeft)),
+
+                InputCommand.RotateWorldRight =>
+                    ResultFromMove(ResolveWorldRotation(WorldRotationDirection.TiltRight)),
 
                 InputCommand.None =>
                     new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
@@ -114,6 +123,47 @@ public sealed class MovementController(Grid grid, RotationConfig? rotationConfig
                 _ =>
                     new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
             };
+
+    /// <summary>
+    /// Resolves a world rotation.
+    /// Updates gravity and transforms the active piece's orientation.
+    /// </summary>
+    /// <param name="direction">The tilt direction.</param>
+    /// <returns>True if the rotation was accepted and applied; otherwise, false.</returns>
+    public bool ResolveWorldRotation(WorldRotationDirection direction)
+    {
+        // 1. Get rotation matrix
+        Matrix3x3 matrix = GravityTable.GetMatrix(direction);
+
+        // 2. Compute new gravity
+        GravityDirection newGravity = GravityTable.GetRotatedGravity(Gravity, matrix);
+
+        // 3. Check level constraints (future work: cooldown, budget)
+        // For now, assume all directions in {Down, North, South, East, West} are valid
+        // per Simulation_Rules §2.3.
+
+        // 4. Update active piece if it exists
+        if (CurrentPiece is not null)
+        {
+            // Per Simulation_Rules §3.2, rotation is rejected if active piece would collide
+            // In world rotation, the piece voxels transform, but they should stay at the same
+            // board positions relative to the piece origin.
+            // Wait, the piece orientation must change so it follows the world.
+            // If the world rotates PitchCW, the piece must rotate PitchCW relative to its local origin.
+
+            if (!CurrentPiece.AttemptRotation(matrix, Grid))
+            {
+                // Partial implementation: rotation rejected if piece can't fit in new orientation
+                return false;
+            }
+        }
+
+        // 5. Apply new gravity
+        Gravity = newGravity;
+
+        // Note: Tilt Resolve for settled world (solids + water) will be handled in Resolve Phase (FL-0109+)
+        return true;
+    }
 
     private static InputApplyResult ResultFromMove(bool moved) =>
         new(Accepted: true, Moved: moved, LockRequested: false);

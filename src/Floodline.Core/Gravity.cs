@@ -39,6 +39,39 @@ public static class GravityTable
         Int3 r = GetRightVector(dir);
         return u.Cross(r);
     }
+
+    /// <summary>
+    /// Gets the new gravity direction after applying a world rotation.
+    /// </summary>
+    public static GravityDirection GetRotatedGravity(GravityDirection current, Matrix3x3 rotation)
+    {
+        Int3 g = GetVector(current);
+        Int3 rotatedG = rotation.Transform(g);
+
+        return rotatedG switch
+        {
+            { X: 0, Y: -1, Z: 0 } => GravityDirection.Down,
+            { X: 0, Y: 0, Z: -1 } => GravityDirection.North,
+            { X: 0, Y: 0, Z: 1 } => GravityDirection.South,
+            { X: 1, Y: 0, Z: 0 } => GravityDirection.East,
+            { X: -1, Y: 0, Z: 0 } => GravityDirection.West,
+            _ => throw new InvalidOperationException($"Rotated gravity vector {rotatedG} is not a valid cardinal direction")
+        };
+    }
+
+    /// <summary>
+    /// Gets the rotation matrix for a 90-degree world tilt.
+    /// Note: Tilting the level "Forward" (+Z direction visually) means gravity shifts toward North (-Z).
+    /// This is equivalent to a Pitch rotation of the world.
+    /// </summary>
+    public static Matrix3x3 GetMatrix(Floodline.Core.Movement.WorldRotationDirection direction) => direction switch
+    {
+        Movement.WorldRotationDirection.TiltForward => Matrix3x3.PitchCW,
+        Movement.WorldRotationDirection.TiltBack => Matrix3x3.PitchCCW,
+        Movement.WorldRotationDirection.TiltLeft => Matrix3x3.RollCW,
+        Movement.WorldRotationDirection.TiltRight => Matrix3x3.RollCCW,
+        _ => throw new ArgumentOutOfRangeException(nameof(direction))
+    };
 }
 
 public readonly record struct TieCoord(int U, int R, int F) : IComparable<TieCoord>
