@@ -453,7 +453,8 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Tick pipeline + resolve loop skeleton (phase order)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T01:20:00Z",
       "dependsOn": [
         "FL-0108"
       ],
