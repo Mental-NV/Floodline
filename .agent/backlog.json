@@ -418,7 +418,8 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "World rotation (snap 90°) + gravity direction model",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-02T16:25:58Z",
       "dependsOn": [
         "FL-0107"
       ],
