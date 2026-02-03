@@ -233,6 +233,10 @@ Prohibitions:
 - If there is a CURRENT active item (`InProgress` or `InReview`): continue it.
 - Else select NEXT = lowest ID `New` item with all `dependsOn` = `Done`.
 
+### Step 1.5 — Create feature branch (mandatory)
+- Create a feature branch from `main` before making any commits.
+- All non-merge commits MUST be on a feature branch (never on `main`).
+
 ### Step 2 — Start work (backlog-only commit)
 - Set `status=InProgress`; set `startedAt` (UTC ISO 8601).
 - Commit backlog-only change immediately: `FL-XXXX: start <short title>`.
