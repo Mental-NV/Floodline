@@ -17,16 +17,22 @@
 
 ## 1) Canonical artifacts (ALWAYS read)
 
-1) [`docs/GDD_Core_v0_2.md`](../docs/GDD_Core_v0_2.md)
+1) [`docs/GDD_Core_v0_2.md`](../docs/GDD_Core_v0_2.md)  
    Player-facing design and product framing.
 
-2) [`docs/specs/Simulation_Rules_v0_2.md`](../docs/specs/Simulation_Rules_v0_2.md)
+2) [`docs/specs/Input_Feel_v0_2.md`](../docs/specs/Input_Feel_v0_2.md)  
+   Input, feel, and lock/tilt expectations that constrain implementation details.
+
+3) [`docs/specs/Simulation_Rules_v0_2.md`](../docs/specs/Simulation_Rules_v0_2.md)  
    Determinism-critical simulation rules (resolve order, solids, objectives, hazards).
 
-3) [`AGENT_OS.md`](AGENT_OS.md) (this file)  
+4) [`docs/specs/Water_Algorithm_v0_2.md`](../docs/specs/Water_Algorithm_v0_2.md)  
+   Exact water propagation / drains / freeze behavior.
+
+5) [`AGENT_OS.md`](AGENT_OS.md) (this file)  
    The only canonical agent workflow + gates + milestone order.
 
-4) [`backlog.json`](backlog.json)  
+6) [`backlog.json`](backlog.json)  
    The only canonical work state (DONE / CURRENT / NEXT) and evidence log.
 
 **Rule:** open any other file only if the CURRENT backlog item’s `requirementRef` explicitly points to it.
@@ -63,16 +69,21 @@
 
 ### 2.4 Backlog truth + WIP discipline (hard rule)
 - Canonical backlog: [`backlog.json`](backlog.json).
-- Status enum: `New → InProgress → Done`.
-- **WIP limit = 1**: at most one `InProgress` item at a time.
+- Status enum: `New → InProgress → InReview → Done`.
+  - `New`: eligible to start once dependencies are satisfied.
+  - `InProgress`: being implemented locally (pre-PR) on a working branch.
+  - `InReview`: a PR exists; changes are in review / self-review / CI iteration.
+  - `Done`: the PR is merged (or explicitly closed as completed) and `main` contains the changes.
+- **WIP limit = 1**: at most one active item at a time (`InProgress` OR `InReview`).
   - `0` is allowed only between items.
   - If any eligible `New` item exists (all `dependsOn` are `Done`), you MUST immediately set NEXT to `InProgress`
     before making other repo changes.
 
 **Always be able to state:**
 - DONE items (`Done`)
-- CURRENT item (`InProgress`) if any
+- CURRENT item (`InProgress` or `InReview`) if any
 - NEXT item (lowest ID `New` with all dependencies `Done`)
+
 
 ### 2.5 Change control (no silent spec drift)
 If design/architecture must change:
@@ -207,14 +218,14 @@ Prohibitions:
 <a id="execution-loop"></a>
 
 ### Step 0 — Preflight (each session)
-- Ensure working tree is clean (no uncommitted changes).
-- Read the 4 canonical artifacts (Core GDD, Simulation Rules, AGENT_OS, backlog).
-- Confirm there is at most one `InProgress` item.
+- Start from a fresh, clean `main` synced to `origin/main` (no local diffs, no untracked files).
+- Read the 6 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, AGENT_OS, backlog).
+- Confirm there is at most one active item (`InProgress` or `InReview`).
 - Run:
   - [`powershell -File ./scripts/preflight.ps1`](../scripts/preflight.ps1)
 
 ### Step 1 — Select work
-- If there is a CURRENT `InProgress` item: continue it.
+- If there is a CURRENT active item (`InProgress` or `InReview`): continue it.
 - Else select NEXT = lowest ID `New` item with all `dependsOn` = `Done`.
 
 ### Step 2 — Start work (mandatory backlog-only commit)
@@ -223,22 +234,48 @@ Prohibitions:
   - `FL-XXXX: start <short title>`
 
 ### Step 3 — Implement and verify
-- Implement per constraints.
-- Run validation commands exactly as listed in backlog item:
+- Implement only what the item requires (no opportunistic refactors).
+- Run validation commands exactly as listed in the backlog item:
   - prefer [`powershell -File ./scripts/ci.ps1`](../scripts/ci.ps1)
 - Record commands + results in item evidence.
 
-### Step 4 — Finish
-Only if gates are satisfied:
-- set `status=Done`, set `doneAt` (UTC ISO 8601)
-- append evidence
-- Create a separate git branch
-- commit:
+### Step 4 — Reviewing (PR open)
+Only if gates are satisfied on the branch:
+- Create / switch to a separate git branch (if not already).
+- Commit implementation:
   - `FL-XXXX: <short title>`
-- Create a PR (GitHub)
+- Push branch and open a PR (GitHub).
+- Status remains `InProgress` while you create/push the PR; then transition the backlog item to `status=InReview` and append evidence including:
+  - PR link
+  - CI run link(s) / summary
+  - any known review TODOs
 
-### Step 5 — If blocked
-- Keep `status=InProgress`.
+> Note: `InReview` is a *WIP state*. You do **not** mark `Done` just because a PR exists.
+
+### Step 5 — Self-review and self-refinement (pre-merge)
+- Re-read authoritative documents:
+  - `/docs/GDD_Core_v0_2.md`
+  - `/docs/specs/Input_Feel_v0_2.md`
+  - `/docs/specs/Simulation_Rules_v0_2.md`
+  - `/docs/specs/Water_Algorithm_v0_2.md`
+  - `/.agent/AGENT_OS.md`
+- Perform a self-review of the diff vs. specs + gates.
+  - If compliant: proceed to Step 6.
+  - If non-compliant and the fix is small: push fix commits to the same PR branch and re-run gates.
+  - If non-compliant and the fix is large / would expand scope: create a follow-up item `FU-XXXX` and keep this PR scoped.
+    - If follow-up is high priority, assign it the *current or next available numeric ID* so the preflight “lowest ID first” rule selects it next.
+    - The follow-up item MUST include `requirementRef` pointing to the violated spec section(s) and evidence explaining why it’s needed.
+
+### Step 6 — Finish (merge → Done)
+Only when the PR is ready to merge:
+- Update the backlog item:
+  - set `status=Done`
+  - set `doneAt` (UTC ISO 8601)
+  - append final evidence (PR link + merge commit / merge confirmation)
+- Merge the PR (or ensure it is merged immediately after this commit), so `main` reflects `Done`.
+
+### Step 7 — If blocked
+- Keep `status=InProgress` (pre-PR) or `status=InReview` (post-PR).
 - Write a Blocking Note into evidence:
   - what failed
   - 2–3 options

@@ -33,8 +33,8 @@ if ($backlog.PSObject.Properties.Name -contains "items") {
 if (-not $items) { Fail "Backlog contains no items." }
 
 # 3) invariants: WIP limit
-$inProgress = @($items | Where-Object { $_.status -eq "InProgress" })
-if ($inProgress.Count -gt 1) { Fail "WIP violation: more than one item is InProgress." }
+$active = @($items | Where-Object { $_.status -in @("InProgress","InReview") })
+if ($active.Count -gt 1) { Fail "WIP violation: more than one item is active (InProgress/InReview)." }
 
 $done = @($items | Where-Object { $_.status -eq "Done" })
 $new  = @($items | Where-Object { $_.status -eq "New" })
@@ -65,13 +65,12 @@ if ($eligibleNew) {
 
 # 5) print summary (agent-friendly)
 Write-Host "DONE:    $($done.Count)"
-if ($inProgress.Count -eq 1) {
-  $cur = $inProgress[0]
-  Write-Host "CURRENT: $($cur.id) - $($cur.title)"
+if ($active.Count -eq 1) {
+  $cur = $active[0]
+  Write-Host "CURRENT: $($cur.id) [$($cur.status)] - $($cur.title)"
 } else {
   Write-Host "CURRENT: (none)"
 }
-
 if ($next) {
   Write-Host "NEXT:    $($next.id) - $($next.title)"
 } else {

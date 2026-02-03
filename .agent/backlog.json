@@ -3,11 +3,12 @@
   "statusEnum": [
     "New",
     "InProgress",
+    "InReview",
     "Done"
   ],
   "wipLimit": 1,
   "canonicalOrdering": "lowest-id-first",
-  "selectionRule": "next = lowest-id New item where all dependsOn are Done",
+  "selectionRule": "current = item with status InProgress or InReview; next = lowest-id New item where all dependsOn are Done",
   "backlogEvolution": {
     "editWindows": [
       "before-starting-new-item",
@@ -17,7 +18,8 @@
       "missing-infrastructure",
       "test-discovered-bug",
       "task-too-large-split",
-      "spec-mismatch-change-proposal"
+      "spec-mismatch-change-proposal",
+      "self-review-discovered-gap"
     ],
     "requiredFieldsForNewItems": [
       "id",
