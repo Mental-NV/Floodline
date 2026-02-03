@@ -25,6 +25,26 @@ function Run([string]$cmd) {
   if ($LASTEXITCODE -ne 0) { throw "Command failed with exit code ${LASTEXITCODE}: $cmd" }
 }
 
+function RunDotnet([string[]]$dotnetArgs) {
+  Write-Host (">> dotnet " + ($dotnetArgs -join " "))
+  $output = & dotnet @dotnetArgs 2>&1
+  if ($LASTEXITCODE -ne 0) {
+    $joinedOutput = $output -join [Environment]::NewLine
+    throw "Command failed with exit code ${LASTEXITCODE}: dotnet $($dotnetArgs -join ' ')`n$joinedOutput"
+  }
+  return $output
+}
+
+function GetDeterminismHash([string[]]$outputLines) {
+  $joinedOutput = $outputLines -join [Environment]::NewLine
+  $match = [regex]::Match($joinedOutput, "DeterminismHash:\s*(\S+)")
+  if ($match.Success) {
+    return $match.Groups[1].Value.Trim()
+  }
+
+  throw "DeterminismHash not found in CLI output.`n$joinedOutput"
+}
+
 # Find solution (first *.sln under repo root)
 $sln = Get-ChildItem -Path "." -Filter "*.sln" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $sln) { throw "No .sln found. Create solution/projects before running CI script." }
@@ -83,6 +103,63 @@ if ($Golden) {
   }
 
   Remove-Item -Path $goldenResultsDir -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+# Replay parity gate (record -> replay determinism hash must match)
+if ($Replay) {
+  $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  $cliProject = Join-Path $repoRoot "src\Floodline.Cli\Floodline.Cli.csproj"
+  $levelPath = Join-Path $repoRoot "levels\minimal_level.json"
+  $inputsPath = Join-Path $repoRoot "levels\minimal_inputs.txt"
+
+  if (-not (Test-Path $cliProject)) { throw "CLI project not found: $cliProject" }
+  if (-not (Test-Path $levelPath)) { throw "Replay fixture level not found: $levelPath" }
+  if (-not (Test-Path $inputsPath)) { throw "Replay fixture inputs not found: $inputsPath" }
+
+  $replayPath = Join-Path ([System.IO.Path]::GetTempPath()) ("floodline-ci-replay-" + [Guid]::NewGuid().ToString("N") + ".json")
+
+  try {
+    $recordArgs = @(
+      "run",
+      "--project", $cliProject,
+      "--configuration", $Configuration,
+      "--no-build",
+      "--",
+      "--level", $levelPath,
+      "--inputs", $inputsPath,
+      "--record", $replayPath
+    )
+
+    $recordOutput = RunDotnet $recordArgs
+
+    if (-not (Test-Path $replayPath)) {
+      throw "Replay file was not created: $replayPath"
+    }
+
+    $recordHash = GetDeterminismHash $recordOutput
+
+    $replayArgs = @(
+      "run",
+      "--project", $cliProject,
+      "--configuration", $Configuration,
+      "--no-build",
+      "--",
+      "--level", $levelPath,
+      "--replay", $replayPath
+    )
+
+    $replayOutput = RunDotnet $replayArgs
+    $replayHash = GetDeterminismHash $replayOutput
+
+    if ($recordHash -ne $replayHash) {
+      throw "Replay determinism mismatch: record=$recordHash replay=$replayHash"
+    }
+
+    Write-Host "Replay parity OK: $recordHash"
+  }
+  finally {
+    Remove-Item -Path $replayPath -Force -ErrorAction SilentlyContinue
+  }
 }
 
 # Formatting (only when gate is introduced)
