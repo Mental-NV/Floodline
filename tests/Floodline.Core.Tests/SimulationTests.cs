@@ -65,7 +65,7 @@ public class SimulationTests
     }
 
     [Fact]
-    public void Simulation_WorldRotation_Triggers_Resolve_Skeleton()
+    public void Simulation_WorldRotation_Triggers_TiltResolve_Without_Merging_ActivePiece()
     {
         // Arrange
         var sim = new Simulation(CreateTestLevel(), new Pcg32(1));
@@ -74,15 +74,15 @@ public class SimulationTests
         sim.Tick(InputCommand.RotateWorldForward);
 
         // Assert
-        // In our current skeleton, Resolve() merges active piece.
-        // So after RotateWorldForward, the piece should be merged.
         Assert.Equal(SimulationStatus.InProgress, sim.State.Status);
-        // Note: In current skeleton, Resolve does NOT reset ActivePiece, 
-        // but it sets voxels in grid.
+        Assert.NotNull(sim.ActivePiece);
+        Assert.Equal(0, sim.State.PiecesLocked);
+
+        // Tilt resolve should not merge the active piece into the grid.
         var positions = sim.ActivePiece!.GetWorldPositions();
         foreach (var pos in positions)
         {
-            Assert.Equal(OccupancyType.Solid, sim.Grid.GetVoxel(pos).Type);
+            Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(pos).Type);
         }
     }
 }

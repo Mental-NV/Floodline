@@ -76,7 +76,7 @@ public sealed class Simulation
         if (inputResult.Accepted && IsWorldRotation(command))
         {
             // Per §3.2: Immediate Tilt Resolve for settled world
-            Resolve();
+            ResolveTilt();
         }
 
         // 2. Gravity Step
@@ -129,6 +129,20 @@ public sealed class Simulation
                 Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, null));
             }
         }
+    }
+
+    private static void ResolveTilt()
+    {
+        // Canonical Tilt Resolve (§3.2):
+        // Resolve settled world only (no merge of active piece).
+        // 1. Settle Solids
+        // 2. Settle Water
+        // 3. Recheck Solids
+        // 4. Apply Drains
+
+        // TODO (FL-0111): Full solids stability implementation
+        // TODO (FL-0112): Full water solver implementation
+        // TODO (FL-0113): Drains and freeze
     }
 
     private void SpawnNextPiece()

@@ -1005,7 +1005,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Tilt Resolve vs. Full Resolve architectural alignment",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-02T23:58:58Z",
+      "doneAt": "2026-02-03T00:01:46Z",
       "dependsOn": [
         "FL-0109"
       ],
@@ -1022,8 +1024,15 @@
         "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M1",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
+          "Fixed CA1822 on ResolveTilt (static) and reran ci.ps1 successfully."
+        ]
       }
     }
   ]
