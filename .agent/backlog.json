@@ -1050,7 +1050,8 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Tilt Resolve active-piece obstacle + rollback on collision",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T06:35:30.1320163Z",
       "dependsOn": [
         "FU-0109",
         "FL-0111"
