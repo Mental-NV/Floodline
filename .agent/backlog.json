@@ -694,7 +694,8 @@
       "epic": "E2",
       "milestone": "M2",
       "title": "Golden suite: solids resolve + stability",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T12:41:44.2604218Z",
       "dependsOn": [
         "FL-0200"
       ],
