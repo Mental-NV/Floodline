@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Floodline.Cli;
 using Xunit;
@@ -34,5 +35,64 @@ public class CliAppTests
         Assert.Contains("Status:", output.ToString());
         Assert.Contains("DeterminismHash:", output.ToString());
         Assert.True(string.IsNullOrWhiteSpace(error.ToString()));
+    }
+
+    [Fact]
+    public void CliApp_Record_And_Replay_Matches_DeterminismHash()
+    {
+        string levelPath = TestPaths.GetLevelPath("minimal_level.json");
+        string inputsPath = TestPaths.GetLevelPath("minimal_inputs.txt");
+        string replayPath = Path.Combine(Path.GetTempPath(), $"floodline-replay-{Guid.NewGuid()}.json");
+
+        try
+        {
+            using StringWriter outputRecord = new();
+            using StringWriter errorRecord = new();
+
+            int recordExit = CliApp.Run(
+                ["--level", levelPath, "--inputs", inputsPath, "--record", replayPath],
+                outputRecord,
+                errorRecord);
+
+            Assert.Equal(0, recordExit);
+            Assert.True(File.Exists(replayPath));
+            Assert.True(string.IsNullOrWhiteSpace(errorRecord.ToString()));
+
+            string recordHash = ExtractHash(outputRecord.ToString());
+
+            using StringWriter outputReplay = new();
+            using StringWriter errorReplay = new();
+
+            int replayExit = CliApp.Run(
+                ["--level", levelPath, "--replay", replayPath],
+                outputReplay,
+                errorReplay);
+
+            Assert.Equal(0, replayExit);
+            Assert.True(string.IsNullOrWhiteSpace(errorReplay.ToString()));
+
+            string replayHash = ExtractHash(outputReplay.ToString());
+            Assert.Equal(recordHash, replayHash);
+        }
+        finally
+        {
+            if (File.Exists(replayPath))
+            {
+                File.Delete(replayPath);
+            }
+        }
+    }
+
+    private static string ExtractHash(string output)
+    {
+        foreach (string line in output.Split(Environment.NewLine))
+        {
+            if (line.StartsWith("DeterminismHash:", StringComparison.Ordinal))
+            {
+                return line["DeterminismHash:".Length..].Trim();
+            }
+        }
+
+        throw new InvalidOperationException("DeterminismHash not found in output.");
     }
 }

@@ -908,7 +908,9 @@
       "epic": "E3",
       "milestone": "M3",
       "title": "Replay recorder + replayer (CLI integration)",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-03T14:04:16.5040917Z",
+      "doneAt": "2026-02-03T14:22:39.2663104Z",
       "dependsOn": [
         "FL-0301"
       ],
@@ -925,8 +927,15 @@
         "powershell -File ./scripts/ci.ps1 -Scope M3"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M3"
+        ],
+        "notes": [
+          "CI: powershell -File ./scripts/ci.ps1 -Scope M3 (Release build, 132 tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/32",
+          "Self-review complete; auto-merging.",
+          "CI: https://github.com/Mental-NV/Floodline/actions/runs/21633871223/job/62353654225"
+        ]
       }
     },
     {
