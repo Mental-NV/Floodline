@@ -1172,6 +1172,165 @@
       }
     },
     {
+      "id": "AI-0001",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Enforce feature branch before work",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
+      "rationale": "Prevent accidental commits on main by requiring a dedicated feature branch before Step 2.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: add explicit 'create feature branch' step between Step 1 and Step 2",
+        "AGENT_OS: forbid non-merge commits on main"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0002",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Make preflight fail on dirty/out-of-sync main",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
+      "rationale": "Ensure Step 0 blocks work when main is dirty or ahead/behind origin/main.",
+      "sizeHint": "S",
+      "deliverables": [
+        "scripts/preflight.ps1: fail if HEAD is not main",
+        "scripts/preflight.ps1: fail if worktree not clean or main ahead/behind origin/main"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0003",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Require PR Ready before merge",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
+      "rationale": "Draft PRs cannot be merged; make PR readiness mandatory before Step 6.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: make Draft→Ready mandatory before Step 6",
+        "AGENT_OS: update Step 5 wording to remove 'optional' ambiguity"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0004",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Backlog edit hygiene rule (no JSON round-trip)",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#backlog-item-format",
+      "rationale": "Avoid massive diffs caused by serializer round-tripping of backlog.json.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: rule to use minimal patching for backlog.json edits",
+        "AGENT_OS: forbid serializer round-tripping for backlog.json"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0005",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Backlog schema consistency rules + check",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#backlog-item-format",
+      "rationale": "Prevent inconsistent timestamp fields and status/field mismatches in backlog.json.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: define timestamp field rules (startedAt/doneAt, no completedAt)",
+        "Optional script or preflight check to validate backlog.json consistency"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0006",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Standardize PowerShell invocation examples",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#standard-validation-entrypoints-preferred",
+      "rationale": "Reduce AuthorizationManager blocks by standardizing ExecutionPolicy usage in examples.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: update command examples to use powershell -ExecutionPolicy Bypass -File ..."
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "AI-0007",
+      "epic": "AI",
+      "milestone": "M0",
+      "title": "Add self-review checklist to Step 5",
+      "status": "New",
+      "dependsOn": [],
+      "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
+      "rationale": "Catch recurring misses (draft PR, lockfiles, encoding, evidence completeness) via a mechanical checklist.",
+      "sizeHint": "S",
+      "deliverables": [
+        "AGENT_OS: add concise self-review checklist under Step 5"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/preflight.ps1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FU-0109",
       "epic": "E1",
       "milestone": "M1",
