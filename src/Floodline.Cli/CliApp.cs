@@ -163,7 +163,7 @@ public static class CliApp
             }
         }
 
-        output.WriteLine("DeterminismHash: TODO");
+        output.WriteLine($"DeterminismHash: {simulation.ComputeDeterminismHash()}");
     }
 
     private static void PrintUsage(TextWriter output)

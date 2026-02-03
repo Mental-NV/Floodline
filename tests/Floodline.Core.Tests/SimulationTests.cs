@@ -179,9 +179,11 @@ public class SimulationTests
         Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(new Int3(blockedCell.X, blockedCell.Y, 0)).Type);
     }
 
-    private sealed class FixedRandom(int value) : IRandom
+    private sealed class FixedRandom(int value) : IRandom, IRandomState
     {
         private readonly int _value = value;
+
+        public ulong State => (ulong)_value;
 
         public uint Nextuint() => (uint)_value;
 

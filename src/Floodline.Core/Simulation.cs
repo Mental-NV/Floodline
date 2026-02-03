@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Floodline.Core.Determinism;
 using Floodline.Core.Levels;
 using Floodline.Core.Movement;
 using Floodline.Core.Random;
@@ -21,8 +22,8 @@ public sealed class Simulation
     private SimulationStatus _status = SimulationStatus.InProgress;
     private long _ticksElapsed;
     private int _piecesLocked;
-    private int _waterRemovedTotal;
-    private int _rotationsExecuted;
+    internal int WaterRemovedTotal { get; private set; }
+    internal int RotationsExecuted { get; private set; }
 
     /// <summary>
     /// Gets the current grid.
@@ -48,6 +49,12 @@ public sealed class Simulation
     /// Gets the current gravity direction.
     /// </summary>
     public GravityDirection Gravity => _movement.Gravity;
+
+    internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
+
+    internal ulong RandomState => _random is IRandomState state
+        ? state.State
+        : throw new InvalidOperationException("Determinism hash requires a random generator that exposes state.");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Simulation"/> class.
@@ -108,7 +115,7 @@ public sealed class Simulation
 
         if (inputResult.Accepted && IsWorldRotation(command))
         {
-            _rotationsExecuted++;
+            RotationsExecuted++;
         }
 
         // 2. Gravity Step
@@ -141,6 +148,11 @@ public sealed class Simulation
             UpdateStatus();
         }
     }
+
+    /// <summary>
+    /// Computes a deterministic hash of the current simulation state.
+    /// </summary>
+    public string ComputeDeterminismHash() => DeterminismHasher.Compute(this);
 
     private void Resolve()
     {
@@ -297,8 +309,8 @@ public sealed class Simulation
             Grid,
             _level,
             _piecesLocked,
-            _waterRemovedTotal,
-            _rotationsExecuted);
+            WaterRemovedTotal,
+            RotationsExecuted);
 
         if (Objectives.AllCompleted)
         {
@@ -357,7 +369,7 @@ public sealed class Simulation
             return;
         }
 
-        _waterRemovedTotal += removed;
+        WaterRemovedTotal += removed;
         _ = WaterSolver.Settle(Grid, _movement.Gravity, [], blockedCells);
     }
 

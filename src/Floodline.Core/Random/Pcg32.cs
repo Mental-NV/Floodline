@@ -5,10 +5,10 @@ namespace Floodline.Core.Random;
 /// This generator is strictly deterministic based on the provided seed.
 /// See: https://www.pcg-random.org/
 /// </summary>
-public sealed class Pcg32 : IRandom
+public sealed class Pcg32 : IRandom, IRandomState
 {
     // State for PCG-XSH-RR
-    private ulong _state;
+    public ulong State { get; private set; }
     // We use a fixed increment for simplicity as we only need a single stream.
     // If we needed multiple streams we would make this configurable (must be odd).
     private const ulong Inc = 1442695040888963407UL;
@@ -19,18 +19,18 @@ public sealed class Pcg32 : IRandom
     /// <param name="seed">The seed value.</param>
     public Pcg32(ulong seed)
     {
-        _state = 0;
+        State = 0;
         Step();
-        _state += seed;
+        State += seed;
         Step();
     }
 
-    private void Step() => _state = (_state * 6364136223846793005UL) + Inc;
+    private void Step() => State = (State * 6364136223846793005UL) + Inc;
 
     /// <inheritdoc/>
     public uint Nextuint()
     {
-        ulong oldState = _state;
+        ulong oldState = State;
         Step();
         uint xorShifted = (uint)(((oldState >> 18) ^ oldState) >> 27);
         int rot = (int)(oldState >> 59);

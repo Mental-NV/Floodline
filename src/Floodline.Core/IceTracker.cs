@@ -11,6 +11,11 @@ public sealed class IceTracker
     private readonly Dictionary<Int3, int> _timers = [];
 
     /// <summary>
+    /// Represents an ice timer snapshot entry.
+    /// </summary>
+    internal readonly record struct IceTimerSnapshot(Int3 Position, int Remaining);
+
+    /// <summary>
     /// Gets the number of active ice timers.
     /// </summary>
     public int ActiveCount => _timers.Count;
@@ -122,5 +127,39 @@ public sealed class IceTracker
         }
 
         return thawed;
+    }
+
+    internal IReadOnlyList<IceTimerSnapshot> GetTimersSnapshot()
+    {
+        if (_timers.Count == 0)
+        {
+            return [];
+        }
+
+        List<IceTimerSnapshot> snapshot = [];
+        foreach (KeyValuePair<Int3, int> entry in _timers)
+        {
+            snapshot.Add(new IceTimerSnapshot(entry.Key, entry.Value));
+        }
+
+        snapshot.Sort((left, right) => ComparePositions(left.Position, right.Position));
+        return snapshot;
+    }
+
+    private static int ComparePositions(Int3 left, Int3 right)
+    {
+        int x = left.X.CompareTo(right.X);
+        if (x != 0)
+        {
+            return x;
+        }
+
+        int y = left.Y.CompareTo(right.Y);
+        if (y != 0)
+        {
+            return y;
+        }
+
+        return left.Z.CompareTo(right.Z);
     }
 }
