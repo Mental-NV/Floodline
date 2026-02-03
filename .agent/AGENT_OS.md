@@ -264,11 +264,11 @@ Only if gates are satisfied on the branch:
   - If non-compliant and fix is large / scope-expanding: keep this PR scoped and create follow-up item `FU-XXXX`.
     - If high priority, assign current/next available numeric ID so “lowest ID first” picks it next.
     - Follow-up MUST include `requirementRef` to violated spec sections + evidence explaining the gap.
-  - If compliant: convert PR to **Ready** (optional) and comment:
+  - If compliant: convert PR to **Ready** and comment:
     - “Self-review complete; auto-merging.”
 
 ### Step 6 — Close PR (merge) + Done + Next
-Only when self-review is compliant AND CI is green:
+Only when self-review is compliant, PR is **Ready** (not Draft), AND CI is green:
 - On the PR branch, make a final commit that updates backlog:
   - set `status=Done`
   - set `doneAt` (UTC ISO 8601)
