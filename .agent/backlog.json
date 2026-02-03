@@ -976,7 +976,7 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Define level JSON schemas (level + campaign)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T14:56:50Z",
       "dependsOn": [
         "FL-0303"
@@ -999,7 +999,9 @@
           "powershell -File ./scripts/ci.ps1 -Scope M4"
         ],
         "notes": [
-          "First M4 run failed at dotnet format due to LevelLoaderTests.cs encoding; rewrote file as UTF-8 (no BOM) and reran successfully."
+          "First M4 run failed at dotnet format due to LevelLoaderTests.cs encoding; rewrote file as UTF-8 (no BOM) and reran successfully.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/34",
+          "CI: local powershell -File ./scripts/ci.ps1 -Scope M4 (Release build, tests, dotnet format verify)"
         ]
       }
     },
