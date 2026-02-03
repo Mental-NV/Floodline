@@ -238,7 +238,7 @@ Prohibitions:
 - Start from a fresh, clean `main` synced to `origin/main`.
 - Read the 8 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog).
 - Confirm there is at most one active item (`InProgress` or `InReview`).
-- Run: `powershell -File ./scripts/preflight.ps1`
+- Run: `powershell -ExecutionPolicy Bypass -File ./scripts/preflight.ps1`
 
 ### Step 1 — Select work
 - If there is a CURRENT active item (`InProgress` or `InReview`): continue it.
@@ -317,11 +317,11 @@ Only when self-review is compliant, PR is **Ready** (not Draft), AND CI is green
 
 Use scripts to reduce per-item command drift:
 
-- [`powershell -File ./scripts/preflight.ps1`](../scripts/preflight.ps1)
-- [`powershell -File ./scripts/ci.ps1 -Scope Always -LockedRestore:$false`](../scripts/ci.ps1)
-- [`powershell -File ./scripts/ci.ps1 -Scope M0 -UseLockFile`](../scripts/ci.ps1)
-- [`powershell -File ./scripts/ci.ps1 -Scope M0 -IncludeFormat`](../scripts/ci.ps1)
-- [`powershell -File ./scripts/ci.ps1 -Scope M1`](../scripts/ci.ps1)
+- [`powershell -ExecutionPolicy Bypass -File ./scripts/preflight.ps1`](../scripts/preflight.ps1)
+- [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope Always -LockedRestore:$false`](../scripts/ci.ps1)
+- [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M0 -UseLockFile`](../scripts/ci.ps1)
+- [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M0 -IncludeFormat`](../scripts/ci.ps1)
+- [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1`](../scripts/ci.ps1)
 
 **Reserved switches (placeholders):** `-Golden`, `-Replay`, `-ValidateLevels`, `-Unity`  
 These flags should become enforcing gates only after the related projects/tests/tools exist.
