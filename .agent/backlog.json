@@ -1176,8 +1176,9 @@
       "epic": "AI",
       "milestone": "M0",
       "title": "Enforce feature branch before work",
-      "status": "InReview",
+      "status": "Done",
       "startedAt": "2026-02-03T17:07:21Z",
+      "doneAt": "2026-02-03T17:11:13Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
       "rationale": "Prevent accidental commits on main by requiring a dedicated feature branch before Step 2.",
@@ -1196,7 +1197,9 @@
         ],
         "notes": [
           "Initial preflight failed on dirty working tree (implementation uncommitted); reran after commit and passed.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/37"
+          "PR: https://github.com/Mental-NV/Floodline/pull/37",
+          "CI: powershell -File ./scripts/preflight.ps1 (pass).",
+          "Self-review complete; auto-merging."
         ]
       }
     },
