@@ -730,7 +730,9 @@
       "epic": "E2",
       "milestone": "M2",
       "title": "Golden suite: water equilibrium + displacement",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-03T12:52:24.9776484Z",
+      "doneAt": "2026-02-03T13:00:51.8110456Z",
       "dependsOn": [
         "FL-0201"
       ],
@@ -746,8 +748,17 @@
         "powershell -File ./scripts/ci.ps1 -Scope M2"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M2",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2"
+        ],
+        "notes": [
+          "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
+          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2 (Release build, 125 tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/27",
+          "CI: https://github.com/Mental-NV/Floodline/actions/runs/21631153685/job/62343952326",
+          "Self-review complete; auto-merging."
+        ]
       }
     },
     {

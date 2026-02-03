@@ -1,0 +1,13 @@
+# FloodlineSnapshot v0.1
+cellOrder: x,y,z
+bounds: 4 2 1
+gravity: Down
+status: InProgress
+ticks: 0
+piecesLocked: 0
+objectives: 0 allCompleted=false
+activePiece: none
+cells: 3
+cell: 0,0,0 type=Water material=none
+cell: 1,0,0 type=Bedrock material=none
+cell: 2,0,0 type=Water material=none
