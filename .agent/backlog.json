@@ -1301,16 +1301,21 @@
       "dependsOn": [
         "FL-0500"
       ],
-      "requirementRef": "/.agent/AGENT_OS.md#milestone-m5",
-      "rationale": "Implement deterministic input sampling and buffering aligned with tick model and feel spec.",
+      "requirementRef": "/docs/specs/Input_Feel_v0_2.md",
+      "rationale": "Implement deterministic input sampling/buffering in Unity that produces the exact per-tick command stream expected by Core, and lock it down with a runtime-recorded test that passes in both Editor and headless/batchmode builds.",
       "sizeHint": "M",
       "deliverables": [
-        "Input system maps to per-tick commands used by Core",
-        "Buffering rules implemented per Input_Feel spec"
+        "Unity input layer maps device inputs to Core per-tick commands (no direct gameplay logic in Unity input code)",
+        "Input buffering/priority rules implemented per Input_Feel_v0_2 (tap/hold/repeat semantics, buffering windows, and conflict resolution)",
+        "Tick clock alignment: Unity input sampling produces commands on the same integer tick cadence as Core (60 TPS); avoid float-time drift and frame-dependent behavior",
+        "Test seam: introduce an injectable input source (real device vs scripted) so PlayMode tests can drive the input layer deterministically without OS/device dependence",
+        "Unity PlayMode integration test: feed a scripted sequence of raw input events (expressed in ticks or deterministic frame->tick mapping), record the generated per-tick command stream at runtime, and assert it matches an expected command sequence exactly",
+        "Cross-build determinism check: the same input-feel test can run in both Editor and batchmode/headless (Unity -runTests) and produces identical command streams",
+        "Test artifacts: store the scripted input sequence and expected per-tick command stream as committed fixtures (JSON/text) so regressions are easy to diff"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M5"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
         "commandsRun": [],
