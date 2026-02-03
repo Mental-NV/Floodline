@@ -655,7 +655,7 @@
       "epic": "E2",
       "milestone": "M2",
       "title": "Golden test harness + stable state snapshot format",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T12:21:24.2446065Z",
       "dependsOn": [
         "FL-0110"
@@ -674,8 +674,16 @@
         "dotnet test -c Release"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M2",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2",
+          "dotnet test -c Release"
+        ],
+        "notes": [
+          "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
+          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2 (Release build, 113 tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/25"
+        ]
       }
     },
     {
