@@ -960,8 +960,12 @@
         "powershell -File ./scripts/ci.ps1 -Scope M3 -Replay"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M3 -Replay"
+        ],
+        "notes": [
+          "CI: powershell -File ./scripts/ci.ps1 -Scope M3 -Replay (Release build, tests, format, replay parity) passed."
+        ]
       }
     },
     {
