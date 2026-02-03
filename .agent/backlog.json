@@ -499,7 +499,7 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "CLI runner (level + scripted inputs)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T12:05:29.9351958Z",
       "dependsOn": [
         "FL-0113"
@@ -526,7 +526,8 @@
         "notes": [
           "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
           "First bypass run failed due to analyzer/style errors (CA1510, IDE0032, CHARSET); corrected and reran.",
-          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1 (Release build, 112 tests, dotnet format verify) passed."
+          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1 (Release build, 112 tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/24"
         ]
       }
     },
