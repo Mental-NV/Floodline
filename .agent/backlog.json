@@ -908,7 +908,8 @@
       "epic": "E3",
       "milestone": "M3",
       "title": "Replay recorder + replayer (CLI integration)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T14:04:16.5040917Z",
       "dependsOn": [
         "FL-0301"
       ],
