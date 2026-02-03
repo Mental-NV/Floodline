@@ -6,8 +6,43 @@ namespace Floodline.Core.Levels;
 public record VoxelData(
     Int3 Pos,
     OccupancyType Type,
-    string? MaterialId = null
+    string? MaterialId = null,
+    DrainConfig? Drain = null
 );
+
+/// <summary>
+/// Defines the drain scope for water removal.
+/// </summary>
+public enum DrainScope
+{
+    /// <summary>
+    /// Only the drain cell itself.
+    /// </summary>
+    Self,
+
+    /// <summary>
+    /// The six orthogonal adjacent neighbors.
+    /// </summary>
+    Adj6,
+
+    /// <summary>
+    /// All 26 adjacent neighbors (including diagonals).
+    /// </summary>
+    Adj26
+}
+
+/// <summary>
+/// Configuration for a drain tile.
+/// </summary>
+/// <param name="RatePerResolve">Number of water units removed per resolve.</param>
+/// <param name="Scope">The drain scope.</param>
+public sealed record DrainConfig(int RatePerResolve, DrainScope Scope)
+{
+    /// <summary>
+    /// Default drain configuration (rate 1, scope SELF).
+    /// </summary>
+    public static DrainConfig Default { get; } = new(1, DrainScope.Self);
+}
 
 /// <summary>
 /// Configuration for world rotation constraints.

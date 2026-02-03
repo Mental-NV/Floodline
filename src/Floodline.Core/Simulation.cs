@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Floodline.Core.Levels;
 using Floodline.Core.Movement;
@@ -14,9 +15,14 @@ public sealed class Simulation
     private readonly Level _level;
     private readonly IRandom _random;
     private readonly MovementController _movement;
+    private readonly Dictionary<Int3, DrainConfig> _drainConfigs = [];
+    private readonly IceTracker _iceTracker = new();
+    private readonly List<FreezeRequest> _pendingFreezes = [];
     private SimulationStatus _status = SimulationStatus.InProgress;
     private long _ticksElapsed;
     private int _piecesLocked;
+    private int _waterRemovedTotal;
+    private int _rotationsExecuted;
 
     /// <summary>
     /// Gets the current grid.
@@ -27,6 +33,11 @@ public sealed class Simulation
     /// Gets the current simulation state.
     /// </summary>
     public SimulationState State => new(_status, _ticksElapsed, _piecesLocked);
+
+    /// <summary>
+    /// Gets the latest objective evaluation snapshot.
+    /// </summary>
+    public ObjectiveEvaluation Objectives { get; private set; } = ObjectiveEvaluation.Empty;
 
     /// <summary>
     /// Gets the current active piece, if any.
@@ -54,6 +65,10 @@ public sealed class Simulation
         foreach (VoxelData voxelData in level.InitialVoxels)
         {
             Grid.SetVoxel(voxelData.Pos, new Voxel(voxelData.Type, voxelData.MaterialId));
+            if (voxelData.Type == OccupancyType.Drain)
+            {
+                _drainConfigs[voxelData.Pos] = voxelData.Drain ?? DrainConfig.Default;
+            }
         }
 
         // 2. Initial spawn
@@ -91,6 +106,11 @@ public sealed class Simulation
             }
         }
 
+        if (inputResult.Accepted && IsWorldRotation(command))
+        {
+            _rotationsExecuted++;
+        }
+
         // 2. Gravity Step
         // If hard drop was requested, movement already happened in ProcessInput
         bool lockRequested = inputResult.LockRequested;
@@ -106,15 +126,20 @@ public sealed class Simulation
         }
 
         // 3. Resolve Phase (only if locked)
+        bool resolvedThisTick = false;
         if (lockRequested)
         {
             Resolve();
             _piecesLocked++;
             SpawnNextPiece();
+            resolvedThisTick = true;
         }
 
         // 4. Evaluate Objectives & Fail States
-        UpdateStatus();
+        if (resolvedThisTick)
+        {
+            UpdateStatus();
+        }
     }
 
     private void Resolve()
@@ -126,8 +151,6 @@ public sealed class Simulation
         // 4. Recheck Solids
         // 5. Apply Drains
         // 6. Evaluate Objectives (handled in Tick/UpdateStatus)
-
-        // TODO (FL-0113): Drains and freeze
 
         List<Int3> displacedWater = [];
 
@@ -145,6 +168,8 @@ public sealed class Simulation
             }
         }
 
+        ApplyPendingFreezes();
+
         SolidSettleResult settleResult = SolidSettler.Settle(Grid, _movement.Gravity);
         displacedWater.AddRange(settleResult.DisplacedWater);
 
@@ -155,6 +180,9 @@ public sealed class Simulation
         {
             _ = WaterSolver.Settle(Grid, _movement.Gravity, recheckResult.DisplacedWater);
         }
+
+        ApplyDrains(null);
+        ApplyIceTimers(null);
     }
 
     // Canonical Tilt Resolve (§3.2):
@@ -163,8 +191,6 @@ public sealed class Simulation
     // 2. Settle Water
     // 3. Recheck Solids
     // 4. Apply Drains
-    //
-    // TODO (FL-0113): Drains and freeze
     private bool ResolveTilt()
     {
         if (ActivePiece is null)
@@ -178,6 +204,8 @@ public sealed class Simulation
                 _ = WaterSolver.Settle(Grid, _movement.Gravity, recheckResultNoPiece.DisplacedWater);
             }
 
+            ApplyDrains(null);
+            ApplyIceTimers(null);
             return true;
         }
 
@@ -212,6 +240,8 @@ public sealed class Simulation
             _ = WaterSolver.Settle(Grid, _movement.Gravity, recheckResult.DisplacedWater, blockedCells);
         }
 
+        ApplyDrains(blockedCells);
+        ApplyIceTimers(blockedCells);
         return true;
     }
 
@@ -256,9 +286,24 @@ public sealed class Simulation
         return true;
     }
 
-    private static void UpdateStatus()
+    private void UpdateStatus()
     {
-        // TODO: Objective evaluation
+        if (_status is SimulationStatus.Lost or SimulationStatus.Won)
+        {
+            return;
+        }
+
+        Objectives = ObjectiveEvaluator.Evaluate(
+            Grid,
+            _level,
+            _piecesLocked,
+            _waterRemovedTotal,
+            _rotationsExecuted);
+
+        if (Objectives.AllCompleted)
+        {
+            _status = SimulationStatus.Won;
+        }
     }
 
     private static bool IsWorldRotation(InputCommand command) =>
@@ -268,4 +313,64 @@ public sealed class Simulation
                    InputCommand.RotateWorldRight;
 
     private static bool IsGravityTick() => false;
+
+    /// <summary>
+    /// Queues a freeze action to be applied during the next resolve.
+    /// </summary>
+    /// <param name="targets">Target water cells to freeze.</param>
+    /// <param name="durationResolves">Duration in resolves.</param>
+    public void QueueFreeze(IReadOnlyList<Int3> targets, int durationResolves)
+    {
+        if (targets is null)
+        {
+            throw new ArgumentNullException(nameof(targets));
+        }
+
+        if (durationResolves <= 0)
+        {
+            return;
+        }
+
+        _pendingFreezes.Add(new FreezeRequest(targets, durationResolves));
+    }
+
+    private void ApplyPendingFreezes()
+    {
+        if (_pendingFreezes.Count == 0)
+        {
+            return;
+        }
+
+        foreach (FreezeRequest request in _pendingFreezes)
+        {
+            _iceTracker.ApplyFreeze(Grid, request.Targets, request.DurationResolves);
+        }
+
+        _pendingFreezes.Clear();
+    }
+
+    private void ApplyDrains(ISet<Int3>? blockedCells)
+    {
+        int removed = DrainSolver.Apply(Grid, _movement.Gravity, _drainConfigs);
+        if (removed <= 0)
+        {
+            return;
+        }
+
+        _waterRemovedTotal += removed;
+        _ = WaterSolver.Settle(Grid, _movement.Gravity, [], blockedCells);
+    }
+
+    private void ApplyIceTimers(ISet<Int3>? blockedCells)
+    {
+        IReadOnlyList<Int3> thawed = _iceTracker.AdvanceResolve(Grid);
+        if (thawed.Count == 0)
+        {
+            return;
+        }
+
+        _ = WaterSolver.Settle(Grid, _movement.Gravity, thawed, blockedCells);
+    }
+
+    private sealed record FreezeRequest(IReadOnlyList<Int3> Targets, int DurationResolves);
 }
