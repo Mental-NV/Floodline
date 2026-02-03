@@ -1,0 +1,34 @@
+﻿{
+  "meta": {
+    "id": "cli-minimal",
+    "title": "CLI Minimal",
+    "schemaVersion": 1,
+    "seed": 1
+  },
+  "bounds": {
+    "x": 6,
+    "y": 6,
+    "z": 6
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "ReachHeight",
+      "params": {
+        "height": 0
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2"
+    ]
+  },
+  "hazards": []
+}
