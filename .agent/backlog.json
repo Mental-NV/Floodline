@@ -943,7 +943,7 @@
       "epic": "E3",
       "milestone": "M3",
       "title": "Turn on CI -Replay switch (record/replay parity gate)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T14:33:04.2036080Z",
       "dependsOn": [
         "FL-0302"
@@ -964,7 +964,8 @@
           "powershell -File ./scripts/ci.ps1 -Scope M3 -Replay"
         ],
         "notes": [
-          "CI: powershell -File ./scripts/ci.ps1 -Scope M3 -Replay (Release build, tests, format, replay parity) passed."
+          "CI: powershell -File ./scripts/ci.ps1 -Scope M3 -Replay (Release build, tests, format, replay parity) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/33"
         ]
       }
     },
