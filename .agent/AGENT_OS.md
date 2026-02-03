@@ -176,6 +176,10 @@ Every new backlog item MUST include:
 
 **No `requirementRef` = scope creep = do not add.**
 
+### Backlog edit hygiene (non-negotiable)
+- Edit `backlog.json` with minimal, targeted line changes.
+- **Do not** round-trip `backlog.json` through a serializer or reformatter.
+
 ---
 
 ## 5) Role loop (run sequentially per item)
