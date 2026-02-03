@@ -1013,7 +1013,7 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Level validator CLI tool (actionable errors)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T15:24:40Z",
       "dependsOn": [
         "FL-0400"
@@ -1036,7 +1036,9 @@
           "powershell -File ./scripts/ci.ps1 -Scope M4"
         ],
         "notes": [
-          "Initial M4 run failed in CliApp_Validate_Level_Returns_Actionable_Errors due to JsonSchema.Net global registry overwrite; switched to a local SchemaRegistry and reran successfully."
+          "Initial M4 run failed in CliApp_Validate_Level_Returns_Actionable_Errors due to JsonSchema.Net global registry overwrite; switched to a local SchemaRegistry and reran successfully.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/35",
+          "CI: local powershell -File ./scripts/ci.ps1 -Scope M4 (Release build, tests, dotnet format verify)"
         ]
       }
     },
