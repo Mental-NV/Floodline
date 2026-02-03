@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Floodline.Core;
 using Floodline.Core.Levels;
 using Floodline.Core.Movement;
 using Floodline.Core.Random;
+using Floodline.Core.Replay;
 
 namespace Floodline.Cli;
 
 public static class CliApp
 {
+    private const int TickRate = 60;
+
     public static int Run(string[] args, TextWriter output, TextWriter error)
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -24,6 +28,8 @@ public static class CliApp
 
         string? levelPath = null;
         string? inputsPath = null;
+        string? recordPath = null;
+        string? replayPath = null;
         int? ticks = null;
 
         for (int i = 0; i < args.Length; i++)
@@ -44,6 +50,20 @@ public static class CliApp
                     if (!TryReadValue(args, ref i, out inputsPath))
                     {
                         return Fail(error, "Missing value for --inputs.");
+                    }
+
+                    break;
+                case "--record":
+                    if (!TryReadValue(args, ref i, out recordPath))
+                    {
+                        return Fail(error, "Missing value for --record.");
+                    }
+
+                    break;
+                case "--replay":
+                    if (!TryReadValue(args, ref i, out replayPath))
+                    {
+                        return Fail(error, "Missing value for --replay.");
                     }
 
                     break;
@@ -76,56 +96,148 @@ public static class CliApp
             return Fail(error, $"Level file not found: {levelPath}");
         }
 
+        if (!string.IsNullOrWhiteSpace(recordPath) && !string.IsNullOrWhiteSpace(replayPath))
+        {
+            return Fail(error, "Choose either --record or --replay, not both.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(replayPath) && !string.IsNullOrWhiteSpace(inputsPath))
+        {
+            return Fail(error, "--inputs cannot be used with --replay (replay uses recorded inputs).");
+        }
+
+        if (!string.IsNullOrWhiteSpace(replayPath) && ticks.HasValue)
+        {
+            return Fail(error, "--ticks cannot be used with --replay (replay uses recorded ticks).");
+        }
+
         Level level;
+        string levelJson;
+        string levelHash;
         try
         {
-            string json = File.ReadAllText(levelPath);
-            level = LevelLoader.Load(json);
+            levelJson = File.ReadAllText(levelPath);
+            level = LevelLoader.Load(levelJson);
+            levelHash = LevelHash.Compute(levelJson);
         }
         catch (Exception ex)
         {
             return Fail(error, $"Failed to load level: {ex.Message}");
         }
 
-        List<InputCommand> commands = [];
-        if (!string.IsNullOrWhiteSpace(inputsPath))
+        List<InputCommand> commands;
+        int ticksToRun;
+        int seed;
+        if (!string.IsNullOrWhiteSpace(replayPath))
         {
-            if (!File.Exists(inputsPath))
+            if (!File.Exists(replayPath))
             {
-                return Fail(error, $"Input script not found: {inputsPath}");
+                return Fail(error, $"Replay file not found: {replayPath}");
+            }
+
+            ReplayFile replay;
+            try
+            {
+                string replayJson = File.ReadAllText(replayPath);
+                replay = ReplaySerializer.Deserialize(replayJson);
+            }
+            catch (Exception ex)
+            {
+                return Fail(error, $"Failed to read replay: {ex.Message}");
+            }
+
+            if (!string.Equals(replay.Meta.ReplayVersion, ReplayFormat.ReplayVersion, StringComparison.Ordinal))
+            {
+                return Fail(error, $"Replay version mismatch: expected {ReplayFormat.ReplayVersion}.");
+            }
+
+            if (!string.Equals(replay.Meta.RulesVersion, RulesVersion.Current, StringComparison.Ordinal))
+            {
+                return Fail(error, $"Rules version mismatch: expected {RulesVersion.Current}.");
+            }
+
+            if (!string.Equals(replay.Meta.InputEncoding, ReplayFormat.InputEncoding, StringComparison.Ordinal))
+            {
+                return Fail(error, $"Input encoding mismatch: expected {ReplayFormat.InputEncoding}.");
+            }
+
+            if (replay.Meta.TickRate != TickRate)
+            {
+                return Fail(error, $"Replay tick rate mismatch: expected {TickRate}.");
+            }
+
+            if (replay.Meta.Seed < 0)
+            {
+                return Fail(error, "Replay seed must be non-negative.");
+            }
+
+            if (!string.Equals(replay.Meta.LevelId, level.Meta.Id, StringComparison.Ordinal))
+            {
+                return Fail(error, "Replay level id does not match the provided level.");
+            }
+
+            if (!string.Equals(replay.Meta.LevelHash, levelHash, StringComparison.Ordinal))
+            {
+                return Fail(error, "Replay level hash does not match the provided level.");
             }
 
             try
             {
-                foreach (string line in File.ReadAllLines(inputsPath))
-                {
-                    string trimmed = line.Trim();
-                    if (trimmed.Length == 0 || trimmed.StartsWith('#'))
-                    {
-                        continue;
-                    }
-
-                    if (!Enum.TryParse(trimmed, ignoreCase: true, out InputCommand command))
-                    {
-                        return Fail(error, $"Unknown input command '{trimmed}'.");
-                    }
-
-                    commands.Add(command);
-                }
+                commands = BuildReplayCommands(replay);
             }
             catch (Exception ex)
             {
-                return Fail(error, $"Failed to read input script: {ex.Message}");
+                return Fail(error, $"Replay inputs invalid: {ex.Message}");
             }
-        }
 
-        int ticksToRun = ticks ?? commands.Count;
-        if (ticksToRun < commands.Count)
+            ticksToRun = commands.Count;
+            seed = replay.Meta.Seed;
+        }
+        else
         {
-            return Fail(error, "--ticks is smaller than the number of input commands.");
+            commands = [];
+            if (!string.IsNullOrWhiteSpace(inputsPath))
+            {
+                if (!File.Exists(inputsPath))
+                {
+                    return Fail(error, $"Input script not found: {inputsPath}");
+                }
+
+                try
+                {
+                    foreach (string line in File.ReadAllLines(inputsPath))
+                    {
+                        string trimmed = line.Trim();
+                        if (trimmed.Length == 0 || trimmed.StartsWith('#'))
+                        {
+                            continue;
+                        }
+
+                        if (!Enum.TryParse(trimmed, ignoreCase: true, out InputCommand command))
+                        {
+                            return Fail(error, $"Unknown input command '{trimmed}'.");
+                        }
+
+                        commands.Add(command);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Fail(error, $"Failed to read input script: {ex.Message}");
+                }
+            }
+
+            ticksToRun = ticks ?? commands.Count;
+            if (ticksToRun < commands.Count)
+            {
+                return Fail(error, "--ticks is smaller than the number of input commands.");
+            }
+
+            seed = (int)level.Meta.Seed;
         }
 
-        Simulation simulation = new(level, new Pcg32(level.Meta.Seed));
+        Simulation simulation = new(level, new Pcg32((ulong)seed));
+        int ticksExecuted = 0;
 
         for (int tick = 0; tick < ticksToRun; tick++)
         {
@@ -136,10 +248,61 @@ public static class CliApp
 
             InputCommand command = tick < commands.Count ? commands[tick] : InputCommand.None;
             simulation.Tick(command);
+            ticksExecuted++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(recordPath))
+        {
+            try
+            {
+                List<ReplayInput> recordedInputs = new(ticksExecuted);
+                for (int tick = 0; tick < ticksExecuted; tick++)
+                {
+                    InputCommand command = tick < commands.Count ? commands[tick] : InputCommand.None;
+                    recordedInputs.Add(new ReplayInput(tick, command));
+                }
+
+                ReplayMeta meta = new(
+                    ReplayFormat.ReplayVersion,
+                    RulesVersion.Current,
+                    level.Meta.Id,
+                    levelHash,
+                    seed,
+                    TickRate,
+                    RuntimeInformation.OSDescription,
+                    ReplayFormat.InputEncoding);
+
+                ReplayFile replayFile = new(meta, recordedInputs);
+                string replayJson = ReplaySerializer.Serialize(replayFile);
+                File.WriteAllText(recordPath, replayJson);
+            }
+            catch (Exception ex)
+            {
+                return Fail(error, $"Failed to write replay: {ex.Message}");
+            }
         }
 
         WriteSummary(output, simulation);
         return 0;
+    }
+
+    private static List<InputCommand> BuildReplayCommands(ReplayFile replay)
+    {
+        List<InputCommand> commands = new(replay.Inputs.Count);
+        int expectedTick = 0;
+
+        foreach (ReplayInput input in replay.Inputs)
+        {
+            if (input.Tick != expectedTick)
+            {
+                throw new ArgumentException("Replay inputs must be contiguous starting at tick 0.");
+            }
+
+            commands.Add(input.Command);
+            expectedTick++;
+        }
+
+        return commands;
     }
 
     private static void WriteSummary(TextWriter output, Simulation simulation)
@@ -170,11 +333,14 @@ public static class CliApp
     {
         output.WriteLine("Floodline CLI");
         output.WriteLine("Usage:");
-        output.WriteLine("  Floodline.Cli --level <path> [--inputs <path>] [--ticks <count>]");
+        output.WriteLine("  Floodline.Cli --level <path> [--inputs <path>] [--ticks <count>] [--record <path>]");
+        output.WriteLine("  Floodline.Cli --level <path> --replay <path>");
         output.WriteLine();
         output.WriteLine("Options:");
         output.WriteLine("  --level, -l     Path to level JSON file.");
         output.WriteLine("  --inputs, -i    Path to input script (one command per line).");
+        output.WriteLine("  --record        Write a replay file for the run.");
+        output.WriteLine("  --replay        Replay from a replay file (ignores --inputs/--ticks).");
         output.WriteLine("  --ticks, -t     Total ticks to simulate (defaults to number of input commands).");
         output.WriteLine("  --help, -h      Show this help.");
     }
