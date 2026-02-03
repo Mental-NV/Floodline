@@ -1013,7 +1013,8 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Level validator CLI tool (actionable errors)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T15:24:40Z",
       "dependsOn": [
         "FL-0400"
       ],
