@@ -44,7 +44,46 @@ if ($LockedRestore) {
 
 # Build + test
 Run "dotnet build `"$($sln.FullName)`" -c $Configuration"
-Run "dotnet test  `"$($sln.FullName)`" -c $Configuration --no-build"
+
+$testFilter = $null
+if ($Golden) {
+  $testFilter = "FullyQualifiedName!~.Golden."
+}
+
+$testCommand = "dotnet test `"$($sln.FullName)`" -c $Configuration --no-build"
+if ($testFilter) {
+  $testCommand += " --filter `"$testFilter`""
+}
+Run $testCommand
+
+if ($Golden) {
+  $goldenFilter = "FullyQualifiedName~.Golden."
+  $goldenResultsDir = Join-Path ([System.IO.Path]::GetTempPath()) ("Floodline-GoldenTests-" + [Guid]::NewGuid().ToString("N"))
+  New-Item -ItemType Directory -Path $goldenResultsDir -Force | Out-Null
+
+  Run "dotnet test `"$($sln.FullName)`" -c $Configuration --no-build --filter `"$goldenFilter`" --results-directory `"$goldenResultsDir`" --logger `"trx`""
+
+  $trxFiles = Get-ChildItem -Path $goldenResultsDir -Filter *.trx -ErrorAction SilentlyContinue
+  if (-not $trxFiles) {
+    throw "Golden test results not found in $goldenResultsDir."
+  }
+
+  $goldenTotal = 0
+  foreach ($trxFile in $trxFiles) {
+    [xml]$trx = Get-Content -LiteralPath $trxFile.FullName
+    $counterNode = $trx.GetElementsByTagName("Counters") | Select-Object -First 1
+    if (-not $counterNode) {
+      continue
+    }
+    $goldenTotal += [int]$counterNode.total
+  }
+
+  if ($goldenTotal -le 0) {
+    throw "Golden test run found no tests. Filter '$goldenFilter' may be wrong."
+  }
+
+  Remove-Item -Path $goldenResultsDir -Recurse -Force -ErrorAction SilentlyContinue
+}
 
 # Formatting (only when gate is introduced)
 if ($IncludeFormat) {
@@ -54,5 +93,5 @@ if ($IncludeFormat) {
 # Future: golden / replay / level validation / unity
 # Implement these later when the projects/tools exist; keep switches stable so backlog items don't churn.
 
-Write-Host "CI OK: Scope=$Scope Config=$Configuration LockedRestore=$LockedRestore IncludeFormat=$IncludeFormat"
+Write-Host "CI OK: Scope=$Scope Config=$Configuration LockedRestore=$LockedRestore IncludeFormat=$IncludeFormat Golden=$Golden"
 exit 0
