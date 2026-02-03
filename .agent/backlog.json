@@ -1,4 +1,4 @@
-{
+﻿{
   "schemaVersion": "1.1.0",
   "statusEnum": [
     "New",
@@ -976,7 +976,8 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Define level JSON schemas (level + campaign)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-03T14:56:50Z",
       "dependsOn": [
         "FL-0303"
       ],
