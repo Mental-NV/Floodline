@@ -1,0 +1,14 @@
+# FloodlineSnapshot v0.1
+cellOrder: x,y,z
+bounds: 2 2 2
+gravity: Down
+status: InProgress
+ticks: 5
+piecesLocked: 1
+objectives: 1 allCompleted=false
+objective: type=DRAIN_WATER current=3 target=10 completed=false
+activePiece: id=O2 orientation=0 origin=0,1,0
+cells: 3
+cell: 0,0,0 type=Bedrock material=none
+cell: 0,1,1 type=Solid material=HEAVY
+cell: 1,0,0 type=Water material=none
