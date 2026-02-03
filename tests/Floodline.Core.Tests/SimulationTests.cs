@@ -130,6 +130,55 @@ public class SimulationTests
         Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(activePos).Type);
     }
 
+    [Fact]
+    public void Simulation_WorldRotation_Rejected_Rolls_Back_Partial_Settle()
+    {
+        // Arrange
+        Level level = new(
+            new("test_id", "Test Title", 1, 12345U),
+            new(6, 6, 6),
+            [],
+            [],
+            new(),
+            new("FIXED_SEQUENCE", ["I4"], null),
+            []
+        );
+        Simulation sim = new(level, new FixedRandom(0));
+        ActivePiece activePiece = sim.ActivePiece!;
+
+        Int3 blockedCell = default;
+        bool foundBlocked = false;
+        foreach (Int3 pos in activePiece.GetWorldPositions())
+        {
+            if (pos.Z < sim.Grid.Size.Z - 1 && (!foundBlocked || pos.Z > blockedCell.Z))
+            {
+                blockedCell = pos;
+                foundBlocked = true;
+            }
+        }
+
+        Assert.True(foundBlocked);
+
+        Int3 firstComponentPos = new(blockedCell.X, blockedCell.Y, blockedCell.Z - 2);
+        Int3 secondComponentPos = new(blockedCell.X, blockedCell.Y, blockedCell.Z + 1);
+        Assert.True(sim.Grid.IsInBounds(firstComponentPos));
+        Assert.True(sim.Grid.IsInBounds(secondComponentPos));
+        Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(firstComponentPos).Type);
+        Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(secondComponentPos).Type);
+
+        sim.Grid.SetVoxel(firstComponentPos, new Voxel(OccupancyType.Solid, null));
+        sim.Grid.SetVoxel(secondComponentPos, new Voxel(OccupancyType.Solid, null));
+
+        // Act
+        sim.Tick(InputCommand.RotateWorldForward);
+
+        // Assert
+        Assert.Equal(GravityDirection.Down, sim.Gravity);
+        Assert.Equal(OccupancyType.Solid, sim.Grid.GetVoxel(firstComponentPos).Type);
+        Assert.Equal(OccupancyType.Solid, sim.Grid.GetVoxel(secondComponentPos).Type);
+        Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(new Int3(blockedCell.X, blockedCell.Y, 0)).Type);
+    }
+
     private sealed class FixedRandom(int value) : IRandom
     {
         private readonly int _value = value;

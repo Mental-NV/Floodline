@@ -1071,12 +1071,14 @@
       "evidence": {
         "commandsRun": [
           "powershell -File ./scripts/ci.ps1 -Scope M1",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1",
           "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
         ],
         "notes": [
           "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
           "PR: https://github.com/Mental-NV/Floodline/pull/21",
-          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
+          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1",
+          "Added TrySettle contract documentation and regression test for partial-settle rollback."
         ]
       }
     }

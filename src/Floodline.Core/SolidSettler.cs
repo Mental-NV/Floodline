@@ -19,6 +19,18 @@ public static class SolidSettler
     public static SolidSettleResult Settle(Grid grid, GravityDirection gravity) =>
         SettleInternal(grid, gravity, null, out _);
 
+    /// <summary>
+    /// Attempts to settle solids while treating blocked cells as immovable obstacles.
+    /// </summary>
+    /// <param name="grid">The grid to settle.</param>
+    /// <param name="gravity">The current gravity direction.</param>
+    /// <param name="blockedCells">Cells that must not be entered by settled solids.</param>
+    /// <param name="result">The settle result (displaced water) collected before any rejection.</param>
+    /// <returns>True if settle completed without hitting blocked cells; otherwise, false.</returns>
+    /// <remarks>
+    /// This method may partially mutate <paramref name="grid"/> before returning false.
+    /// Callers must snapshot/rollback grid state if they require no changes on rejection.
+    /// </remarks>
     public static bool TrySettle(Grid grid, GravityDirection gravity, ISet<Int3> blockedCells, out SolidSettleResult result)
     {
         if (blockedCells is null)
