@@ -6,6 +6,6 @@ namespace Floodline.Core.Levels;
 public record LevelMeta(
     string Id,
     string Title,
-    int SchemaVersion,
+    string SchemaVersion,
     uint Seed
 );

@@ -2,7 +2,7 @@
     "meta": {
         "id": "test-level",
         "title": "Minimal Test Level",
-        "schemaVersion": 1,
+        "schemaVersion": "0.2.0",
         "seed": 12345
     },
     "bounds": {

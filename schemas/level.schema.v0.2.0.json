@@ -1,0 +1,315 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "level.schema.v0.2.0.json",
+  "title": "Floodline Level Schema v0.2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "bounds",
+    "initialVoxels",
+    "objectives",
+    "rotation",
+    "bag",
+    "hazards"
+  ],
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "bounds": {
+      "$ref": "#/$defs/int3Positive"
+    },
+    "initialVoxels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/voxelData"
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/objective"
+      }
+    },
+    "rotation": {
+      "$ref": "#/$defs/rotationConfig"
+    },
+    "bag": {
+      "$ref": "#/$defs/bagConfig"
+    },
+    "hazards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hazard"
+      }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "schemaVersion",
+        "seed"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "int3NonNegative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "z": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "int3Positive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "z": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "occupancyType": {
+      "type": "string",
+      "enum": [
+        "Empty",
+        "Solid",
+        "Wall",
+        "Bedrock",
+        "Water",
+        "Ice",
+        "Porous",
+        "Drain"
+      ]
+    },
+    "drainScope": {
+      "type": "string",
+      "enum": [
+        "Self",
+        "Adj6",
+        "Adj26"
+      ]
+    },
+    "drainConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ratePerResolve",
+        "scope"
+      ],
+      "properties": {
+        "ratePerResolve": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/drainScope"
+        }
+      }
+    },
+    "voxelData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pos",
+        "type"
+      ],
+      "properties": {
+        "pos": {
+          "$ref": "#/$defs/int3NonNegative"
+        },
+        "type": {
+          "$ref": "#/$defs/occupancyType"
+        },
+        "materialId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drain": {
+          "$ref": "#/$defs/drainConfig"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "Drain"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "drain"
+            ]
+          }
+        }
+      ]
+    },
+    "objective": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "rotationConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxRotations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tiltBudget": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cooldownTicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowedDirections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gravityDirection"
+          }
+        },
+        "allowedPieceRotationAxes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rotationAxis"
+          }
+        }
+      }
+    },
+    "gravityDirection": {
+      "type": "string",
+      "enum": [
+        "Down",
+        "North",
+        "South",
+        "East",
+        "West"
+      ]
+    },
+    "rotationAxis": {
+      "type": "string",
+      "enum": [
+        "Yaw",
+        "Pitch",
+        "Roll"
+      ]
+    },
+    "bagConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "weights": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "hazard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

@@ -994,8 +994,13 @@
         "powershell -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "notes": [
+          "First M4 run failed at dotnet format due to LevelLoaderTests.cs encoding; rewrote file as UTF-8 (no BOM) and reran successfully."
+        ]
       }
     },
     {

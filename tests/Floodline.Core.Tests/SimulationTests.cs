@@ -10,7 +10,7 @@ public class SimulationTests
 {
     private static Level CreateTestLevel() =>
         new(
-            new("test_id", "Test Title", 1, 12345U),
+            new("test_id", "Test Title", "0.2.0", 12345U),
             new(10, 20, 10),
             [],
             [],
@@ -91,7 +91,7 @@ public class SimulationTests
     {
         // Arrange
         Level level = new(
-            new("test_id", "Test Title", 1, 12345U),
+            new("test_id", "Test Title", "0.2.0", 12345U),
             new(6, 6, 6),
             [],
             [],
@@ -135,7 +135,7 @@ public class SimulationTests
     {
         // Arrange
         Level level = new(
-            new("test_id", "Test Title", 1, 12345U),
+            new("test_id", "Test Title", "0.2.0", 12345U),
             new(6, 6, 6),
             [],
             [],

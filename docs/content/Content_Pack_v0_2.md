@@ -304,9 +304,9 @@ Introduces weight limits, footprint constraints, wind forcing, stabilization, an
 This plan is intended to be authored into actual JSON levels using the level template:
 - Tutorial levels should use `bag.type = FIXED_SEQUENCE`.
 - All levels should specify `meta.seed` for reproducibility.
+- All time/duration fields in level JSON use **integer ticks** at `TICK_HZ=60` (no floats).
 - Each chapter should include 1–2 “exam” levels that combine prior concepts.
 
 ---
 
 *End of 30-Level Campaign Plan v0.2*
-

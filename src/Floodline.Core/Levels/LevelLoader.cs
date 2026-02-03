@@ -103,6 +103,11 @@ public static class LevelLoader
             throw new ArgumentException("Level ID is missing.");
         }
 
+        if (string.IsNullOrWhiteSpace(level.Meta.SchemaVersion))
+        {
+            throw new ArgumentException("Level schemaVersion is missing.");
+        }
+
         if (level.Bounds.X <= 0 || level.Bounds.Y <= 0 || level.Bounds.Z <= 0)
         {
             throw new ArgumentException("Level bounds must be positive.");

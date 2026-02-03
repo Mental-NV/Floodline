@@ -38,7 +38,7 @@ public class DeterminismHasherTests
 
     private static Level CreateTestLevel() =>
         new(
-            new LevelMeta("test_id", "Test Level", 1, 12345U),
+            new LevelMeta("test_id", "Test Level", "0.2.0", 12345U),
             new Int3(6, 8, 6),
             [],
             [],

@@ -2,7 +2,7 @@
   "meta": {
     "id": "cli-minimal",
     "title": "CLI Minimal",
-    "schemaVersion": 1,
+    "schemaVersion": "0.2.0",
     "seed": 1
   },
   "bounds": {

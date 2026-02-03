@@ -31,7 +31,7 @@ public class LevelLoaderTests
         // Arrange
         string json = @"
 {
-  ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+  ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
   ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
   ""initialVoxels"": [],
   ""objectives"": [],
@@ -55,7 +55,7 @@ public class LevelLoaderTests
     public void LoadMissingRotationThrowsArgumentException()
     {
         string json = @"{
-            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
             ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
             ""initialVoxels"": [],
             ""objectives"": [],
@@ -70,7 +70,7 @@ public class LevelLoaderTests
     public void LoadMissingInitialVoxelsThrowsArgumentException()
     {
         string json = @"{
-            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
             ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
             ""objectives"": [],
             ""rotation"": { ""cooldownTicks"": 60 },
@@ -85,7 +85,7 @@ public class LevelLoaderTests
     public void LoadMissingBagTypeThrowsArgumentException()
     {
         string json = @"{
-            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
             ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
             ""initialVoxels"": [],
             ""objectives"": [],
@@ -101,7 +101,7 @@ public class LevelLoaderTests
     public void LoadMissingObjectiveTypeThrowsArgumentException()
     {
         string json = @"{
-            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
             ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
             ""initialVoxels"": [],
             ""objectives"": [{ ""params"": {} }],
@@ -117,7 +117,7 @@ public class LevelLoaderTests
     public void LoadMissingHazardTypeThrowsArgumentException()
     {
         string json = @"{
-            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": 1, ""seed"": 1 },
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
             ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
             ""initialVoxels"": [],
             ""objectives"": [],
@@ -129,3 +129,5 @@ public class LevelLoaderTests
         Assert.Contains("Hazard type is missing", ex.Message);
     }
 }
+
+

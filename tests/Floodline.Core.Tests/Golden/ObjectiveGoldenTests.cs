@@ -60,7 +60,7 @@ public class ObjectiveGoldenTests
 
     private static Level CreateLevel(Int3 bounds, List<ObjectiveConfig> objectives)
     {
-        LevelMeta meta = new("test-level", "Test Level", 1, 1);
+        LevelMeta meta = new("test-level", "Test Level", "0.2.0", 1);
         return new Level(
             meta,
             bounds,

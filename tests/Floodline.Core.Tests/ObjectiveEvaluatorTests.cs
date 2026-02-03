@@ -12,7 +12,7 @@ public class ObjectiveEvaluatorTests
     {
         // Arrange
         Level level = new(
-            new LevelMeta("test_id", "Test", 1, 1),
+            new LevelMeta("test_id", "Test", "0.2.0", 1),
             new Int3(4, 4, 4),
             [],
             [
