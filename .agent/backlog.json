@@ -861,7 +861,8 @@
         ],
         "notes": [
           "CI: powershell -File ./scripts/ci.ps1 -Scope M3 (Release build, 130 tests, dotnet format verify) passed.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/30"
+          "PR: https://github.com/Mental-NV/Floodline/pull/30",
+          "Self-review complete; auto-merging."
         ]
       }
     },
