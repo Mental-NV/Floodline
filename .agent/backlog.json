@@ -393,8 +393,8 @@
       "milestone": "M1",
       "title": "Piece rotation + kick rules (deterministic)",
       "status": "Done",
-      "startedAt": "2026-02-02T02:51:41+03:00",
-      "completedAt": "2026-02-02T18:15:00+03:00",
+      "startedAt": "2026-02-01T23:51:41Z",
+      "doneAt": "2026-02-02T15:15:00Z",
       "dependsOn": [
         "FL-0106"
       ],
