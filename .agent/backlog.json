@@ -1063,7 +1063,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1090,7 +1090,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1101,7 +1101,7 @@
       "id": "FL-0404",
       "epic": "E4",
       "milestone": "M4",
-      "title": "Author Campaign Chapter 1A levels (Lv 1–5)",
+      "title": "Author Campaign Chapter 1A levels (Lv 1-5)",
       "status": "New",
       "dependsOn": [
         "FL-0403"
@@ -1119,7 +1119,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1130,7 +1130,7 @@
       "id": "FL-0405",
       "epic": "E4",
       "milestone": "M4",
-      "title": "Author Campaign Chapter 1B levels (Lv 6–10)",
+      "title": "Author Campaign Chapter 1B levels (Lv 6-10)",
       "status": "New",
       "dependsOn": [
         "FL-0404"
@@ -1147,7 +1147,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1158,7 +1158,7 @@
       "id": "FL-0406",
       "epic": "E4",
       "milestone": "M4",
-      "title": "Author Campaign Chapter 2A levels (Lv 11–15)",
+      "title": "Author Campaign Chapter 2A levels (Lv 11-15)",
       "status": "New",
       "dependsOn": [
         "FL-0405"
@@ -1175,7 +1175,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1186,7 +1186,7 @@
       "id": "FL-0407",
       "epic": "E4",
       "milestone": "M4",
-      "title": "Author Campaign Chapter 2B levels (Lv 16–20)",
+      "title": "Author Campaign Chapter 2B levels (Lv 16-20)",
       "status": "New",
       "dependsOn": [
         "FL-0406"
@@ -1202,7 +1202,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1231,7 +1231,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1259,7 +1259,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1285,7 +1285,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M5"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1340,7 +1340,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M5"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1365,7 +1365,7 @@
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
-        "powershell -File ./scripts/ci.ps1 -Scope M5 -Unity"
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
       ],
       "evidence": {
         "commandsRun": [],
