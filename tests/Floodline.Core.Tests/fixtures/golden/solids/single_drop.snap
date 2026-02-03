@@ -1,0 +1,12 @@
+# FloodlineSnapshot v0.1
+cellOrder: x,y,z
+bounds: 3 3 3
+gravity: Down
+status: InProgress
+ticks: 0
+piecesLocked: 0
+objectives: 0 allCompleted=false
+activePiece: none
+cells: 2
+cell: 1,0,1 type=Bedrock material=none
+cell: 1,1,1 type=Solid material=none
