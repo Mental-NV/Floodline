@@ -554,8 +554,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Water equilibrium solver (exact) + displacement integration",
-      "status": "InReview",
+      "status": "Done",
       "startedAt": "2026-02-03T07:38:57.0186641Z",
+      "doneAt": "2026-02-03T08:33:42.3385848Z",
       "dependsOn": [
         "FL-0111"
       ],
@@ -581,7 +582,8 @@
           "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
           "First bypassed run failed due to analyzer errors in WaterSolverTests; corrected collection expressions and reran.",
           "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1 (Release build, 107 tests, dotnet format verify) passed.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/22"
+          "PR: https://github.com/Mental-NV/Floodline/pull/22",
+          "Merged PR #22 into main."
         ]
       }
     },
