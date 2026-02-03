@@ -1,0 +1,12 @@
+# FloodlineSnapshot v0.1
+cellOrder: x,y,z
+bounds: 3 3 3
+gravity: Down
+status: InProgress
+ticks: 0
+piecesLocked: 0
+objectives: 2 allCompleted=false
+objective: type=DRAIN_WATER current=3 target=5 completed=false
+objective: type=SURVIVE_ROTATIONS current=2 target=2 completed=true
+activePiece: none
+cells: 0
