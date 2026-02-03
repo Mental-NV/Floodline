@@ -1272,7 +1272,7 @@
       "epic": "AI",
       "milestone": "M0",
       "title": "Backlog edit hygiene rule (no JSON round-trip)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T17:22:13Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#backlog-item-format",
@@ -1287,8 +1287,13 @@
         "powershell -File ./scripts/preflight.ps1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/preflight.ps1"
+        ],
+        "notes": [
+          "Validation run on main (feature branch intentionally fails preflight by design).",
+          "PR: https://github.com/Mental-NV/Floodline/pull/40"
+        ]
       }
     },
     {
