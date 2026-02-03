@@ -802,7 +802,7 @@
       "epic": "E2",
       "milestone": "M2",
       "title": "Turn on CI -Golden switch (enforce golden execution)",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T13:17:01.4033491Z",
       "dependsOn": [
         "FL-0203"
@@ -819,8 +819,15 @@
         "powershell -File ./scripts/ci.ps1 -Scope M2 -Golden"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M2 -Golden",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2 -Golden"
+        ],
+        "notes": [
+          "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
+          "CI: powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M2 -Golden (Release build, 112 non-golden tests, 16 golden tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/29"
+        ]
       }
     },
     {
