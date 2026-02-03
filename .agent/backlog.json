@@ -1031,8 +1031,13 @@
         "powershell -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "notes": [
+          "Initial M4 run failed in CliApp_Validate_Level_Returns_Actionable_Errors due to JsonSchema.Net global registry overwrite; switched to a local SchemaRegistry and reran successfully."
+        ]
       }
     },
     {

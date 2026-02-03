@@ -1,0 +1,21 @@
+{
+  "bounds": {
+    "x": 6,
+    "y": 6,
+    "z": 6
+  },
+  "initialVoxels": [],
+  "objectives": [],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2"
+    ]
+  },
+  "hazards": []
+}

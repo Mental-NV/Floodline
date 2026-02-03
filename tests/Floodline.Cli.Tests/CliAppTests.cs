@@ -83,6 +83,39 @@ public class CliAppTests
         }
     }
 
+    [Fact]
+    public void CliApp_Validate_Level_Succeeds()
+    {
+        string levelPath = TestPaths.GetLevelPath("minimal_level.json");
+
+        using StringWriter output = new();
+        using StringWriter error = new();
+
+        int exitCode = CliApp.Run(["--level", levelPath, "--validate"], output, error);
+
+        Assert.Equal(0, exitCode);
+        Assert.Contains("Validation OK", output.ToString());
+        Assert.True(string.IsNullOrWhiteSpace(error.ToString()));
+    }
+
+    [Fact]
+    public void CliApp_Validate_Level_Returns_Actionable_Errors()
+    {
+        string levelPath = TestPaths.GetCliFixturePath("invalid_level_missing_meta.json");
+
+        using StringWriter output = new();
+        using StringWriter error = new();
+
+        int exitCode = CliApp.Run(["--level", levelPath, "--validate"], output, error);
+
+        Assert.Equal(2, exitCode);
+        string errorText = error.ToString();
+        Assert.Contains(levelPath, errorText, StringComparison.Ordinal);
+        Assert.Contains("#", errorText, StringComparison.Ordinal);
+        Assert.Contains("[schema.", errorText, StringComparison.Ordinal);
+        Assert.True(string.IsNullOrWhiteSpace(output.ToString()));
+    }
+
     private static string ExtractHash(string output)
     {
         foreach (string line in output.Split(Environment.NewLine))

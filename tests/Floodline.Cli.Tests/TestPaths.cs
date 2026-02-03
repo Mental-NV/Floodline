@@ -9,6 +9,9 @@ internal static class TestPaths
 
     public static string GetLevelPath(string fileName) => Path.Combine(RepoRoot, "levels", fileName);
 
+    public static string GetCliFixturePath(string fileName) =>
+        Path.Combine(RepoRoot, "tests", "Floodline.Cli.Tests", "fixtures", fileName);
+
     private static string FindRepoRoot()
     {
         DirectoryInfo? dir = new(AppContext.BaseDirectory);

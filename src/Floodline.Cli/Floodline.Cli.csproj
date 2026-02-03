@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Floodline.Core\Floodline.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="JsonSchema.Net" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>

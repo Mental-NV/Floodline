@@ -7,6 +7,7 @@ using Floodline.Core.Levels;
 using Floodline.Core.Movement;
 using Floodline.Core.Random;
 using Floodline.Core.Replay;
+using Floodline.Cli.Validation;
 
 namespace Floodline.Cli;
 
@@ -31,6 +32,7 @@ public static class CliApp
         string? recordPath = null;
         string? replayPath = null;
         int? ticks = null;
+        bool validateOnly = false;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -81,6 +83,9 @@ public static class CliApp
 
                     ticks = parsedTicks;
                     break;
+                case "--validate":
+                    validateOnly = true;
+                    break;
                 default:
                     return Fail(error, $"Unknown argument '{arg}'.");
             }
@@ -109,6 +114,31 @@ public static class CliApp
         if (!string.IsNullOrWhiteSpace(replayPath) && ticks.HasValue)
         {
             return Fail(error, "--ticks cannot be used with --replay (replay uses recorded ticks).");
+        }
+
+        if (validateOnly)
+        {
+            if (!string.IsNullOrWhiteSpace(inputsPath) ||
+                !string.IsNullOrWhiteSpace(recordPath) ||
+                !string.IsNullOrWhiteSpace(replayPath) ||
+                ticks.HasValue)
+            {
+                return Fail(error, "--validate cannot be combined with --inputs, --ticks, --record, or --replay.");
+            }
+
+            LevelValidationResult validation = LevelValidator.ValidateFile(levelPath);
+            if (!validation.IsValid)
+            {
+                foreach (LevelValidationError validationError in validation.Errors)
+                {
+                    error.WriteLine($"{validationError.FilePath}:{validationError.JsonPointer} [{validationError.RuleId}] {validationError.Message}");
+                }
+
+                return 2;
+            }
+
+            output.WriteLine("Validation OK");
+            return 0;
         }
 
         Level level;
@@ -342,6 +372,7 @@ public static class CliApp
         output.WriteLine("  --record        Write a replay file for the run.");
         output.WriteLine("  --replay        Replay from a replay file (ignores --inputs/--ticks).");
         output.WriteLine("  --ticks, -t     Total ticks to simulate (defaults to number of input commands).");
+        output.WriteLine("  --validate      Validate the level JSON and exit.");
         output.WriteLine("  --help, -h      Show this help.");
     }
 

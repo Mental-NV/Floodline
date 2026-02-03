@@ -35,6 +35,25 @@
         "resolved": "2.5.3",
         "contentHash": "HFFL6O+QLEOfs555SqHii48ovVa4CqGYanY+B32BjLpPptdE+wEJmCFNXlLHdEOD5LYeayb9EroaUpydGpcybg=="
       },
+      "Humanizer.Core": {
+        "type": "Transitive",
+        "resolved": "2.14.1",
+        "contentHash": "lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw=="
+      },
+      "Json.More.Net": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "+kj2dE04clW9+Bw4GoEVBFdLSiOKwLEkiiGbX+CK860DbytCtpD0QA68cEQISMnIrxyxQPw5gQAra22WCnRPUA=="
+      },
+      "JsonPointer.Net": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "jdnFo5huuJDB3ASWIkD0F9Ntf+9nOtRbsIp4VqRlHbTW9LxpBBMRKQhQJxPtIFAhNVS55aAsMb78TB+LK29CqQ==",
+        "dependencies": {
+          "Humanizer.Core": "2.14.1",
+          "Json.More.Net": "3.0.0"
+        }
+      },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
         "resolved": "17.8.0",
@@ -1019,13 +1038,23 @@
       "floodline.cli": {
         "type": "Project",
         "dependencies": {
-          "Floodline.Core": "[1.0.0, )"
+          "Floodline.Core": "[1.0.0, )",
+          "JsonSchema.Net": "[9.0.0, )"
         }
       },
       "floodline.core": {
         "type": "Project",
         "dependencies": {
           "System.Text.Json": "[8.0.5, )"
+        }
+      },
+      "JsonSchema.Net": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.0, )",
+        "resolved": "9.0.0",
+        "contentHash": "rGa8+OIvK9HdRduVTKrTTKTCWmPEcMgwOWXOzhDoJWirY8flz9cOVuJv21XyotDZBKAMWxnysr3E5AN1tMXubQ==",
+        "dependencies": {
+          "JsonPointer.Net": "7.0.0"
         }
       },
       "System.Text.Json": {
