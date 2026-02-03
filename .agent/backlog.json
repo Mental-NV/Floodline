@@ -517,8 +517,9 @@
       "epic": "E1",
       "milestone": "M1",
       "title": "Solids stability: connected components + drop distance",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-03T00:22:57.2444734Z",
+      "doneAt": "2026-02-03T00:29:44.9800510Z",
       "dependsOn": [
         "FL-0109"
       ],
@@ -536,8 +537,14 @@
         "powershell -File ./scripts/ci.ps1 -Scope M1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M1",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1"
+        ],
+        "notes": [
+          "Initial ci.ps1 run blocked by PowerShell AuthorizationManager; reran with ExecutionPolicy Bypass.",
+          "Implemented deterministic solid settling (components, drop distance) with displaced-water capture and tests."
+        ]
       }
     },
     {

@@ -115,7 +115,6 @@ public sealed class Simulation
         // 5. Apply Drains
         // 6. Evaluate Objectives (handled in Tick/UpdateStatus)
 
-        // TODO (FL-0111): Full solids stability implementation
         // TODO (FL-0112): Full water solver implementation
         // TODO (FL-0113): Drains and freeze
 
@@ -129,21 +128,20 @@ public sealed class Simulation
                 Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, null));
             }
         }
+
+        _ = SolidSettler.Settle(Grid, _movement.Gravity);
     }
 
-    private static void ResolveTilt()
-    {
-        // Canonical Tilt Resolve (§3.2):
-        // Resolve settled world only (no merge of active piece).
-        // 1. Settle Solids
-        // 2. Settle Water
-        // 3. Recheck Solids
-        // 4. Apply Drains
-
-        // TODO (FL-0111): Full solids stability implementation
-        // TODO (FL-0112): Full water solver implementation
-        // TODO (FL-0113): Drains and freeze
-    }
+    // Canonical Tilt Resolve (§3.2):
+    // Resolve settled world only (no merge of active piece).
+    // 1. Settle Solids
+    // 2. Settle Water
+    // 3. Recheck Solids
+    // 4. Apply Drains
+    //
+    // TODO (FL-0112): Full water solver implementation
+    // TODO (FL-0113): Drains and freeze
+    private void ResolveTilt() => SolidSettler.Settle(Grid, _movement.Gravity);
 
     private void SpawnNextPiece()
     {
