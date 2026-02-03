@@ -873,7 +873,7 @@
       "epic": "E3",
       "milestone": "M3",
       "title": "Determinism hash function for Core state",
-      "status": "InProgress",
+      "status": "InReview",
       "startedAt": "2026-02-03T13:42:53.0266377Z",
       "dependsOn": [
         "FL-0300"
@@ -891,8 +891,13 @@
         "powershell -File ./scripts/ci.ps1 -Scope M3"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/ci.ps1 -Scope M3"
+        ],
+        "notes": [
+          "CI: powershell -File ./scripts/ci.ps1 -Scope M3 (Release build, 131 tests, dotnet format verify) passed.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/31"
+        ]
       }
     },
     {
