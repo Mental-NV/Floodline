@@ -1304,8 +1304,9 @@
       "epic": "AI",
       "milestone": "M0",
       "title": "Backlog schema consistency rules + check",
-      "status": "InReview",
+      "status": "Done",
       "startedAt": "2026-02-03T17:27:38Z",
+      "doneAt": "2026-02-03T17:33:07Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#backlog-item-format",
       "rationale": "Prevent inconsistent timestamp fields and status/field mismatches in backlog.json.",
@@ -1324,7 +1325,9 @@
         ],
         "notes": [
           "Validation run on main (feature branch intentionally fails preflight by design).",
-          "PR: https://github.com/Mental-NV/Floodline/pull/41"
+          "PR: https://github.com/Mental-NV/Floodline/pull/41",
+          "CI: powershell -File ./scripts/preflight.ps1 (pass).",
+          "Self-review complete; auto-merging."
         ]
       }
     },
