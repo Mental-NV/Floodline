@@ -59,7 +59,48 @@ if ($active.Count -gt 1) { Fail "WIP violation: more than one item is active (In
 $done = @($items | Where-Object { $_.status -eq "Done" })
 $new  = @($items | Where-Object { $_.status -eq "New" })
 
-# 6) compute NEXT = lowest ID New with all dependsOn Done
+# 6) backlog timestamp consistency
+function AssertUtcTimestamp([string]$fieldName, $value, [string]$itemId) {
+  if (-not $value) { return }
+  $pattern = '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$'
+  if ($value -notmatch $pattern) {
+    Fail "Backlog item $itemId has invalid $fieldName timestamp: $value (expected UTC ISO 8601 with Z)."
+  }
+}
+
+foreach ($item in $items) {
+  $id = [string]$item.id
+  $status = [string]$item.status
+
+  if ($item.PSObject.Properties.Name -contains "completedAt") {
+    Fail "Backlog item $id uses completedAt; use doneAt instead."
+  }
+
+  $startedAt = $item.startedAt
+  $doneAt = $item.doneAt
+
+  if ($status -eq "New") {
+    if ($startedAt -or $doneAt) {
+      Fail "Backlog item $id is New but has startedAt/doneAt set."
+    }
+  } elseif ($status -in @("InProgress","InReview")) {
+    if (-not $startedAt) {
+      Fail "Backlog item $id is $status but missing startedAt."
+    }
+    if ($doneAt) {
+      Fail "Backlog item $id is $status but has doneAt set."
+    }
+  } elseif ($status -eq "Done") {
+    if (-not $doneAt) {
+      Fail "Backlog item $id is Done but missing doneAt."
+    }
+  }
+
+  AssertUtcTimestamp "startedAt" $startedAt $id
+  AssertUtcTimestamp "doneAt" $doneAt $id
+}
+
+# 7) compute NEXT = lowest ID New with all dependsOn Done
 $doneIds = @($done | ForEach-Object { [string]$_.id })
 
 function IsEligible($item) {
@@ -83,7 +124,7 @@ if ($eligibleNew) {
     $next = $null
 }
 
-# 7) print summary (agent-friendly)
+# 8) print summary (agent-friendly)
 Write-Host "DONE:    $($done.Count)"
 if ($active.Count -eq 1) {
   $cur = $active[0]

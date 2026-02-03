@@ -180,6 +180,13 @@ Every new backlog item MUST include:
 - Edit `backlog.json` with minimal, targeted line changes.
 - **Do not** round-trip `backlog.json` through a serializer or reformatter.
 
+### Backlog timestamp rules (non-negotiable)
+- Use only `startedAt` and `doneAt` (UTC ISO 8601 with `Z`).
+- `New`: no `startedAt` or `doneAt`.
+- `InProgress` / `InReview`: `startedAt` required, `doneAt` must be absent.
+- `Done`: `doneAt` required; `startedAt` is optional but recommended.
+- **Never** use `completedAt`.
+
 ---
 
 ## 5) Role loop (run sequentially per item)
