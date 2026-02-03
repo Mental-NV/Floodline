@@ -1042,6 +1042,33 @@
           "Fixed CA1822 on ResolveTilt (static) and reran ci.ps1 successfully."
         ]
       }
+    },
+    {
+      "id": "FU-0111",
+      "epic": "E1",
+      "milestone": "M1",
+      "title": "Tilt Resolve active-piece obstacle + rollback on collision",
+      "status": "New",
+      "dependsOn": [
+        "FU-0109",
+        "FL-0111"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#rotation-effects",
+      "rationale": "Spec requires treating the active piece as an immovable obstacle during Tilt Resolve and rejecting rotations that would collide with settled voxels.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Tilt Resolve uses active piece footprint as blocked cells",
+        "World rotation rejected if any settled voxel would enter blocked cells",
+        "Unit tests for rotation rejection and no-merge behavior"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -File ./scripts/ci.ps1 -Scope M1"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
     }
   ]
 }
