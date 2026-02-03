@@ -1208,7 +1208,9 @@
       "epic": "AI",
       "milestone": "M0",
       "title": "Make preflight fail on dirty/out-of-sync main",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-03T17:12:37Z",
+      "doneAt": "2026-02-03T17:16:39Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#execution-loop",
       "rationale": "Ensure Step 0 blocks work when main is dirty or ahead/behind origin/main.",
@@ -1222,8 +1224,15 @@
         "powershell -File ./scripts/preflight.ps1"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -File ./scripts/preflight.ps1"
+        ],
+        "notes": [
+          "Validation run on main (feature branch intentionally fails preflight by design).",
+          "PR: https://github.com/Mental-NV/Floodline/pull/38",
+          "CI: powershell -File ./scripts/preflight.ps1 (pass).",
+          "Self-review complete; auto-merging."
+        ]
       }
     },
     {
