@@ -1221,11 +1221,14 @@
       ],
       "evidence": {
         "commandsRun": [
-          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay"
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay",
+          "git push -u origin feat/FL-0413-hold",
+          "gh pr create --title \"FL-0413: hold + replay updates\" --body \"## Summary\n- add hold input with once-per-drop swap and orientation reset\n- extend determinism hash with hold state and bump hash version\n- bump replay format/encoding and update replay tests\n\n## Testing\n- powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay\""
         ],
         "notes": [
           "Implemented hold slot with once-per-drop rule and orientation reset on swap.",
-          "Replay format bumped to 0.1.1 / command-v1; determinism hash bumped to 0.1.2 including hold state."
+          "Replay format bumped to 0.1.1 / command-v1; determinism hash bumped to 0.1.2 including hold state.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/50"
         ]
       }
     },
