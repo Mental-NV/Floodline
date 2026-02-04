@@ -2244,8 +2244,9 @@
       "epic": "E0",
       "milestone": "M0",
       "title": "Autonomy: prevent stopping after PR creation",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-04T19:42:49Z",
+      "doneAt": "2026-02-04T19:47:10Z",
       "dependsOn": [],
       "requirementRef": "/.agent/AGENT_OS.md#execution-loop; /.agent/MISSION_PROMPT.txt",
       "rationale": "Ensure the execution loop explicitly continues through CI/merge without waiting for user confirmation.",
@@ -2266,7 +2267,8 @@
         ],
         "notes": [
           "Preflight requires main; ran on main and returned to feature branch.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/47"
+          "PR: https://github.com/Mental-NV/Floodline/pull/47",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/47"
         ]
       }
     }
