@@ -8,8 +8,8 @@ namespace Floodline.Core.Replay;
 /// </summary>
 public static class ReplayFormat
 {
-    public const string ReplayVersion = "0.1.0";
-    public const string InputEncoding = "command-v0";
+    public const string ReplayVersion = "0.1.1";
+    public const string InputEncoding = "command-v1";
 }
 
 /// <summary>

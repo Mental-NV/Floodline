@@ -117,6 +117,9 @@ public sealed class MovementController(Grid grid, RotationConfig? rotationConfig
                 InputCommand.RotateWorldRight =>
                     ResolveWorldRotation(WorldRotationDirection.TiltRight),
 
+                InputCommand.Hold =>
+                    new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
+
                 InputCommand.None =>
                     new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
 

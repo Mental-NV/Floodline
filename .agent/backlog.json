@@ -1201,11 +1201,13 @@
       "epic": "E1",
       "milestone": "M4",
       "title": "Core: Hold (once per drop) + replay/determinism updates",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-04T20:22:00Z",
+      "doneAt": "2026-02-04T20:30:58Z",
       "dependsOn": [
         "FL-0412"
       ],
-      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#12-rng-bags-and-hold",
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#12-rng-bags-and-hold; /src/Floodline.Core/Simulation.cs; /src/Floodline.Core/SimulationState.cs; /src/Floodline.Core/Movement/InputCommand.cs; /src/Floodline.Core/Movement/ActivePiece.cs; /src/Floodline.Core/Movement/MovementController.cs; /src/Floodline.Core/Determinism/DeterminismHasher.cs; /src/Floodline.Core/PieceBag.cs; /src/Floodline.Core/PieceLibrary.cs; /src/Floodline.Core/Levels/Level.cs; /src/Floodline.Core/Levels/LevelConfigs.cs; /src/Floodline.Core/Replay/ReplayFile.cs; /src/Floodline.Core/Replay/ReplaySerializer.cs; /tests/Floodline.Core.Tests/Replay/ReplayFormatTests.cs; /tests/Floodline.Core.Tests/SimulationTests.cs; /tests/Floodline.Core.Tests/HoldTests.cs",
       "rationale": "Hold is introduced in campaign level 6 and is part of the canonical rules; it must be deterministic and encoded in replays and determinism hashes.",
       "sizeHint": "L",
       "deliverables": [
@@ -1219,8 +1221,17 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay",
+          "git push -u origin feat/FL-0413-hold",
+          "gh pr create --title \"FL-0413: hold + replay updates\" --body \"## Summary\n- add hold input with once-per-drop swap and orientation reset\n- extend determinism hash with hold state and bump hash version\n- bump replay format/encoding and update replay tests\n\n## Testing\n- powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay\""
+        ],
+        "notes": [
+          "Implemented hold slot with once-per-drop rule and orientation reset on swap.",
+          "Replay format bumped to 0.1.1 / command-v1; determinism hash bumped to 0.1.2 including hold state.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/50",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/50"
+        ]
       }
     },
     {

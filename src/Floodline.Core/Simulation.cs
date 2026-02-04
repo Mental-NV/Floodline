@@ -51,6 +51,10 @@ public sealed class Simulation
     /// </summary>
     public GravityDirection Gravity => _movement.Gravity;
 
+    internal BagEntry? HoldSlot { get; private set; }
+
+    internal bool HoldUsedThisDrop { get; private set; }
+
     internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
 
     internal ulong RandomState => _random is IRandomState state
@@ -81,7 +85,7 @@ public sealed class Simulation
         }
 
         // 2. Initial spawn
-        SpawnNextPiece();
+        SpawnNextPiece(resetHoldUsage: true);
     }
 
     /// <summary>
@@ -101,7 +105,9 @@ public sealed class Simulation
         GravityDirection previousGravity = _movement.Gravity;
 
         // 1. Apply Input
-        InputApplyResult inputResult = _movement.ProcessInput(command);
+        InputApplyResult inputResult = command == InputCommand.Hold
+            ? ApplyHold()
+            : _movement.ProcessInput(command);
 
         // Immediate Tilt Resolve if world rotation was accepted
         if (inputResult.Accepted && IsWorldRotation(command))
@@ -140,7 +146,7 @@ public sealed class Simulation
         {
             Resolve();
             _piecesLocked++;
-            SpawnNextPiece();
+            SpawnNextPiece(resetHoldUsage: true);
             resolvedThisTick = true;
         }
 
@@ -259,17 +265,27 @@ public sealed class Simulation
         return true;
     }
 
-    private void SpawnNextPiece()
+    private void SpawnNextPiece(bool resetHoldUsage)
     {
         BagEntry next = _bag.DrawNext();
-        PieceDefinition def = PieceLibrary.Get(next.PieceId);
-        OrientedPiece oriented = new(next.PieceId, def.UniqueOrientations[0], 0);
+        SpawnPiece(next, resetHoldUsage);
+    }
+
+    private void SpawnPiece(BagEntry entry, bool resetHoldUsage)
+    {
+        if (resetHoldUsage)
+        {
+            HoldUsedThisDrop = false;
+        }
+
+        PieceDefinition def = PieceLibrary.Get(entry.PieceId);
+        OrientedPiece oriented = new(entry.PieceId, def.UniqueOrientations[0], 0);
 
         // Spawn at top-middle
         Int3 spawnPos = new(_level.Bounds.X / 2, _level.Bounds.Y - 1, _level.Bounds.Z / 2);
 
         // Reset movement controller with new piece
-        _movement.CurrentPiece = new ActivePiece(oriented, spawnPos, next.MaterialId);
+        _movement.CurrentPiece = new ActivePiece(oriented, spawnPos, entry.MaterialId);
 
         // check immediate collision (overflow)
         if (!IsPlacementValid(spawnPos, oriented.Voxels))
@@ -325,6 +341,40 @@ public sealed class Simulation
                    InputCommand.RotateWorldRight;
 
     private static bool IsGravityTick() => false;
+
+    private InputApplyResult ApplyHold()
+    {
+        if (!(_level.Abilities?.HoldEnabled ?? false))
+        {
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        if (ActivePiece is null)
+        {
+            return new InputApplyResult(Accepted: false, Moved: false, LockRequested: false);
+        }
+
+        if (HoldUsedThisDrop)
+        {
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        BagEntry current = new(ActivePiece.Piece.Id, ActivePiece.MaterialId);
+        if (HoldSlot is null)
+        {
+            HoldSlot = current;
+            SpawnNextPiece(resetHoldUsage: false);
+        }
+        else
+        {
+            BagEntry held = HoldSlot.Value;
+            HoldSlot = current;
+            SpawnPiece(held, resetHoldUsage: false);
+        }
+
+        HoldUsedThisDrop = true;
+        return new InputApplyResult(Accepted: true, Moved: true, LockRequested: false);
+    }
 
     /// <summary>
     /// Queues a freeze action to be applied during the next resolve.

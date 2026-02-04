@@ -32,6 +32,11 @@ public enum InputCommand
     MoveBack,
 
     /// <summary>
+    /// Hold the current piece (once per drop).
+    /// </summary>
+    Hold,
+
+    /// <summary>
     /// Rotate the piece Yaw CW (around the vertical Y axis).
     /// </summary>
     RotatePieceYawCW,
