@@ -251,6 +251,8 @@ Prohibitions:
 - Re-check repo state (`git status`), backlog CURRENT item, and last confirmed step.
 - Re-run any partially executed commands if outcomes are unknown.
 - Continue the execution loop without waiting for user confirmation.
+- If the user asks why you stopped or to continue, answer briefly then immediately resume the loop in the same session.
+- Never idle between steps. After any explanation or status update, proceed to the next required action.
 
 ### Step 0 — Preflight (each session)
 - Start from a fresh, clean `main` synced to `origin/main`.

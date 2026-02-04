@@ -99,7 +99,17 @@ public enum InputCommand
     /// <summary>
     /// Stabilize ability - arm the current piece to anchor on lock.
     /// </summary>
-    Stabilize
+    Stabilize,
+
+    /// <summary>
+    /// Freeze ability - arm the current piece to freeze water on lock.
+    /// </summary>
+    FreezeAbility,
+
+    /// <summary>
+    /// Drain placement ability - arm the current piece to place a drain on lock.
+    /// </summary>
+    DrainPlacementAbility
 }
 
 /// <summary>

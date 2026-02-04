@@ -32,6 +32,22 @@ public enum DrainScope
 }
 
 /// <summary>
+/// Defines the freeze target scope.
+/// </summary>
+public enum FreezeScope
+{
+    /// <summary>
+    /// The six orthogonal adjacent neighbors.
+    /// </summary>
+    Adj6,
+
+    /// <summary>
+    /// All 26 adjacent neighbors (including diagonals).
+    /// </summary>
+    Adj26
+}
+
+/// <summary>
 /// Configuration for a drain tile.
 /// </summary>
 /// <param name="RatePerResolve">Number of water units removed per resolve.</param>
@@ -69,7 +85,12 @@ public record BagConfig(
 /// </summary>
 public record AbilitiesConfig(
     bool HoldEnabled = false,
-    int StabilizeCharges = 0
+    int StabilizeCharges = 0,
+    int FreezeCharges = 0,
+    int FreezeDurationResolves = 1,
+    FreezeScope FreezeScope = FreezeScope.Adj6,
+    int DrainPlacementCharges = 0,
+    DrainConfig? DrainPlacement = null
 );
 
 /// <summary>

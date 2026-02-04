@@ -19,6 +19,16 @@ public sealed class Simulation
     private static readonly Int3 WindDirectionWest = new(-1, 0, 0);
     private static readonly Int3 WindDirectionNorth = new(0, 0, -1);
     private static readonly Int3 WindDirectionSouth = new(0, 0, 1);
+    private static readonly Int3[] FreezeAdj6Offsets =
+    [
+        new Int3(1, 0, 0),
+        new Int3(-1, 0, 0),
+        new Int3(0, 1, 0),
+        new Int3(0, -1, 0),
+        new Int3(0, 0, 1),
+        new Int3(0, 0, -1)
+    ];
+    private static readonly Int3[] FreezeAdj26Offsets = BuildAdj26Offsets();
     private readonly Level _level;
     private readonly IRandom _random;
     private readonly MovementController _movement;
@@ -79,6 +89,14 @@ public sealed class Simulation
 
     internal int StabilizeChargesRemaining { get; private set; }
 
+    internal bool FreezeArmed { get; private set; }
+
+    internal int FreezeChargesRemaining { get; private set; }
+
+    internal bool DrainPlacementArmed { get; private set; }
+
+    internal int DrainPlacementChargesRemaining { get; private set; }
+
     internal IReadOnlyList<AnchorTimerSnapshot> StabilizeAnchorTimers => GetStabilizeAnchorSnapshots();
 
     internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
@@ -106,6 +124,8 @@ public sealed class Simulation
         _allowedGravityDirections = BuildAllowedGravityDirections(level.Rotation);
         (_windHazard, _windRandom) = BuildWindHazard(level);
         StabilizeChargesRemaining = Math.Max(0, level.Abilities?.StabilizeCharges ?? 0);
+        FreezeChargesRemaining = Math.Max(0, level.Abilities?.FreezeCharges ?? 0);
+        DrainPlacementChargesRemaining = Math.Max(0, level.Abilities?.DrainPlacementCharges ?? 0);
 
         // 1. Initial voxels
         foreach (VoxelData voxelData in level.InitialVoxels)
@@ -144,6 +164,10 @@ public sealed class Simulation
             ? ApplyHold()
             : command == InputCommand.Stabilize
                 ? ApplyStabilize()
+                : command == InputCommand.FreezeAbility
+                    ? ApplyFreezeAbility()
+                    : command == InputCommand.DrainPlacementAbility
+                        ? ApplyDrainPlacementAbility()
                 : IsWorldRotation(command) && !CanAttemptWorldRotation(command)
                     ? new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
                     : _movement.ProcessInput(command);
@@ -249,13 +273,25 @@ public sealed class Simulation
         {
             bool stabilizeAnchors = StabilizeArmed;
             bool reinforcedAnchors = IsReinforcedMaterial(ActivePiece.MaterialId);
+            bool freezeArmed = FreezeArmed;
+            bool drainPlacementArmed = DrainPlacementArmed;
+            Int3 pivot = ActivePiece.Origin;
+            IReadOnlyList<Int3> positions = ActivePiece.GetWorldPositions();
+            DrainConfig drainPlacementConfig = _level.Abilities?.DrainPlacement ?? DrainConfig.Default;
 
-            foreach (Int3 pos in ActivePiece.GetWorldPositions())
+            foreach (Int3 pos in positions)
             {
                 Voxel existing = Grid.GetVoxel(pos);
                 if (existing.Type == OccupancyType.Water)
                 {
                     displacedWater.Add(pos);
+                }
+
+                if (drainPlacementArmed && pos == pivot)
+                {
+                    Grid.SetVoxel(pos, new Voxel(OccupancyType.Drain, null));
+                    _drainConfigs[pos] = drainPlacementConfig;
+                    continue;
                 }
 
                 bool anchored = stabilizeAnchors || reinforcedAnchors;
@@ -265,6 +301,28 @@ public sealed class Simulation
                 {
                     _stabilizeAnchorTimers[pos] = Constants.StabilizeAnchorRotations;
                 }
+            }
+
+            if (freezeArmed)
+            {
+                AbilitiesConfig? abilities = _level.Abilities;
+                int duration = abilities?.FreezeDurationResolves ?? 0;
+                FreezeScope scope = abilities?.FreezeScope ?? FreezeScope.Adj6;
+                if (duration > 0)
+                {
+                    IReadOnlyList<Int3> targets = BuildFreezeTargets(positions, scope);
+                    if (targets.Count > 0)
+                    {
+                        QueueFreeze(targets, duration);
+                    }
+                }
+
+                FreezeArmed = false;
+            }
+
+            if (drainPlacementArmed)
+            {
+                DrainPlacementArmed = false;
             }
 
             if (stabilizeAnchors)
@@ -806,6 +864,56 @@ public sealed class Simulation
         return pushStrength / massFactor;
     }
 
+    private static Int3[] BuildAdj26Offsets()
+    {
+        List<Int3> offsets = [];
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int z = -1; z <= 1; z++)
+                {
+                    if (x == 0 && y == 0 && z == 0)
+                    {
+                        continue;
+                    }
+
+                    offsets.Add(new Int3(x, y, z));
+                }
+            }
+        }
+
+        return [.. offsets];
+    }
+
+    private static IReadOnlyList<Int3> BuildFreezeTargets(IReadOnlyList<Int3> positions, FreezeScope scope)
+    {
+        if (positions.Count == 0)
+        {
+            return [];
+        }
+
+        Int3[] offsets = scope == FreezeScope.Adj26 ? FreezeAdj26Offsets : FreezeAdj6Offsets;
+        HashSet<Int3> targets = [];
+
+        foreach (Int3 pos in positions)
+        {
+            foreach (Int3 offset in offsets)
+            {
+                targets.Add(pos + offset);
+            }
+        }
+
+        if (targets.Count == 0)
+        {
+            return [];
+        }
+
+        List<Int3> ordered = [.. targets];
+        ordered.Sort(ComparePositions);
+        return ordered;
+    }
+
     private bool IsGravityTick()
     {
         if (GravityTicksRemaining > 0)
@@ -876,6 +984,52 @@ public sealed class Simulation
         }
 
         StabilizeArmed = false;
+        return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+    }
+
+    private InputApplyResult ApplyFreezeAbility()
+    {
+        if (ActivePiece is null)
+        {
+            return new InputApplyResult(Accepted: false, Moved: false, LockRequested: false);
+        }
+
+        if (FreezeChargesRemaining <= 0 && !FreezeArmed)
+        {
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        if (!FreezeArmed)
+        {
+            FreezeChargesRemaining--;
+            FreezeArmed = true;
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        FreezeArmed = false;
+        return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+    }
+
+    private InputApplyResult ApplyDrainPlacementAbility()
+    {
+        if (ActivePiece is null)
+        {
+            return new InputApplyResult(Accepted: false, Moved: false, LockRequested: false);
+        }
+
+        if (DrainPlacementChargesRemaining <= 0 && !DrainPlacementArmed)
+        {
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        if (!DrainPlacementArmed)
+        {
+            DrainPlacementChargesRemaining--;
+            DrainPlacementArmed = true;
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        DrainPlacementArmed = false;
         return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
     }
 
@@ -1080,6 +1234,8 @@ public sealed class Simulation
         LockResetCount = 0;
         LockDelayActive = false;
         StabilizeArmed = false;
+        FreezeArmed = false;
+        DrainPlacementArmed = false;
         ResetGravityTimer();
     }
 

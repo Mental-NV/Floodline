@@ -120,6 +120,12 @@ public sealed class MovementController(Grid grid, RotationConfig? rotationConfig
                 InputCommand.Stabilize =>
                     new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
 
+                InputCommand.FreezeAbility =>
+                    new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
+
+                InputCommand.DrainPlacementAbility =>
+                    new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
+
                 InputCommand.Hold =>
                     new InputApplyResult(Accepted: true, Moved: false, LockRequested: false),
 

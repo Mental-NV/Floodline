@@ -5,5 +5,5 @@ namespace Floodline.Core;
 /// </summary>
 public static class RulesVersion
 {
-    public const string Current = "0.2.0";
+    public const string Current = "0.2.1";
 }

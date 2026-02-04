@@ -13,7 +13,7 @@ namespace Floodline.Core.Determinism;
 /// </summary>
 public static class DeterminismHasher
 {
-    public const string HashVersion = "0.1.6";
+    public const string HashVersion = "0.1.7";
 
     public static string Compute(Simulation simulation)
     {
@@ -99,6 +99,10 @@ public static class DeterminismHasher
 
         writer.WriteBool(simulation.StabilizeArmed);
         writer.WriteInt32(simulation.StabilizeChargesRemaining);
+        writer.WriteBool(simulation.FreezeArmed);
+        writer.WriteInt32(simulation.FreezeChargesRemaining);
+        writer.WriteBool(simulation.DrainPlacementArmed);
+        writer.WriteInt32(simulation.DrainPlacementChargesRemaining);
         IReadOnlyList<Simulation.AnchorTimerSnapshot> stabilizeAnchors = simulation.StabilizeAnchorTimers;
         writer.WriteInt32(stabilizeAnchors.Count);
         foreach (Simulation.AnchorTimerSnapshot anchor in stabilizeAnchors)
