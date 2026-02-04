@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Floodline.Core.Determinism;
 using Floodline.Core.Levels;
 using Floodline.Core.Movement;
@@ -13,11 +14,18 @@ namespace Floodline.Core;
 /// </summary>
 public sealed class Simulation
 {
+    private const ulong WindSeedSalt = 0x9E3779B97F4A7C15UL;
+    private static readonly Int3 WindDirectionEast = new(1, 0, 0);
+    private static readonly Int3 WindDirectionWest = new(-1, 0, 0);
+    private static readonly Int3 WindDirectionNorth = new(0, 0, -1);
+    private static readonly Int3 WindDirectionSouth = new(0, 0, 1);
     private readonly Level _level;
     private readonly IRandom _random;
     private readonly MovementController _movement;
     private readonly PieceBag _bag;
     private readonly HashSet<GravityDirection>? _allowedGravityDirections;
+    private readonly WindHazard? _windHazard;
+    private readonly IRandom? _windRandom;
     private readonly Dictionary<Int3, DrainConfig> _drainConfigs = [];
     private readonly IceTracker _iceTracker = new();
     private readonly List<FreezeRequest> _pendingFreezes = [];
@@ -79,6 +87,10 @@ public sealed class Simulation
         ? state.State
         : throw new InvalidOperationException("Determinism hash requires a random generator that exposes state.");
 
+    internal ulong WindRandomState => _windRandom is IRandomState state
+        ? state.State
+        : 0UL;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Simulation"/> class.
     /// </summary>
@@ -92,6 +104,7 @@ public sealed class Simulation
         _movement = new MovementController(Grid, level.Rotation);
         _bag = new PieceBag(level.Bag, _random);
         _allowedGravityDirections = BuildAllowedGravityDirections(level.Rotation);
+        (_windHazard, _windRandom) = BuildWindHazard(level);
         StabilizeChargesRemaining = Math.Max(0, level.Abilities?.StabilizeCharges ?? 0);
 
         // 1. Initial voxels
@@ -157,7 +170,7 @@ public sealed class Simulation
             AdvanceStabilizeAnchors();
         }
 
-        // 2. Gravity Step
+        // 2. Wind + Gravity Step
         // If hard drop was requested, movement already happened in ProcessInput
         bool lockRequested = inputResult.LockRequested;
 
@@ -165,6 +178,8 @@ public sealed class Simulation
         {
             wasGrounded = false;
         }
+
+        ApplyWindHazard(lockRequested);
 
         bool isGroundedAfterInput = IsGrounded();
         if (wasGrounded && !isGroundedAfterInput && !pieceSwapped)
@@ -412,6 +427,44 @@ public sealed class Simulation
         }
     }
 
+    private void ApplyWindHazard(bool lockRequested)
+    {
+        if (lockRequested || _windHazard is null)
+        {
+            return;
+        }
+
+        ActivePiece? activePiece = ActivePiece;
+        if (activePiece is null)
+        {
+            return;
+        }
+
+        long tickIndex = _ticksElapsed - 1;
+        if (tickIndex < _windHazard.OffsetTicks)
+        {
+            return;
+        }
+
+        long sinceOffset = tickIndex - _windHazard.OffsetTicks;
+        if (sinceOffset % _windHazard.IntervalTicks != 0)
+        {
+            return;
+        }
+
+        long gustIndex = sinceOffset / _windHazard.IntervalTicks;
+        Int3 direction = GetWindDirection(_windHazard, gustIndex);
+        int pushSteps = GetWindPushSteps(_windHazard.PushStrength, activePiece.MaterialId);
+
+        for (int i = 0; i < pushSteps; i++)
+        {
+            if (!activePiece.TryTranslate(direction, Grid))
+            {
+                break;
+            }
+        }
+    }
+
     private static bool IsWorldRotation(InputCommand command) =>
         command is InputCommand.RotateWorldForward or
                    InputCommand.RotateWorldBack or
@@ -525,6 +578,232 @@ public sealed class Simulation
         };
 
         return normalized is "DOWN" or "NORTH" or "SOUTH" or "EAST" or "WEST";
+    }
+
+    private static (WindHazard? Hazard, IRandom? Random) BuildWindHazard(Level level)
+    {
+        if (level.Hazards is null || level.Hazards.Count == 0)
+        {
+            return (null, null);
+        }
+
+        foreach (HazardConfig hazard in level.Hazards)
+        {
+            if (!hazard.Enabled)
+            {
+                continue;
+            }
+
+            if (!IsWindHazardType(hazard.Type))
+            {
+                continue;
+            }
+
+            if (hazard.Params is null)
+            {
+                throw new ArgumentException("Wind hazard params are missing.");
+            }
+
+            Dictionary<string, object> parameters = hazard.Params;
+            int intervalTicks = GetRequiredInt(parameters, "intervalTicks");
+            if (intervalTicks < 1)
+            {
+                intervalTicks = 1;
+            }
+
+            int pushStrength = GetRequiredInt(parameters, "pushStrength");
+            if (pushStrength < 0)
+            {
+                pushStrength = 0;
+            }
+
+            string modeRaw = GetRequiredString(parameters, "directionMode");
+            WindDirectionMode directionMode = ParseWindDirectionMode(modeRaw);
+
+            Int3 fixedDirection = default;
+            if (directionMode == WindDirectionMode.Fixed)
+            {
+                string fixedRaw = GetRequiredString(parameters, "fixedDirection");
+                fixedDirection = ParseWindDirection(fixedRaw);
+            }
+
+            IRandom? windRandom = null;
+            int offsetTicks;
+            if (TryGetInt(parameters, "firstGustOffsetTicks", out int offset))
+            {
+                offsetTicks = Math.Max(0, offset);
+            }
+            else
+            {
+                windRandom = CreateWindRandom(level.Meta.Seed);
+                offsetTicks = windRandom.NextInt(intervalTicks);
+            }
+
+            if (directionMode == WindDirectionMode.RandomSeeded && windRandom is null)
+            {
+                windRandom = CreateWindRandom(level.Meta.Seed);
+            }
+
+            WindHazard windHazard = new(intervalTicks, offsetTicks, pushStrength, directionMode, fixedDirection);
+            return (windHazard, windRandom);
+        }
+
+        return (null, null);
+    }
+
+    private static bool IsWindHazardType(string? type) => NormalizeToken(type) == "WINDGUST";
+
+    private static WindDirectionMode ParseWindDirectionMode(string mode)
+    {
+        string normalized = NormalizeToken(mode);
+        return normalized switch
+        {
+            "ALTERNATEEW" => WindDirectionMode.AlternateEw,
+            "FIXED" => WindDirectionMode.Fixed,
+            "RANDOMSEEDED" => WindDirectionMode.RandomSeeded,
+            _ => throw new ArgumentException($"Wind direction mode '{mode}' is invalid.")
+        };
+    }
+
+    private static Int3 ParseWindDirection(string direction)
+    {
+        string normalized = NormalizeToken(direction);
+        return normalized switch
+        {
+            "EAST" => WindDirectionEast,
+            "WEST" => WindDirectionWest,
+            "NORTH" => WindDirectionNorth,
+            "SOUTH" => WindDirectionSouth,
+            _ => throw new ArgumentException($"Wind fixedDirection '{direction}' is invalid.")
+        };
+    }
+
+    private static string NormalizeToken(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        Span<char> buffer = stackalloc char[value.Length];
+        int index = 0;
+        foreach (char c in value)
+        {
+            if (c is '_' or '-' or ' ')
+            {
+                continue;
+            }
+
+            buffer[index] = char.ToUpperInvariant(c);
+            index++;
+        }
+
+        return new string(buffer[..index]);
+    }
+
+    private static int GetRequiredInt(Dictionary<string, object> parameters, string key)
+    {
+        if (TryGetInt(parameters, key, out int value))
+        {
+            return value;
+        }
+
+        throw new ArgumentException($"Hazard parameter '{key}' is missing.");
+    }
+
+    private static string GetRequiredString(Dictionary<string, object> parameters, string key)
+    {
+        if (TryGetString(parameters, key, out string value))
+        {
+            return value;
+        }
+
+        throw new ArgumentException($"Hazard parameter '{key}' is missing.");
+    }
+
+    private static bool TryGetInt(Dictionary<string, object> parameters, string key, out int value)
+    {
+        if (!parameters.TryGetValue(key, out object? raw) || raw is null)
+        {
+            value = 0;
+            return false;
+        }
+
+        value = raw switch
+        {
+            int intValue => intValue,
+            long longValue => checked((int)longValue),
+            JsonElement element when element.ValueKind == JsonValueKind.Number => element.GetInt32(),
+            JsonElement element when element.ValueKind == JsonValueKind.String => ParseStringInt(element.GetString(), key),
+            _ => throw new ArgumentException($"Hazard parameter '{key}' must be an integer.")
+        };
+
+        return true;
+    }
+
+    private static bool TryGetString(Dictionary<string, object> parameters, string key, out string value)
+    {
+        if (!parameters.TryGetValue(key, out object? raw) || raw is null)
+        {
+            value = string.Empty;
+            return false;
+        }
+
+        value = raw switch
+        {
+            string text => text,
+            JsonElement element when element.ValueKind == JsonValueKind.String => element.GetString() ?? string.Empty,
+            _ => throw new ArgumentException($"Hazard parameter '{key}' must be a string.")
+        };
+
+        return true;
+    }
+
+    private static int ParseStringInt(string? text, string key)
+    {
+        if (int.TryParse(text, out int value))
+        {
+            return value;
+        }
+
+        throw new ArgumentException($"Hazard parameter '{key}' must be an integer.");
+    }
+
+    private static IRandom CreateWindRandom(uint seed) =>
+        new Pcg32(DeriveWindSeed(seed));
+
+    private static ulong DeriveWindSeed(uint seed) =>
+        seed ^ WindSeedSalt;
+
+    private Int3 GetWindDirection(WindHazard hazard, long gustIndex) =>
+        hazard.DirectionMode switch
+        {
+            WindDirectionMode.AlternateEw => gustIndex % 2 == 0 ? WindDirectionEast : WindDirectionWest,
+            WindDirectionMode.Fixed => hazard.FixedDirection,
+            WindDirectionMode.RandomSeeded => GetRandomWindDirection(),
+            _ => WindDirectionEast
+        };
+
+    private Int3 GetRandomWindDirection()
+    {
+        if (_windRandom is null)
+        {
+            throw new InvalidOperationException("Wind hazard requires a random stream.");
+        }
+
+        int roll = _windRandom.NextInt(2);
+        return roll == 0 ? WindDirectionEast : WindDirectionWest;
+    }
+
+    private static int GetWindPushSteps(int pushStrength, string? materialId)
+    {
+        if (pushStrength <= 0)
+        {
+            return 0;
+        }
+
+        int massFactor = Math.Max(1, GetMaterialMass(materialId));
+        return pushStrength / massFactor;
     }
 
     private bool IsGravityTick()
@@ -927,6 +1206,20 @@ public sealed class Simulation
 
         return materialId.Trim().Equals("REINFORCED", StringComparison.OrdinalIgnoreCase);
     }
+
+    private enum WindDirectionMode
+    {
+        AlternateEw,
+        Fixed,
+        RandomSeeded
+    }
+
+    private sealed record WindHazard(
+        int IntervalTicks,
+        int OffsetTicks,
+        int PushStrength,
+        WindDirectionMode DirectionMode,
+        Int3 FixedDirection);
 
     internal readonly record struct AnchorTimerSnapshot(Int3 Position, int RemainingRotations);
 

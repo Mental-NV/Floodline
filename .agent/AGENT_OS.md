@@ -246,6 +246,12 @@ Prohibitions:
 ## 6) Execution loop
 <a id="execution-loop"></a>
 
+### Interruption recovery (always)
+- If a response or tool run is interrupted/aborted, immediately resume.
+- Re-check repo state (`git status`), backlog CURRENT item, and last confirmed step.
+- Re-run any partially executed commands if outcomes are unknown.
+- Continue the execution loop without waiting for user confirmation.
+
 ### Step 0 — Preflight (each session)
 - Start from a fresh, clean `main` synced to `origin/main`.
 - Read the 8 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog).

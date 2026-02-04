@@ -1385,10 +1385,12 @@
       },
     {
       "id": "FL-0418",
-      "epic": "E1",
-      "milestone": "M4",
-      "title": "Core: Wind hazard (WIND_GUST) scheduling + push rules",
-      "status": "New",
+        "epic": "E1",
+        "milestone": "M4",
+        "title": "Core: Wind hazard (WIND_GUST) scheduling + push rules",
+        "status": "Done",
+        "startedAt": "2026-02-04T21:47:40Z",
+        "doneAt": "2026-02-04T22:19:01Z",
       "dependsOn": [
         "FL-0417"
       ],
@@ -1406,8 +1408,21 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/preflight.ps1",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "notes": [
+          "Preflight failed: requires main; current branch feat/FL-0418-wind-hazard.",
+          "First ci.ps1 run failed due to IDE0004 (redundant cast). Fixed.",
+          "Second ci.ps1 run failed due to WindHazard_Stops_On_Collision and IDE0022 formatting. Fixed tests and expression-bodied methods.",
+          "Wind: skip gust application when hard drop requests lock to avoid post-lock lateral shifts.",
+          "Wind: RANDOM_SEEDED selects East/West only; first enabled WIND_GUST hazard is used.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/55",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/55"
+        ]
       }
     },
     {
