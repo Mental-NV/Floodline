@@ -1601,7 +1601,8 @@
           "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
         ],
         "notes": [
-          "Generated rotation constraint golden fixtures with FLOODLINE_UPDATE_GOLDENS=1 dotnet test C:\\Projects\\Floodline\\Floodline.sln -c Release --filter FullyQualifiedName~RotationConstraintGoldenTests."
+          "Generated rotation constraint golden fixtures with FLOODLINE_UPDATE_GOLDENS=1 dotnet test C:\\Projects\\Floodline\\Floodline.sln -c Release --filter FullyQualifiedName~RotationConstraintGoldenTests.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/60"
         ]
       }
     },
