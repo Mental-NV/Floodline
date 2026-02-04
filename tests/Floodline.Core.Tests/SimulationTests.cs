@@ -48,6 +48,40 @@ public class SimulationTests
     }
 
     [Fact]
+    public void Simulation_NaturalGravity_Moves_On_Interval()
+    {
+        // Arrange
+        var sim = new Simulation(CreateTestLevel(), new Pcg32(1));
+        Int3 initialOrigin = sim.ActivePiece!.Origin;
+
+        // Act
+        for (int i = 0; i < Constants.GravityTicksPerStep - 1; i++)
+        {
+            sim.Tick(InputCommand.None);
+        }
+
+        // Assert
+        Assert.Equal(initialOrigin, sim.ActivePiece!.Origin);
+
+        sim.Tick(InputCommand.None);
+        Assert.Equal(initialOrigin.Y - 1, sim.ActivePiece!.Origin.Y);
+    }
+
+    [Fact]
+    public void Simulation_SoftDrop_Moves_One_Cell_Per_Tick()
+    {
+        // Arrange
+        var sim = new Simulation(CreateTestLevel(), new Pcg32(1));
+        Int3 initialOrigin = sim.ActivePiece!.Origin;
+
+        // Act
+        sim.Tick(InputCommand.SoftDrop);
+
+        // Assert
+        Assert.Equal(initialOrigin.Y - 1, sim.ActivePiece!.Origin.Y);
+    }
+
+    [Fact]
     public void Simulation_HardDrop_Locks_Piece_And_Respawns()
     {
         // Arrange

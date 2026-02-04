@@ -55,6 +55,14 @@ public sealed class Simulation
 
     internal bool HoldUsedThisDrop { get; private set; }
 
+    internal int LockDelayTicksRemaining { get; private set; }
+
+    internal int LockResetCount { get; private set; }
+
+    internal bool LockDelayActive { get; private set; }
+
+    internal int GravityTicksRemaining { get; private set; }
+
     internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
 
     internal ulong RandomState => _random is IRandomState state
@@ -102,12 +110,16 @@ public sealed class Simulation
 
         _ticksElapsed++;
 
+        bool wasGrounded = IsGrounded();
         GravityDirection previousGravity = _movement.Gravity;
+        ActivePiece? pieceBeforeInput = ActivePiece;
 
         // 1. Apply Input
         InputApplyResult inputResult = command == InputCommand.Hold
             ? ApplyHold()
             : _movement.ProcessInput(command);
+
+        bool pieceSwapped = pieceBeforeInput != ActivePiece;
 
         // Immediate Tilt Resolve if world rotation was accepted
         if (inputResult.Accepted && IsWorldRotation(command))
@@ -130,14 +142,34 @@ public sealed class Simulation
         // If hard drop was requested, movement already happened in ProcessInput
         bool lockRequested = inputResult.LockRequested;
 
-        if (!lockRequested && IsGravityTick())
+        if (pieceSwapped)
         {
-            // Apply natural gravity or soft drop (which is just extra gravity ticks)
-            bool gravityMoved = _movement.ApplyGravityStep();
-            if (!gravityMoved)
-            {
-                lockRequested = true;
-            }
+            wasGrounded = false;
+        }
+
+        bool isGroundedAfterInput = IsGrounded();
+        if (wasGrounded && !isGroundedAfterInput && !pieceSwapped)
+        {
+            HandleUngroundedTransition();
+        }
+
+        bool softDropRequested = command == InputCommand.SoftDrop && inputResult.Accepted;
+
+        if (!lockRequested && softDropRequested)
+        {
+            ResetGravityTimer();
+        }
+
+        if (!lockRequested && !softDropRequested && IsGravityTick())
+        {
+            // Apply natural gravity
+            _ = _movement.ApplyGravityStep();
+        }
+
+        bool isGroundedAfterGravity = IsGrounded();
+        if (!lockRequested)
+        {
+            lockRequested = UpdateLockDelay(isGroundedAfterGravity);
         }
 
         // 3. Resolve Phase (only if locked)
@@ -278,6 +310,8 @@ public sealed class Simulation
             HoldUsedThisDrop = false;
         }
 
+        ResetDropState();
+
         PieceDefinition def = PieceLibrary.Get(entry.PieceId);
         OrientedPiece oriented = new(entry.PieceId, def.UniqueOrientations[0], 0);
 
@@ -340,7 +374,21 @@ public sealed class Simulation
                    InputCommand.RotateWorldLeft or
                    InputCommand.RotateWorldRight;
 
-    private static bool IsGravityTick() => false;
+    private bool IsGravityTick()
+    {
+        if (GravityTicksRemaining > 0)
+        {
+            GravityTicksRemaining--;
+        }
+
+        if (GravityTicksRemaining > 0)
+        {
+            return false;
+        }
+
+        ResetGravityTimer();
+        return true;
+    }
 
     private InputApplyResult ApplyHold()
     {
@@ -432,6 +480,56 @@ public sealed class Simulation
         }
 
         _ = WaterSolver.Settle(Grid, _movement.Gravity, thawed, blockedCells);
+    }
+
+    private bool IsGrounded() =>
+        ActivePiece is not null && !ActivePiece.CanAdvance(Grid, _movement.Gravity);
+
+    private void ResetDropState()
+    {
+        LockDelayTicksRemaining = Constants.LockDelayTicks;
+        LockResetCount = 0;
+        LockDelayActive = false;
+        ResetGravityTimer();
+    }
+
+    private void ResetGravityTimer() =>
+        GravityTicksRemaining = Constants.GravityTicksPerStep;
+
+    private void HandleUngroundedTransition()
+    {
+        if (LockResetCount < Constants.MaxLockResets)
+        {
+            LockResetCount++;
+            LockDelayTicksRemaining = Constants.LockDelayTicks;
+        }
+
+        LockDelayActive = false;
+    }
+
+    private bool UpdateLockDelay(bool isGrounded)
+    {
+        if (!isGrounded)
+        {
+            LockDelayActive = false;
+            return false;
+        }
+
+        if (!LockDelayActive)
+        {
+            LockDelayActive = true;
+            if (LockDelayTicksRemaining <= 0)
+            {
+                LockDelayTicksRemaining = Constants.LockDelayTicks;
+            }
+        }
+
+        if (LockDelayTicksRemaining > 0)
+        {
+            LockDelayTicksRemaining--;
+        }
+
+        return LockDelayTicksRemaining <= 0;
     }
 
     private sealed record FreezeRequest(IReadOnlyList<Int3> Targets, int DurationResolves);
