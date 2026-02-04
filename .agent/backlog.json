@@ -1162,8 +1162,9 @@
       "epic": "E1",
       "milestone": "M4",
       "title": "Core: piece bag draw (FIXED_SEQUENCE/WEIGHTED) + bag token parsing",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-04T19:55:14Z",
+      "doneAt": "2026-02-04T20:11:54Z",
       "dependsOn": [
         "FL-0113"
       ],
@@ -1190,7 +1191,8 @@
         "notes": [
           "Implemented deterministic piece bag (fixed/weighted) with material tokens and peek via cloneable RNG.",
           "Determinism hash version bumped to 0.1.1 to include active piece material.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/49"
+          "PR: https://github.com/Mental-NV/Floodline/pull/49",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/49"
         ]
       }
     },
