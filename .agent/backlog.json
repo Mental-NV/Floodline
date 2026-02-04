@@ -1339,7 +1339,8 @@
             "Anchored state stored on Voxel (Anchored flag) with temporary stabilize timers tracked per-position and decremented only on successful world rotations.",
             "Reinforced material anchors permanently on lock; stabilize anchors expire after Constants.StabilizeAnchorRotations (2) rotations.",
             "Bumped determinism hash version to 0.1.5 to include anchored voxels and stabilize timers/state.",
-            "Inspected Voxel/SolidSettler/PieceBag/InputCommand to implement anchored settling and Stabilize input despite requirementRef only listing spec."
+            "Inspected Voxel/SolidSettler/PieceBag/InputCommand to implement anchored settling and Stabilize input despite requirementRef only listing spec.",
+            "PR: https://github.com/Mental-NV/Floodline/pull/53"
           ]
         }
       },
