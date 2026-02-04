@@ -16,6 +16,7 @@ public sealed class Simulation
     private readonly Level _level;
     private readonly IRandom _random;
     private readonly MovementController _movement;
+    private readonly PieceBag _bag;
     private readonly Dictionary<Int3, DrainConfig> _drainConfigs = [];
     private readonly IceTracker _iceTracker = new();
     private readonly List<FreezeRequest> _pendingFreezes = [];
@@ -67,6 +68,7 @@ public sealed class Simulation
         _random = random ?? throw new ArgumentNullException(nameof(random));
         Grid = new Grid(level.Bounds);
         _movement = new MovementController(Grid, level.Rotation);
+        _bag = new PieceBag(level.Bag, _random);
 
         // 1. Initial voxels
         foreach (VoxelData voxelData in level.InitialVoxels)
@@ -176,7 +178,7 @@ public sealed class Simulation
                     displacedWater.Add(pos);
                 }
 
-                Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, null));
+                Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, ActivePiece.MaterialId));
             }
         }
 
@@ -259,17 +261,15 @@ public sealed class Simulation
 
     private void SpawnNextPiece()
     {
-        // TODO (FL-0105/bag logic): For now, pick a piece from the library based on random
-        // In M1, we just need a functioning spawning loop.
-        PieceId nextId = _random.NextChoice((PieceId[])Enum.GetValues(typeof(PieceId)));
-        PieceDefinition def = PieceLibrary.Get(nextId);
-        OrientedPiece oriented = new(nextId, def.UniqueOrientations[0], 0);
+        BagEntry next = _bag.DrawNext();
+        PieceDefinition def = PieceLibrary.Get(next.PieceId);
+        OrientedPiece oriented = new(next.PieceId, def.UniqueOrientations[0], 0);
 
         // Spawn at top-middle
         Int3 spawnPos = new(_level.Bounds.X / 2, _level.Bounds.Y - 1, _level.Bounds.Z / 2);
 
         // Reset movement controller with new piece
-        _movement.CurrentPiece = new ActivePiece(oriented, spawnPos);
+        _movement.CurrentPiece = new ActivePiece(oriented, spawnPos, next.MaterialId);
 
         // check immediate collision (overflow)
         if (!IsPlacementValid(spawnPos, oriented.Voxels))

@@ -1162,11 +1162,13 @@
       "epic": "E1",
       "milestone": "M4",
       "title": "Core: piece bag draw (FIXED_SEQUENCE/WEIGHTED) + bag token parsing",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-04T19:55:14Z",
+      "doneAt": "2026-02-04T20:11:54Z",
       "dependsOn": [
         "FL-0113"
       ],
-      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#12-rng-bags-and-hold",
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#12-rng-bags-and-hold; /src/Floodline.Core/Simulation.cs; /src/Floodline.Core/SimulationState.cs; /src/Floodline.Core/Levels/Level.cs; /src/Floodline.Core/Levels/LevelConfigs.cs; /src/Floodline.Core/Levels/LevelLoader.cs; /src/Floodline.Core/PieceLibrary.cs; /src/Floodline.Core/PieceInfo.cs; /src/Floodline.Core/PieceBag.cs; /src/Floodline.Core/Random/RandomExtensions.cs; /src/Floodline.Core/Random/IRandom.cs; /src/Floodline.Core/Random/IRandomCloneable.cs; /src/Floodline.Core/Random/Pcg32.cs; /src/Floodline.Core/Movement/ActivePiece.cs; /src/Floodline.Core/Movement/MovementController.cs; /src/Floodline.Core/Voxel.cs; /tests/Floodline.Core.Tests/SimulationTests.cs; /tests/Floodline.Core.Tests/BagTests.cs",
       "rationale": "Campaign levels depend on deterministic piece supply. Current Simulation spawns random Enum values and ignores level.bag, making content authoring and solutions impossible.",
       "sizeHint": "L",
       "deliverables": [
@@ -1181,8 +1183,17 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4",
+          "git push -u origin feat/FL-0412-bag",
+          "gh pr create --title \"FL-0412: deterministic piece bag\" --body \"## Summary\n- implement fixed/weighted bag draws with material tokens\n- add bag preview via RNG clone and tests\n- propagate material ids into active piece, voxels, and determinism hash\n\n## Testing\n- powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4\""
+        ],
+        "notes": [
+          "Implemented deterministic piece bag (fixed/weighted) with material tokens and peek via cloneable RNG.",
+          "Determinism hash version bumped to 0.1.1 to include active piece material.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/49",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/49"
+        ]
       }
     },
     {

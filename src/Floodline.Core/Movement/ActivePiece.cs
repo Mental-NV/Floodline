@@ -6,7 +6,8 @@ namespace Floodline.Core.Movement;
 /// </summary>
 /// <param name="piece">The oriented piece definition.</param>
 /// <param name="origin">The initial origin position.</param>
-public sealed class ActivePiece(OrientedPiece piece, Int3 origin)
+/// <param name="materialId">Optional material identifier for the piece.</param>
+public sealed class ActivePiece(OrientedPiece piece, Int3 origin, string? materialId = null)
 {
     /// <summary>
     /// Gets the oriented piece definition (shape and voxels).
@@ -17,6 +18,11 @@ public sealed class ActivePiece(OrientedPiece piece, Int3 origin)
     /// Gets or sets the origin position of the piece in grid coordinates.
     /// </summary>
     public Int3 Origin { get; private set; } = origin;
+
+    /// <summary>
+    /// Gets the material identifier for the piece.
+    /// </summary>
+    public string? MaterialId { get; } = materialId;
 
     /// <summary>
     /// Gets the absolute world positions of all voxels in the piece.
