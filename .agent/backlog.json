@@ -1560,10 +1560,10 @@
       "rationale": "Winnability proofs depend on a canonical, documented solution format and a deterministic runner. Defining this up front prevents ambiguity and CI friction during autonomous level authoring.",
       "sizeHint": "M",
       "deliverables": [
-        "Document the campaign solution format and location in docs/content/Content_Pack_v0_2.md (fields, tick-only inputs, naming, required metadata)",
-        "Add a committed template solution file under /levels/solutions with placeholder metadata and example inputs",
-        "CLI runner: run a level with a solution file and fail with actionable errors on invalid format or non-win result",
-        "Document the CLI command and expected output/error behavior alongside the format"
+        "Document that campaign solutions are replay files and define location/naming (e.g., /levels/solutions/{levelId}.replay.json) in docs/content/Content_Pack_v0_2.md; tie to replay schema version and tick-only inputs",
+        "Add a committed template replay solution file under /levels/solutions with placeholder metadata and example inputs",
+        "CLI runner: run a level with its replay solution (reuse replay parser) and fail with actionable errors on invalid replay format or non-win result",
+        "Document the CLI command and expected output/error behavior alongside the replay-based format"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
@@ -1591,10 +1591,10 @@
       "rationale": "Autonomous level authoring must be mechanically verifiable. Requiring a committed solution per level lets CI prove each level is winnable and prevents content regressions.",
       "sizeHint": "M",
       "deliverables": [
-        "Define per-level solution convention (e.g., /levels/solutions/{levelId}.inputs.txt or replay) and document it alongside campaign authoring conventions",
-        "Add CLI and/or script support to run a level with its solution and assert Status=Won, producing actionable failures on mismatch",
-        "scripts/ci.ps1: add -CampaignSolutions switch that enumerates campaign manifest levels and runs each solution in Release, failing if any level does not reach Won",
-        "Unit tests: at least one harness test that validates solution discovery and reports missing solution file paths clearly"
+        "Define per-level solution convention as replay files at /levels/solutions/{levelId}.replay.json (or .replay) and document it alongside campaign authoring conventions",
+        "Add CLI and/or script support to run a level with its replay solution and assert Status=Won, producing actionable failures on mismatch",
+        "scripts/ci.ps1: add -CampaignSolutions switch that enumerates campaign manifest levels and runs each replay solution in Release, failing if any level does not reach Won",
+        "Unit tests: at least one harness test that validates replay solution discovery and reports missing replay file paths clearly"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
