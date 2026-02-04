@@ -54,21 +54,12 @@ Step 3 — Implement + verify
 Step 4 — Publishing
 - Only if gates pass on the branch:
   - Commit implementation: “FL-XXXX: <short title>”.
-  - Push branch + open Draft PR.
-  - Set backlog status=InReview; append evidence (PR link + CI summary).
-- Hard rule: immediately proceed to Step 5 (no skipping).
-
-Step 5 — Self-review / self-refinement
-1) Re-Read the 8 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog).
-2) Self-review the diff for spec compliance and test coverage:
-   - If small fixes needed: fix in place (push commits), re-run gates, repeat Step 5.
-   - If massive / scope-expanding: keep this PR scoped and create follow-up FU-XXXX with `requirementRef`.
-     - If high priority, assign current/next available numeric ID.
-   - If compliant: comment “Self-review complete; auto-merging.”
+  - Push branch + open PR.
+  - Set backlog status=InReview; append evidence (PR link).
 
 Step 6 — Close PR (merge) + Done + Next
-- When CI is green and self-review is compliant:
-  - Finalize backlog on PR branch: set status=Done; set doneAt; append final evidence.
+- After publishing:
+  - Finalize backlog on PR branch: set status=Done; set doneAt; append final evidence (PR link).
   - Merge PR (closing it) and delete branch.
   - Sync main and continue with the next backlog item (loop to Step 1).
 

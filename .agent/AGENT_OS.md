@@ -261,37 +261,18 @@ Prohibitions:
 
 ### Step 4 — Publishing (PR open)
 Only if gates are satisfied on the branch:
-- Ensure implementation commit exists on a feature branch:
-  - `FL-XXXX: <short title>`
-- Push branch and open a PR as **Draft** (not ready yet).
-- Transition backlog item to `status=InReview` and append evidence:
-  - PR link
-  - CI run link(s) / summary
-
-**Hard rule:** after opening the PR, you MUST immediately do Step 5 before merging.
-
-### Step 5 — Self-review and self-refinement (autonomous)
-- Checklist (verify each):
-- PR is **Ready** (not Draft) after self-review comment is posted.
-- Validation commands run exactly; results recorded in backlog evidence.
-- Evidence includes PR link + CI summary; timestamps are UTC `Z` and consistent with status.
-- Lock files unchanged unless required; if changed, locked restore was used.
-- No unintended encoding/line-ending churn; scope matches `requirementRef` only.
-- Re-Read the 8 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog).
-- Self-review the diff vs. specs + gates:
-  - If non-compliant and fix is small: fix in place (push commits to same PR), re-run gates, repeat Step 5.
-  - If non-compliant and fix is large / scope-expanding: keep this PR scoped and create follow-up item `FU-XXXX`.
-    - If high priority, assign current/next available numeric ID so “lowest ID first” picks it next.
-    - Follow-up MUST include `requirementRef` to violated spec sections + evidence explaining the gap.
-  - If compliant: convert PR to **Ready** and comment:
-    - “Self-review complete; auto-merging.”
+  - Ensure implementation commit exists on a feature branch:
+    - `FL-XXXX: <short title>`
+  - Push branch and open a PR.
+  - Transition backlog item to `status=InReview` and append evidence:
+    - PR link
 
 ### Step 6 — Close PR (merge) + Done + Next
-Only when self-review is compliant, PR is **Ready** (not Draft), AND CI is green:
+After publishing:
 - On the PR branch, make a final commit that updates backlog:
   - set `status=Done`
   - set `doneAt` (UTC ISO 8601)
-  - append final evidence (PR link + CI + “self-review pass”)
+  - append final evidence (PR link)
 - Merge the PR (this closes it) and delete the branch.
 - Sync local `main` to `origin/main` and re-run preflight/CI if required by gates.
 - Return to Step 1 and continue with the next backlog item.
