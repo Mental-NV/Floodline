@@ -1468,8 +1468,9 @@
       "epic": "E1",
       "milestone": "M4",
       "title": "Core: Freeze ability + Drain placement (charges + replay encoding)",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-04T22:46:15Z",
+      "doneAt": "2026-02-04T23:20:24Z",
       "dependsOn": [
         "FL-0420",
         "FL-0415",
@@ -1497,7 +1498,8 @@
           "First ci.ps1 run failed in FreezeDrainAbilityTests due to water movement in adjacency checks; adjusted tests to use landing origin and assert non-ice for non-target cells.",
           "Assumption: drain placement pivot column is ActivePiece.Origin (origin offset (0,0,0) is the pivot).",
           "User-requested: updated AGENT_OS and MISSION_PROMPT execution loop to auto-resume after interruptions.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/57"
+          "PR: https://github.com/Mental-NV/Floodline/pull/57",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/57"
         ]
       }
     },
