@@ -1201,8 +1201,9 @@
       "epic": "E1",
       "milestone": "M4",
       "title": "Core: Hold (once per drop) + replay/determinism updates",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-04T20:22:00Z",
+      "doneAt": "2026-02-04T20:30:58Z",
       "dependsOn": [
         "FL-0412"
       ],
@@ -1228,7 +1229,8 @@
         "notes": [
           "Implemented hold slot with once-per-drop rule and orientation reset on swap.",
           "Replay format bumped to 0.1.1 / command-v1; determinism hash bumped to 0.1.2 including hold state.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/50"
+          "PR: https://github.com/Mental-NV/Floodline/pull/50",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/50"
         ]
       }
     },
