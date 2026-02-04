@@ -1508,7 +1508,8 @@
       "epic": "E2",
       "milestone": "M4",
       "title": "Golden suite: Hold (once per drop) determinism",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-04T23:21:45Z",
       "dependsOn": [
         "FL-0413",
         "FL-0200"
