@@ -173,7 +173,25 @@ if ($Replay) {
 
 # Placeholder gates (fail fast until implemented)
 if ($ValidateLevels) {
-  throw "-ValidateLevels is not implemented yet. Implement campaign validation first (see backlog FL-0402)."
+  $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  $cliProject = Join-Path $repoRoot "src\Floodline.Cli\Floodline.Cli.csproj"
+  $campaignPath = Join-Path $repoRoot "levels\campaign.v0.2.0.json"
+
+  if (-not (Test-Path $cliProject)) { throw "CLI project not found: $cliProject" }
+
+  $validateArgs = @(
+    "run",
+    "--project", $cliProject,
+    "--configuration", $Configuration,
+    "--no-build",
+    "--",
+    "--validate-campaign",
+    "--campaign", $campaignPath
+  )
+
+  $validateOutput = RunDotnet $validateArgs
+  $validateJoined = $validateOutput -join [Environment]::NewLine
+  Write-Host $validateJoined
 }
 
 if ($CampaignSolutions) {

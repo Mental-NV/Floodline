@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "id": "campaign-mvp",
+    "title": "MVP Campaign",
+    "schemaVersion": "0.2.1"
+  },
+  "levels": [
+    {
+      "id": "minimal",
+      "path": "levels/minimal_level.json"
+    }
+  ]
+}

@@ -133,6 +133,50 @@ public class CliAppTests
         Assert.Contains(result.Errors, error => error.RuleId == ruleId && error.JsonPointer == jsonPointer);
     }
 
+    [Fact]
+    public void CampaignValidator_Returns_Error_For_Missing_Campaign_File()
+    {
+        string missingPath = TestPaths.GetLevelPath($"missing-campaign-{Guid.NewGuid()}.json");
+
+        LevelValidationResult result = CampaignValidator.ValidateFile(missingPath);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.RuleId == "io.campaign_not_found" && error.FilePath == missingPath);
+    }
+
+    [Fact]
+    public void CampaignValidator_Returns_Error_For_Missing_Level_File()
+    {
+        string campaignPath = TestPaths.GetCliFixturePath("invalid_campaign_missing_level.json");
+
+        LevelValidationResult result = CampaignValidator.ValidateFile(campaignPath);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(
+            result.Errors,
+            error => error.RuleId == "campaign.level_not_found" &&
+                     error.FilePath == campaignPath &&
+                     error.JsonPointer == "#/levels/0/path");
+    }
+
+    [Fact]
+    public void CampaignValidator_Returns_Level_Errors_For_Invalid_Level()
+    {
+        string campaignPath = TestPaths.GetCliFixturePath("invalid_campaign_invalid_level.json");
+        string levelPath = TestPaths.GetCliFixturePath("invalid_level_missing_meta.json");
+
+        LevelValidationResult result = CampaignValidator.ValidateFile(campaignPath);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(
+            result.Errors,
+            error => string.Equals(
+                         Path.GetFullPath(error.FilePath),
+                         Path.GetFullPath(levelPath),
+                         StringComparison.OrdinalIgnoreCase) &&
+                     error.RuleId.StartsWith("schema.", StringComparison.Ordinal));
+    }
+
     private static string ExtractHash(string output)
     {
         foreach (string line in output.Split(Environment.NewLine))

@@ -29,10 +29,12 @@ public static class CliApp
 
         string? levelPath = null;
         string? inputsPath = null;
+        string? campaignPath = null;
         string? recordPath = null;
         string? replayPath = null;
         int? ticks = null;
         bool validateOnly = false;
+        bool validateCampaign = false;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -52,6 +54,13 @@ public static class CliApp
                     if (!TryReadValue(args, ref i, out inputsPath))
                     {
                         return Fail(error, "Missing value for --inputs.");
+                    }
+
+                    break;
+                case "--campaign":
+                    if (!TryReadValue(args, ref i, out campaignPath))
+                    {
+                        return Fail(error, "Missing value for --campaign.");
                     }
 
                     break;
@@ -86,9 +95,44 @@ public static class CliApp
                 case "--validate":
                     validateOnly = true;
                     break;
+                case "--validate-campaign":
+                case "--validate-levels":
+                    validateCampaign = true;
+                    break;
                 default:
                     return Fail(error, $"Unknown argument '{arg}'.");
             }
+        }
+
+        if (validateCampaign)
+        {
+            if (validateOnly)
+            {
+                return Fail(error, "--validate-campaign cannot be combined with --validate.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(levelPath) ||
+                !string.IsNullOrWhiteSpace(inputsPath) ||
+                !string.IsNullOrWhiteSpace(recordPath) ||
+                !string.IsNullOrWhiteSpace(replayPath) ||
+                ticks.HasValue)
+            {
+                return Fail(error, "--validate-campaign cannot be combined with --level, --inputs, --ticks, --record, or --replay.");
+            }
+
+            LevelValidationResult validation = CampaignValidator.ValidateFile(campaignPath);
+            if (!validation.IsValid)
+            {
+                foreach (LevelValidationError validationError in validation.Errors)
+                {
+                    error.WriteLine($"{validationError.FilePath}:{validationError.JsonPointer} [{validationError.RuleId}] {validationError.Message}");
+                }
+
+                return 2;
+            }
+
+            output.WriteLine("Campaign validation OK");
+            return 0;
         }
 
         if (string.IsNullOrWhiteSpace(levelPath))
@@ -365,14 +409,17 @@ public static class CliApp
         output.WriteLine("Usage:");
         output.WriteLine("  Floodline.Cli --level <path> [--inputs <path>] [--ticks <count>] [--record <path>]");
         output.WriteLine("  Floodline.Cli --level <path> --replay <path>");
+        output.WriteLine("  Floodline.Cli --validate-campaign [--campaign <path>]");
         output.WriteLine();
         output.WriteLine("Options:");
         output.WriteLine("  --level, -l     Path to level JSON file.");
         output.WriteLine("  --inputs, -i    Path to input script (one command per line).");
+        output.WriteLine("  --campaign      Path to campaign JSON file (defaults to levels/campaign.v0.2.0.json).");
         output.WriteLine("  --record        Write a replay file for the run.");
         output.WriteLine("  --replay        Replay from a replay file (ignores --inputs/--ticks).");
         output.WriteLine("  --ticks, -t     Total ticks to simulate (defaults to number of input commands).");
         output.WriteLine("  --validate      Validate the level JSON and exit.");
+        output.WriteLine("  --validate-campaign  Validate campaign JSON and referenced levels.");
         output.WriteLine("  --help, -h      Show this help.");
     }
 

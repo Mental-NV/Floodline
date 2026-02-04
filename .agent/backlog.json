@@ -1069,9 +1069,12 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
       ],
       "evidence": {
-        "commandsRun": [],
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+        ],
         "notes": [
-          "Blocked: requirementRef points only to /docs/specs/Simulation_Rules_v0_2.md#objectives; AGENT_OS rule forbids opening other files, but implementing semantic validation requires LevelValidator and schema code. Options: (1) update FL-0411 requirementRef to include validator/source file paths; (2) amend AGENT_OS rule to allow opening code files needed to implement an item. Recommendation: update FL-0411 requirementRef to include the validator code paths."
+          "Blocked: requirementRef points only to /docs/specs/Simulation_Rules_v0_2.md#objectives; AGENT_OS rule forbids opening other files, but implementing semantic validation requires LevelValidator and schema code. Options: (1) update FL-0411 requirementRef to include validator/source file paths; (2) amend AGENT_OS rule to allow opening code files needed to implement an item. Recommendation: update FL-0411 requirementRef to include the validator code paths.",
+          "Implemented campaign validation entrypoint (CLI + validator), added default campaign manifest, and wired -ValidateLevels gate; CI M4 ValidateLevels passed."
         ]
       }
     },

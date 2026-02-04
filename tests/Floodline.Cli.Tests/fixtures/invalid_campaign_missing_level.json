@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "id": "campaign-missing-level",
+    "title": "Campaign Missing Level",
+    "schemaVersion": "0.2.1"
+  },
+  "levels": [
+    {
+      "id": "missing-level",
+      "path": "levels/does_not_exist.json"
+    }
+  ]
+}

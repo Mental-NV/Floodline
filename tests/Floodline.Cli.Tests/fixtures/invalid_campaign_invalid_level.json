@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "id": "campaign-invalid-level",
+    "title": "Campaign Invalid Level",
+    "schemaVersion": "0.2.1"
+  },
+  "levels": [
+    {
+      "id": "invalid-level",
+      "path": "tests/Floodline.Cli.Tests/fixtures/invalid_level_missing_meta.json"
+    }
+  ]
+}
