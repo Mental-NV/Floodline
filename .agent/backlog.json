@@ -1418,7 +1418,8 @@
           "First ci.ps1 run failed due to IDE0004 (redundant cast). Fixed.",
           "Second ci.ps1 run failed due to WindHazard_Stops_On_Collision and IDE0022 formatting. Fixed tests and expression-bodied methods.",
           "Wind: skip gust application when hard drop requests lock to avoid post-lock lateral shifts.",
-          "Wind: RANDOM_SEEDED selects East/West only; first enabled WIND_GUST hazard is used."
+          "Wind: RANDOM_SEEDED selects East/West only; first enabled WIND_GUST hazard is used.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/55"
         ]
       }
     },
