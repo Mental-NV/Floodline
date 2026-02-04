@@ -1182,8 +1182,13 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "notes": [
+          "Implemented deterministic piece bag (fixed/weighted) with material tokens and peek via cloneable RNG.",
+          "Determinism hash version bumped to 0.1.1 to include active piece material."
+        ]
       }
     },
     {

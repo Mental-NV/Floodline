@@ -5,7 +5,7 @@ namespace Floodline.Core.Random;
 /// This generator is strictly deterministic based on the provided seed.
 /// See: https://www.pcg-random.org/
 /// </summary>
-public sealed class Pcg32 : IRandom, IRandomState
+public sealed class Pcg32 : IRandom, IRandomState, IRandomCloneable
 {
     // State for PCG-XSH-RR
     public ulong State { get; private set; }
@@ -24,6 +24,18 @@ public sealed class Pcg32 : IRandom, IRandomState
         State += seed;
         Step();
     }
+
+    private Pcg32(ulong state, bool useState)
+    {
+        _ = useState;
+        State = state;
+    }
+
+    /// <summary>
+    /// Creates a new generator from an existing internal state.
+    /// </summary>
+    /// <param name="state">The internal state to copy.</param>
+    public static Pcg32 FromState(ulong state) => new(state, useState: true);
 
     private void Step() => State = (State * 6364136223846793005UL) + Inc;
 
@@ -79,4 +91,7 @@ public sealed class Pcg32 : IRandom, IRandomState
             }
         }
     }
+
+    /// <inheritdoc/>
+    public IRandom Clone() => FromState(State);
 }

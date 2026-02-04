@@ -179,7 +179,7 @@ public class SimulationTests
         Assert.Equal(OccupancyType.Empty, sim.Grid.GetVoxel(new Int3(blockedCell.X, blockedCell.Y, 0)).Type);
     }
 
-    private sealed class FixedRandom(int value) : IRandom, IRandomState
+    private sealed class FixedRandom(int value) : IRandom, IRandomState, IRandomCloneable
     {
         private readonly int _value = value;
 
@@ -190,6 +190,8 @@ public class SimulationTests
         public int NextInt(int max) => Clamp(_value, 0, max - 1);
 
         public int NextInt(int min, int max) => Clamp(_value, min, max - 1);
+
+        public IRandom Clone() => new FixedRandom(_value);
 
         private static int Clamp(int value, int min, int max)
         {
