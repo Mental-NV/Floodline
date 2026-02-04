@@ -603,6 +603,14 @@
         "drainPlacement": {
           "$ref": "#/$defs/drainConfig"
         }
+      },
+      "dependentRequired": {
+        "freezeCharges": [
+          "freezeDurationResolves"
+        ],
+        "drainPlacementCharges": [
+          "drainPlacement"
+        ]
       }
     },
     "constraintsConfig": {

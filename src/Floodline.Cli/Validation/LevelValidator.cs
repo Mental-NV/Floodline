@@ -9,7 +9,7 @@ namespace Floodline.Cli.Validation;
 
 public static class LevelValidator
 {
-    private const string DefaultSchemaVersion = "0.2.1";
+    private const string DefaultSchemaVersion = "0.2.2";
     private const int RepoSearchDepth = 12;
     private static readonly HashSet<string> AllowedGravityDirections = new(StringComparer.OrdinalIgnoreCase)
     {

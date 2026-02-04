@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "invalid-drain-missing-config",
+    "title": "Invalid Drain Missing Config",
+    "schemaVersion": "0.2.2",
+    "seed": 1
+  },
+  "bounds": {
+    "x": 6,
+    "y": 6,
+    "z": 6
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": {
+        "height": 0
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0,
+    "drainPlacementCharges": 1
+  },
+  "constraints": {}
+}

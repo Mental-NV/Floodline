@@ -133,6 +133,19 @@ public class CliAppTests
         Assert.Contains(result.Errors, error => error.RuleId == ruleId && error.JsonPointer == jsonPointer);
     }
 
+    [Theory]
+    [InlineData("invalid_abilities_freeze_missing_duration.json", "schema.dependentRequired", "/abilities")]
+    [InlineData("invalid_abilities_drain_missing_config.json", "schema.dependentRequired", "/abilities")]
+    public void LevelValidator_Returns_Schema_Errors(string fixture, string ruleId, string jsonPointer)
+    {
+        string levelPath = TestPaths.GetCliFixturePath(fixture);
+
+        LevelValidationResult result = LevelValidator.ValidateFile(levelPath);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.RuleId == ruleId && error.JsonPointer == jsonPointer);
+    }
+
     [Fact]
     public void CampaignValidator_Returns_Error_For_Missing_Campaign_File()
     {

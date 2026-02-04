@@ -250,7 +250,8 @@ After all drains processed:
 Freeze converts water into temporary support.
 
 ### 8.1 Freeze action
-Freeze targets a set of water cells (selection method is UI/ability-specific):
+Freeze targets a set of water cells based on the armed-on-lock ability:
+- When a `FreezeAbility`-armed piece locks, target all `WATER` cells in `freezeScope` around the locking piece voxels.
 - Each targeted `WATER` cell becomes `ICE`
 - ICE duration: `T` resolves (integer), decremented after each resolve
 

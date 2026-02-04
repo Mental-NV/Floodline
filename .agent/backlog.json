@@ -1448,8 +1448,16 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "notes": [
+          "First ci.ps1 run failed due to schema error expectations in new fixtures; adjusted schema dependency and test rule IDs.",
+          "Second ci.ps1 run failed due to dependentRequired ruleId mismatch; updated test expectations.",
+          "Assumption: default input bindings set to Freeze=B and Drain placement=N."
+        ]
       }
     },
     {

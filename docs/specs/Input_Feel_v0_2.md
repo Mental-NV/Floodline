@@ -28,11 +28,13 @@ Actions are sampled each tick and applied in canonical order:
 1. **World rotate** (snap 90°) if pressed and allowed.  
    - On success, immediately execute a **Tilt Resolve** for the settled world (locked solids + water) under the new gravity.  
    - The active piece remains controllable and is treated as an immovable obstacle during Tilt Resolve.
-2. **Stabilize ability** (if available) — arms the current active piece to anchor on lock (see §7).
+2. **Ability actions** (if available) � `Stabilize`, `FreezeAbility`, `DrainPlacementAbility` arm or disarm the current active piece for on-lock effects (see Simulation Rules �9).
 3. **Piece rotate** (local rotation) if pressed.
 4. **Piece move** (horizontal translate) via hold-repeat.
 5. **Soft drop** (accelerate gravity step rate).
 6. **Hard drop** (immediate place+lock).
+
+Ability actions are discrete; pressing again before lock disarms the action (no charge refund).
 
 If multiple inputs of the same class occur, apply in the order they were received this tick (or by fixed priority).
 
@@ -131,6 +133,8 @@ On spawn, camera recenters to keep the active piece and the top of the structure
   - Tilt forward/back: 1 / 2
   - Tilt left/right: 3 / 4
 - Stabilize (ability): V (if level enables)
+- Freeze (ability): B (if level enables)
+- Drain placement (ability): N (if level enables)
 - Camera snap: F1–F4
 
 (Rebinding supported via Unity Input System.)

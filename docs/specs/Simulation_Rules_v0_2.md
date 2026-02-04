@@ -318,7 +318,7 @@ When timer expires:
 - water settle is executed.
 
 ### 9.3 Freeze ability (MVP input/targeting)
-Freeze is an **armed-on-lock** ability (see Input model in this spec).
+Freeze is an **armed-on-lock** ability (see Input_Feel_v0_2.md §2).
 
 **Activation:**
 - A `FreezeAbility` input arms the current active piece if `freezeCharges > 0`.
