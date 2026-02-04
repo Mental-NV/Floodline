@@ -1373,6 +1373,125 @@
       }
     },
     {
+      "id": "FL-0504",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity HUD (gravity, objectives, next/hold, score/stars, timers)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0503"
+      ],
+      "requirementRef": "/docs/GDD_Core_v0_2.md#101-hud",
+      "rationale": "Implement the must-have HUD so the player can read gravity, objectives, upcoming pieces, budgets, and time-based hazards (wind) without ambiguity, while keeping Core determinism untouched.",
+      "sizeHint": "L",
+      "deliverables": [
+        "HUD scaffold: a single HUD root prefab (Canvas) with stable layout + minimal allocations per frame",
+        "Gravity display: prominent gravity arrow + label (matches current Core gravity direction)",
+        "Objectives panel: list primary objectives + per-objective progress bars/values sourced from Core objective evaluation",
+        "Score + Stars: show current score (if enabled) and current earned-star status (1/2/3), derived from GDD scoring/star rules and/or level star thresholds",
+        "Next + Hold: next piece preview (3-5) + hold slot, reflecting the bag/queue state; respect per-level toggles (hold enabled/disabled)",
+        "Rotation budget/cooldown: show remaining tilt budget and/or cooldown indicator when constrained by level config",
+        "Ability charges: drain/freeze/stabilize charges UI (only visible when the level enables the ability)",
+        "Timer widgets: (a) wind icon + countdown timer to next gust and direction arrow telegraph ≥1s before gust; (b) generic level timer widget if the schema/level defines a time pressure constraint",
+        "Wind gust feedback: short screen-space nudge when the gust triggers (per Simulation Rules telegraphing)",
+        "Feature gating: HUD hides or disables widgets that are irrelevant for the current level (e.g., no wind => no wind timer UI)",
+        "Unity PlayMode test: run a deterministic scripted scenario (or replay fixture) and assert the HUD-derived 'view model' values match expected values at selected ticks (objective progress, next/hold ids, rotation budget, wind countdown)",
+        "Non-interference rule: HUD must not write into Core simulation state; it is read-only from the Unity side"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0505",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity audio SFX integration (lock/drop/rotate/collapse/water/drain/freeze/wind)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0504"
+      ],
+      "requirementRef": "/docs/GDD_Core_v0_2.md#12-audio-direction",
+      "rationale": "Add reactive SFX to improve readability and feedback while ensuring audio never affects deterministic outcomes.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Audio system scaffold: AudioManager + lightweight event router for gameplay SFX triggers",
+        "SFX hooks (minimum set): lock, hard drop, soft drop tick (optional), piece rotate, world rotate (tilt), collapse/shift, water settle/flow (light), drain tick/remove, freeze, thaw, wind gust whoosh",
+        "Wind gust cue pairs whoosh SFX with a short screen-space nudge on trigger (presentation-only)",
+        "SFX triggering is driven by deterministic Core events/state deltas (e.g., resolved metrics deltas) and/or Unity-side presentation events (e.g., camera tilt animation start), but never feeds back into Core",
+        "Placeholder audio clips committed (or a documented stub strategy) so CI/playtests are functional without external assets",
+        "Unity test: minimal PlayMode smoke that runs a short scenario and asserts the expected SFX events were requested (spy/mock), without depending on actual audio playback"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0506",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity music integration (ambient + danger ramp)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0505"
+      ],
+      "requirementRef": "/docs/GDD_Core_v0_2.md#12-audio-direction",
+      "rationale": "Implement ambient music that ramps with danger state (near overflow / flood threshold) to match audio direction and improve player perception of risk.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Music controller that can crossfade layers or switch states (Calm -> Tension -> Danger)",
+        "Danger heuristics defined from Core-readable metrics (e.g., proximity to world height limit; water near forbidden threshold; wind imminent), with explicit, testable thresholds",
+        "No randomness that can influence gameplay (music randomness allowed only if isolated from Core and replays)",
+        "Unity PlayMode test: given a scripted sequence of metric states, assert the music state machine transitions match expected states"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0507",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity materials + lighting baseline (voxel readability, art direction)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0503"
+      ],
+      "requirementRef": "/docs/GDD_Core_v0_2.md#11-art-direction",
+      "rationale": "Lock a clean voxel look with high readability via a small, consistent material palette and lighting setup aligned to the GDD art direction.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Material palette that maps Core cell/material types to Unity materials: STANDARD (neutral), HEAVY (hazard stripe/darker), REINFORCED (metal frame), WATER (translucent with strong surface line), ICE (bright/crystalline), plus WALL/BEDROCK/DRAIN markers",
+        "Lighting baseline: simple, non-distracting environment lighting that preserves silhouette readability (no heavy post-processing required for MVP)",
+        "Scene baseline: one representative scene/prefab setup that demonstrates the intended look on a sample level; environment kept non-distracting (e.g., skybox/clouds) per GDD direction",
+        "Documentation: a short dev note describing the material mapping + lighting constraints so future work doesn’t drift",
+        "Non-interference rule: visuals must not change simulation inputs/outputs; all lighting/material choices are presentation-only"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "AI-0001",
       "epic": "AI",
       "milestone": "M0",
