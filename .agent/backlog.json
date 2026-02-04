@@ -1270,15 +1270,16 @@
           ]
         }
       },
-    {
-      "id": "FL-0415",
-      "epic": "E1",
-      "milestone": "M4",
-      "title": "Core: enforce rotation constraints (cooldown/maxRotations/tiltBudget/allowed dirs)",
-      "status": "New",
-      "dependsOn": [
-        "FL-0414"
-      ],
+      {
+        "id": "FL-0415",
+        "epic": "E1",
+        "milestone": "M4",
+        "title": "Core: enforce rotation constraints (cooldown/maxRotations/tiltBudget/allowed dirs)",
+        "status": "InProgress",
+        "startedAt": "2026-02-04T20:59:48Z",
+        "dependsOn": [
+          "FL-0414"
+        ],
       "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#3-world-rotation-snap-90",
       "rationale": "Campaign levels rely on rotation scarcity (cooldown, max rotations, tilt budget) and direction restrictions. These must be enforced deterministically in Core, not approximated in Unity.",
       "sizeHint": "M",
@@ -1288,14 +1289,22 @@
         "Unit tests for rotation rejection/acceptance and counter/budget behavior across ticks"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
-      "validation": [
-        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
-      ],
-      "evidence": {
-        "commandsRun": [],
-        "notes": []
-      }
-    },
+        "validation": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "evidence": {
+          "commandsRun": [
+            "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+          ],
+          "notes": [
+            "Implemented rotation cooldown as full-tick wait: cooldown decremented after each tick that does not accept a rotation; successful rotations set RotationCooldownRemaining to cooldownTicks.",
+            "Enforced maxRotations and tiltBudget using RotationsExecuted (incremented only on successful world rotation).",
+            "Bumped determinism hash version to 0.1.4 to include rotation cooldown state.",
+            "Inspected LevelConfigs/LevelValidator to align allowedDirections string mapping and tiltBudget constraints.",
+            "PR: https://github.com/Mental-NV/Floodline/pull/52"
+          ]
+        }
+      },
     {
       "id": "FL-0416",
       "epic": "E1",

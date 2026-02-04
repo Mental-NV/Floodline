@@ -17,6 +17,7 @@ public sealed class Simulation
     private readonly IRandom _random;
     private readonly MovementController _movement;
     private readonly PieceBag _bag;
+    private readonly HashSet<GravityDirection>? _allowedGravityDirections;
     private readonly Dictionary<Int3, DrainConfig> _drainConfigs = [];
     private readonly IceTracker _iceTracker = new();
     private readonly List<FreezeRequest> _pendingFreezes = [];
@@ -63,6 +64,8 @@ public sealed class Simulation
 
     internal int GravityTicksRemaining { get; private set; }
 
+    internal int RotationCooldownRemaining { get; private set; }
+
     internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
 
     internal ulong RandomState => _random is IRandomState state
@@ -81,6 +84,7 @@ public sealed class Simulation
         Grid = new Grid(level.Bounds);
         _movement = new MovementController(Grid, level.Rotation);
         _bag = new PieceBag(level.Bag, _random);
+        _allowedGravityDirections = BuildAllowedGravityDirections(level.Rotation);
 
         // 1. Initial voxels
         foreach (VoxelData voxelData in level.InitialVoxels)
@@ -117,7 +121,9 @@ public sealed class Simulation
         // 1. Apply Input
         InputApplyResult inputResult = command == InputCommand.Hold
             ? ApplyHold()
-            : _movement.ProcessInput(command);
+            : IsWorldRotation(command) && !CanAttemptWorldRotation(command)
+                ? new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
+                : _movement.ProcessInput(command);
 
         bool pieceSwapped = pieceBeforeInput != ActivePiece;
 
@@ -133,9 +139,11 @@ public sealed class Simulation
             }
         }
 
-        if (inputResult.Accepted && IsWorldRotation(command))
+        bool rotationAccepted = inputResult.Accepted && IsWorldRotation(command);
+        if (rotationAccepted)
         {
             RotationsExecuted++;
+            RotationCooldownRemaining = _level.Rotation.CooldownTicks ?? 0;
         }
 
         // 2. Gravity Step
@@ -186,6 +194,11 @@ public sealed class Simulation
         if (resolvedThisTick)
         {
             UpdateStatus();
+        }
+
+        if (!rotationAccepted && RotationCooldownRemaining > 0)
+        {
+            RotationCooldownRemaining--;
         }
     }
 
@@ -373,6 +386,115 @@ public sealed class Simulation
                    InputCommand.RotateWorldBack or
                    InputCommand.RotateWorldLeft or
                    InputCommand.RotateWorldRight;
+
+    private bool CanAttemptWorldRotation(InputCommand command)
+    {
+        RotationConfig rotation = _level.Rotation;
+        if (rotation.CooldownTicks is > 0 && RotationCooldownRemaining > 0)
+        {
+            return false;
+        }
+
+        if (rotation.MaxRotations is not null && RotationsExecuted >= rotation.MaxRotations.Value)
+        {
+            return false;
+        }
+
+        if (rotation.TiltBudget is not null && RotationsExecuted >= rotation.TiltBudget.Value)
+        {
+            return false;
+        }
+
+        if (!TryGetWorldRotationDirection(command, out WorldRotationDirection direction))
+        {
+            return true;
+        }
+
+        GravityDirection? nextGravity = GetRotatedGravity(direction);
+        if (nextGravity is null)
+        {
+            return false;
+        }
+
+        return _allowedGravityDirections is null || _allowedGravityDirections.Contains(nextGravity.Value);
+    }
+
+    private GravityDirection? GetRotatedGravity(WorldRotationDirection direction)
+    {
+        Matrix3x3 matrix = GravityTable.GetMatrix(direction);
+        return GravityTable.GetRotatedGravity(_movement.Gravity, matrix);
+    }
+
+    private static bool TryGetWorldRotationDirection(InputCommand command, out WorldRotationDirection direction)
+    {
+        if (command == InputCommand.RotateWorldForward)
+        {
+            direction = WorldRotationDirection.TiltForward;
+            return true;
+        }
+
+        if (command == InputCommand.RotateWorldBack)
+        {
+            direction = WorldRotationDirection.TiltBack;
+            return true;
+        }
+
+        if (command == InputCommand.RotateWorldLeft)
+        {
+            direction = WorldRotationDirection.TiltLeft;
+            return true;
+        }
+
+        if (command == InputCommand.RotateWorldRight)
+        {
+            direction = WorldRotationDirection.TiltRight;
+            return true;
+        }
+
+        direction = default;
+        return false;
+    }
+
+    private static HashSet<GravityDirection>? BuildAllowedGravityDirections(RotationConfig rotation)
+    {
+        if (rotation.AllowedDirections is null)
+        {
+            return null;
+        }
+
+        HashSet<GravityDirection> allowed = [];
+        foreach (string direction in rotation.AllowedDirections)
+        {
+            if (TryParseGravityDirection(direction, out GravityDirection parsed))
+            {
+                allowed.Add(parsed);
+            }
+        }
+
+        return allowed;
+    }
+
+    private static bool TryParseGravityDirection(string? value, out GravityDirection direction)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            direction = default;
+            return false;
+        }
+
+        string normalized = value.Trim().ToUpperInvariant();
+        direction = normalized switch
+        {
+            "DOWN" => GravityDirection.Down,
+            "NORTH" => GravityDirection.North,
+            "SOUTH" => GravityDirection.South,
+            "EAST" => GravityDirection.East,
+            "WEST" => GravityDirection.West,
+            _ => default
+        };
+
+        return normalized is "DOWN" or "NORTH" or "SOUTH" or "EAST" or "WEST";
+    }
 
     private bool IsGravityTick()
     {
