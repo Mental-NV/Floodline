@@ -1300,7 +1300,8 @@
             "Implemented rotation cooldown as full-tick wait: cooldown decremented after each tick that does not accept a rotation; successful rotations set RotationCooldownRemaining to cooldownTicks.",
             "Enforced maxRotations and tiltBudget using RotationsExecuted (incremented only on successful world rotation).",
             "Bumped determinism hash version to 0.1.4 to include rotation cooldown state.",
-            "Inspected LevelConfigs/LevelValidator to align allowedDirections string mapping and tiltBudget constraints."
+            "Inspected LevelConfigs/LevelValidator to align allowedDirections string mapping and tiltBudget constraints.",
+            "PR: https://github.com/Mental-NV/Floodline/pull/52"
           ]
         }
       },
