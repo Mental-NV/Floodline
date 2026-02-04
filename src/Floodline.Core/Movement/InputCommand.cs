@@ -94,7 +94,12 @@ public enum InputCommand
     /// <summary>
     /// Rotate the world Right (Tilt Right).
     /// </summary>
-    RotateWorldRight
+    RotateWorldRight,
+
+    /// <summary>
+    /// Stabilize ability - arm the current piece to anchor on lock.
+    /// </summary>
+    Stabilize
 }
 
 /// <summary>

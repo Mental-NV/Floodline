@@ -21,6 +21,7 @@ public sealed class Simulation
     private readonly Dictionary<Int3, DrainConfig> _drainConfigs = [];
     private readonly IceTracker _iceTracker = new();
     private readonly List<FreezeRequest> _pendingFreezes = [];
+    private readonly Dictionary<Int3, int> _stabilizeAnchorTimers = [];
     private SimulationStatus _status = SimulationStatus.InProgress;
     private long _ticksElapsed;
     private int _piecesLocked;
@@ -66,6 +67,12 @@ public sealed class Simulation
 
     internal int RotationCooldownRemaining { get; private set; }
 
+    internal bool StabilizeArmed { get; private set; }
+
+    internal int StabilizeChargesRemaining { get; private set; }
+
+    internal IReadOnlyList<AnchorTimerSnapshot> StabilizeAnchorTimers => GetStabilizeAnchorSnapshots();
+
     internal IReadOnlyList<IceTracker.IceTimerSnapshot> IceTimers => _iceTracker.GetTimersSnapshot();
 
     internal ulong RandomState => _random is IRandomState state
@@ -85,6 +92,7 @@ public sealed class Simulation
         _movement = new MovementController(Grid, level.Rotation);
         _bag = new PieceBag(level.Bag, _random);
         _allowedGravityDirections = BuildAllowedGravityDirections(level.Rotation);
+        StabilizeChargesRemaining = Math.Max(0, level.Abilities?.StabilizeCharges ?? 0);
 
         // 1. Initial voxels
         foreach (VoxelData voxelData in level.InitialVoxels)
@@ -121,9 +129,11 @@ public sealed class Simulation
         // 1. Apply Input
         InputApplyResult inputResult = command == InputCommand.Hold
             ? ApplyHold()
-            : IsWorldRotation(command) && !CanAttemptWorldRotation(command)
-                ? new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
-                : _movement.ProcessInput(command);
+            : command == InputCommand.Stabilize
+                ? ApplyStabilize()
+                : IsWorldRotation(command) && !CanAttemptWorldRotation(command)
+                    ? new InputApplyResult(Accepted: false, Moved: false, LockRequested: false)
+                    : _movement.ProcessInput(command);
 
         bool pieceSwapped = pieceBeforeInput != ActivePiece;
 
@@ -144,6 +154,7 @@ public sealed class Simulation
         {
             RotationsExecuted++;
             RotationCooldownRemaining = _level.Rotation.CooldownTicks ?? 0;
+            AdvanceStabilizeAnchors();
         }
 
         // 2. Gravity Step
@@ -221,6 +232,9 @@ public sealed class Simulation
 
         if (ActivePiece != null)
         {
+            bool stabilizeAnchors = StabilizeArmed;
+            bool reinforcedAnchors = IsReinforcedMaterial(ActivePiece.MaterialId);
+
             foreach (Int3 pos in ActivePiece.GetWorldPositions())
             {
                 Voxel existing = Grid.GetVoxel(pos);
@@ -229,7 +243,18 @@ public sealed class Simulation
                     displacedWater.Add(pos);
                 }
 
-                Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, ActivePiece.MaterialId));
+                bool anchored = stabilizeAnchors || reinforcedAnchors;
+                Grid.SetVoxel(pos, new Voxel(OccupancyType.Solid, ActivePiece.MaterialId, anchored));
+
+                if (stabilizeAnchors && !reinforcedAnchors)
+                {
+                    _stabilizeAnchorTimers[pos] = Constants.StabilizeAnchorRotations;
+                }
+            }
+
+            if (stabilizeAnchors)
+            {
+                StabilizeArmed = false;
             }
         }
 
@@ -546,6 +571,29 @@ public sealed class Simulation
         return new InputApplyResult(Accepted: true, Moved: true, LockRequested: false);
     }
 
+    private InputApplyResult ApplyStabilize()
+    {
+        if (ActivePiece is null)
+        {
+            return new InputApplyResult(Accepted: false, Moved: false, LockRequested: false);
+        }
+
+        if (StabilizeChargesRemaining <= 0 && !StabilizeArmed)
+        {
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        if (!StabilizeArmed)
+        {
+            StabilizeChargesRemaining--;
+            StabilizeArmed = true;
+            return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+        }
+
+        StabilizeArmed = false;
+        return new InputApplyResult(Accepted: true, Moved: false, LockRequested: false);
+    }
+
     /// <summary>
     /// Queues a freeze action to be applied during the next resolve.
     /// </summary>
@@ -612,6 +660,7 @@ public sealed class Simulation
         LockDelayTicksRemaining = Constants.LockDelayTicks;
         LockResetCount = 0;
         LockDelayActive = false;
+        StabilizeArmed = false;
         ResetGravityTimer();
     }
 
@@ -653,6 +702,93 @@ public sealed class Simulation
 
         return LockDelayTicksRemaining <= 0;
     }
+
+    private void AdvanceStabilizeAnchors()
+    {
+        if (_stabilizeAnchorTimers.Count == 0)
+        {
+            return;
+        }
+
+        List<Int3> expired = [];
+        List<Int3> keys = [.. _stabilizeAnchorTimers.Keys];
+        foreach (Int3 pos in keys)
+        {
+            int remaining = _stabilizeAnchorTimers[pos] - 1;
+            if (remaining <= 0)
+            {
+                expired.Add(pos);
+                continue;
+            }
+
+            _stabilizeAnchorTimers[pos] = remaining;
+        }
+
+        foreach (Int3 pos in expired)
+        {
+            _stabilizeAnchorTimers.Remove(pos);
+            if (!Grid.TryGetVoxel(pos, out Voxel voxel))
+            {
+                continue;
+            }
+
+            if (!voxel.Anchored || IsReinforcedMaterial(voxel.MaterialId))
+            {
+                continue;
+            }
+
+            Grid.SetVoxel(pos, voxel with { Anchored = false });
+        }
+    }
+
+    private IReadOnlyList<AnchorTimerSnapshot> GetStabilizeAnchorSnapshots()
+    {
+        if (_stabilizeAnchorTimers.Count == 0)
+        {
+            return [];
+        }
+
+        List<AnchorTimerSnapshot> snapshots = new(_stabilizeAnchorTimers.Count);
+        foreach (KeyValuePair<Int3, int> entry in _stabilizeAnchorTimers)
+        {
+            snapshots.Add(new AnchorTimerSnapshot(entry.Key, entry.Value));
+        }
+
+        snapshots.Sort(CompareAnchorSnapshots);
+        return snapshots;
+    }
+
+    private static int CompareAnchorSnapshots(AnchorTimerSnapshot left, AnchorTimerSnapshot right) =>
+        ComparePositions(left.Position, right.Position);
+
+    private static int ComparePositions(Int3 left, Int3 right)
+    {
+        int comp = left.X.CompareTo(right.X);
+        if (comp != 0)
+        {
+            return comp;
+        }
+
+        comp = left.Y.CompareTo(right.Y);
+        if (comp != 0)
+        {
+            return comp;
+        }
+
+        return left.Z.CompareTo(right.Z);
+    }
+
+    private static bool IsReinforcedMaterial(string? materialId)
+    {
+        if (string.IsNullOrWhiteSpace(materialId))
+        {
+            return false;
+        }
+
+        return materialId.Trim().Equals("REINFORCED", StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal readonly record struct AnchorTimerSnapshot(Int3 Position, int RemainingRotations);
 
     private sealed record FreezeRequest(IReadOnlyList<Int3> Targets, int DurationResolves);
 }

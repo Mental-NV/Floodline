@@ -5,7 +5,8 @@ namespace Floodline.Core;
 /// </summary>
 /// <param name="Type">The occupancy type of the cell.</param>
 /// <param name="MaterialId">Optional material identifier for solids and porous cells.</param>
-public record Voxel(OccupancyType Type, string? MaterialId = null)
+/// <param name="Anchored">Whether the voxel is anchored (immovable during settling).</param>
+public record Voxel(OccupancyType Type, string? MaterialId = null, bool Anchored = false)
 {
     /// <summary>
     /// Gets a static instance of an empty voxel.

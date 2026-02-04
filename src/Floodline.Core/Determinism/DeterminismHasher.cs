@@ -13,7 +13,7 @@ namespace Floodline.Core.Determinism;
 /// </summary>
 public static class DeterminismHasher
 {
-    public const string HashVersion = "0.1.4";
+    public const string HashVersion = "0.1.5";
 
     public static string Compute(Simulation simulation)
     {
@@ -59,6 +59,7 @@ public static class DeterminismHasher
                     Voxel cell = grid.GetVoxel(new Int3(x, y, z));
                     writer.WriteInt32((int)cell.Type);
                     writer.WriteString(cell.MaterialId);
+                    writer.WriteBool(cell.Anchored);
                 }
             }
         }
@@ -93,6 +94,18 @@ public static class DeterminismHasher
             BagEntry slot = holdSlot.Value;
             writer.WriteInt32((int)slot.PieceId);
             writer.WriteString(slot.MaterialId);
+        }
+
+        writer.WriteBool(simulation.StabilizeArmed);
+        writer.WriteInt32(simulation.StabilizeChargesRemaining);
+        IReadOnlyList<Simulation.AnchorTimerSnapshot> stabilizeAnchors = simulation.StabilizeAnchorTimers;
+        writer.WriteInt32(stabilizeAnchors.Count);
+        foreach (Simulation.AnchorTimerSnapshot anchor in stabilizeAnchors)
+        {
+            writer.WriteInt32(anchor.Position.X);
+            writer.WriteInt32(anchor.Position.Y);
+            writer.WriteInt32(anchor.Position.Z);
+            writer.WriteInt32(anchor.RemainingRotations);
         }
 
         writer.WriteInt32(simulation.LockDelayTicksRemaining);

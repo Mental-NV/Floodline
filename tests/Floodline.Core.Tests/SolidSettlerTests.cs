@@ -59,4 +59,19 @@ public class SolidSettlerTests
         Assert.Contains(new Int3(1, 1, 1), result.DisplacedWater);
         Assert.Equal(OccupancyType.Solid, grid.GetVoxel(new Int3(1, 1, 1)).Type);
     }
+
+    [Fact]
+    public void Settle_Does_Not_Move_Anchored_Solid()
+    {
+        Grid grid = new(new Int3(3, 4, 3));
+        grid.SetVoxel(new Int3(1, 2, 1), new Voxel(OccupancyType.Solid, "STANDARD", Anchored: true));
+
+        SolidSettleResult result = SolidSettler.Settle(grid, GravityDirection.Down);
+
+        Assert.Empty(result.DisplacedWater);
+        Voxel anchored = grid.GetVoxel(new Int3(1, 2, 1));
+        Assert.Equal(OccupancyType.Solid, anchored.Type);
+        Assert.True(anchored.Anchored);
+        Assert.Equal(OccupancyType.Empty, grid.GetVoxel(new Int3(1, 1, 1)).Type);
+    }
 }

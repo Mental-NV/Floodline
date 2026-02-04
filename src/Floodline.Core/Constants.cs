@@ -25,4 +25,9 @@ public static class Constants
     /// Maximum number of lock delay resets per piece.
     /// </summary>
     public const int MaxLockResets = 4;
+
+    /// <summary>
+    /// Number of successful world rotations a stabilize anchor persists.
+    /// </summary>
+    public const int StabilizeAnchorRotations = 2;
 }

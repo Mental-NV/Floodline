@@ -118,7 +118,7 @@ public static class SolidSettler
 
                     Int3 pos = new(x, y, z);
                     Voxel voxel = grid.GetVoxel(pos);
-                    if (!IsMovableSolid(voxel.Type))
+                    if (!IsMovableSolid(voxel))
                     {
                         visited[x, y, z] = true;
                         continue;
@@ -188,7 +188,7 @@ public static class SolidSettler
                 }
 
                 Voxel neighbor = grid.GetVoxel(next);
-                if (!IsMovableSolid(neighbor.Type))
+                if (!IsMovableSolid(neighbor))
                 {
                     visited[next.X, next.Y, next.Z] = true;
                     continue;
@@ -223,7 +223,7 @@ public static class SolidSettler
                 continue;
             }
 
-            if (IsImmovableSupport(voxel.Type))
+            if (IsImmovableSupport(voxel))
             {
                 return true;
             }
@@ -312,15 +312,15 @@ public static class SolidSettler
         return elevComp != 0 ? elevComp : left.MinTieCoord.CompareTo(right.MinTieCoord);
     }
 
-    private static bool IsMovableSolid(OccupancyType type) =>
-        type is OccupancyType.Solid or OccupancyType.Porous;
+    private static bool IsMovableSolid(Voxel voxel) =>
+        (voxel.Type is OccupancyType.Solid or OccupancyType.Porous) && !voxel.Anchored;
 
     private static bool IsSupportVoxel(OccupancyType type) =>
         type is OccupancyType.Solid or OccupancyType.Wall or OccupancyType.Bedrock or OccupancyType.Ice
             or OccupancyType.Drain or OccupancyType.Porous;
 
-    private static bool IsImmovableSupport(OccupancyType type) =>
-        type is OccupancyType.Wall or OccupancyType.Bedrock or OccupancyType.Ice or OccupancyType.Drain;
+    private static bool IsImmovableSupport(Voxel voxel) =>
+        voxel.Anchored || voxel.Type is OccupancyType.Wall or OccupancyType.Bedrock or OccupancyType.Ice or OccupancyType.Drain;
 
     private static bool IsBlockingVoxel(OccupancyType type) =>
         type is OccupancyType.Solid or OccupancyType.Wall or OccupancyType.Bedrock or OccupancyType.Ice
