@@ -1275,8 +1275,9 @@
         "epic": "E1",
         "milestone": "M4",
         "title": "Core: enforce rotation constraints (cooldown/maxRotations/tiltBudget/allowed dirs)",
-        "status": "InProgress",
+        "status": "Done",
         "startedAt": "2026-02-04T20:59:48Z",
+        "doneAt": "2026-02-04T21:16:35Z",
         "dependsOn": [
           "FL-0414"
         ],
@@ -1301,7 +1302,8 @@
             "Enforced maxRotations and tiltBudget using RotationsExecuted (incremented only on successful world rotation).",
             "Bumped determinism hash version to 0.1.4 to include rotation cooldown state.",
             "Inspected LevelConfigs/LevelValidator to align allowedDirections string mapping and tiltBudget constraints.",
-            "PR: https://github.com/Mental-NV/Floodline/pull/52"
+            "PR: https://github.com/Mental-NV/Floodline/pull/52",
+            "Merged PR: https://github.com/Mental-NV/Floodline/pull/52"
           ]
         }
       },
