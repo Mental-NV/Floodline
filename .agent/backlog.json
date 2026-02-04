@@ -1456,7 +1456,8 @@
         "notes": [
           "First ci.ps1 run failed due to schema error expectations in new fixtures; adjusted schema dependency and test rule IDs.",
           "Second ci.ps1 run failed due to dependentRequired ruleId mismatch; updated test expectations.",
-          "Assumption: default input bindings set to Freeze=B and Drain placement=N."
+          "Assumption: default input bindings set to Freeze=B and Drain placement=N.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/56"
         ]
       }
     },
