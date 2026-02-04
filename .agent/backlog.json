@@ -1527,8 +1527,12 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+        ],
+        "notes": [
+          "Generated hold golden fixtures with FLOODLINE_UPDATE_GOLDENS=1 dotnet test C:\\Projects\\Floodline\\Floodline.sln -c Release --filter FullyQualifiedName~HoldGoldenTests."
+        ]
       }
     },
     {

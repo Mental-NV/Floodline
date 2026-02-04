@@ -45,7 +45,19 @@ public class HoldTests
         Assert.Equal(0, sim.ActivePiece!.Piece.OrientationIndex);
     }
 
-    private static Level CreateHoldLevel(string[]? sequence = null) =>
+    [Fact]
+    public void Hold_Disabled_Ignores_Command()
+    {
+        Level level = CreateHoldLevel(holdEnabled: false);
+        Simulation sim = new(level, new Pcg32(2));
+        PieceId initial = sim.ActivePiece!.Piece.Id;
+
+        sim.Tick(InputCommand.Hold);
+
+        Assert.Equal(initial, sim.ActivePiece!.Piece.Id);
+    }
+
+    private static Level CreateHoldLevel(string[]? sequence = null, bool holdEnabled = true) =>
         new(
             new LevelMeta("hold-test", "Hold Test", "0.2.0", 1U),
             new Int3(6, 12, 6),
@@ -54,6 +66,6 @@ public class HoldTests
             new RotationConfig(),
             new BagConfig("FIXED_SEQUENCE", sequence ?? ["I4", "O2", "L3"], null),
             [],
-            new AbilitiesConfig(HoldEnabled: true, StabilizeCharges: 0),
+            new AbilitiesConfig(HoldEnabled: holdEnabled, StabilizeCharges: 0),
             new ConstraintsConfig());
 }
