@@ -35,12 +35,12 @@
 6) [`contract-policy.md`](contract-policy.md)  
    Canonical change/versioning rules for autonomous work (scope control, follow-ups, compatibility).
 
-7) Change proposal documents under .agent\change-proposals\*
+7) Change proposal documents /.agent/change-proposals/**.md
 
-7) [`AGENT_OS.md`](AGENT_OS.md) (this file)  
+8) [`AGENT_OS.md`](AGENT_OS.md) (this file)  
    The only canonical agent workflow + gates + milestone order.
 
-8) [`backlog.json`](backlog.json)  
+9) [`backlog.json`](backlog.json)  
    The only canonical work state (DONE / CURRENT / NEXT) and evidence log.
 
 **Rule:** open any other file only if the CURRENT backlog item’s `requirementRef` explicitly points to it.
