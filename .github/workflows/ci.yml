@@ -6,14 +6,12 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
-      - '*.txt'
       - '.agent/backlog.json'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - 'docs/**'
       - '*.md'
-      - '*.txt'
       - '.agent/backlog.json'
 
 jobs:

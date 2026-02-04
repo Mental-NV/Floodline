@@ -14,10 +14,19 @@ param(
   [switch]$Golden = $false,
   [switch]$Replay = $false,
   [switch]$ValidateLevels = $false,
+  [switch]$CampaignSolutions = $false,
   [switch]$Unity = $false
 )
 
 $ErrorActionPreference = "Stop"
+
+switch ($Scope) {
+  "M2" { $Golden = $true }
+  "M3" { $Golden = $true; $Replay = $true }
+  "M4" { $Golden = $true; $Replay = $true }
+  "M5" { $Golden = $true; $Replay = $true }
+  default { }
+}
 
 function Run([string]$cmd) {
   Write-Host ">> $cmd"
@@ -162,13 +171,25 @@ if ($Replay) {
   }
 }
 
+# Placeholder gates (fail fast until implemented)
+if ($ValidateLevels) {
+  throw "-ValidateLevels is not implemented yet. Implement campaign validation first (see backlog FL-0402)."
+}
+
+if ($CampaignSolutions) {
+  throw "-CampaignSolutions is not implemented yet. Implement solution runner gate first (see backlog FL-0419)."
+}
+
+if ($Unity) {
+  throw "-Unity is not implemented yet. Implement Unity parity gate first (see backlog FL-0503)."
+}
+
 # Formatting (only when gate is introduced)
 if ($IncludeFormat) {
   Run "dotnet format `"$($sln.FullName)`" --verify-no-changes"
 }
 
-# Future: golden / replay / level validation / unity
-# Implement these later when the projects/tools exist; keep switches stable so backlog items don't churn.
+# Future: keep switch names stable so backlog items don't churn; add enforcement when tooling exists.
 
 Write-Host "CI OK: Scope=$Scope Config=$Configuration LockedRestore=$LockedRestore IncludeFormat=$IncludeFormat Golden=$Golden"
 exit 0

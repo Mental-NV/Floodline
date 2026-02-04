@@ -2,7 +2,7 @@
   "meta": {
     "id": "cli-minimal",
     "title": "CLI Minimal",
-    "schemaVersion": "0.2.0",
+    "schemaVersion": "0.2.1",
     "seed": 1
   },
   "bounds": {
@@ -13,7 +13,7 @@
   "initialVoxels": [],
   "objectives": [
     {
-      "type": "ReachHeight",
+      "type": "REACH_HEIGHT",
       "params": {
         "height": 0
       }
@@ -30,5 +30,10 @@
       "O2"
     ]
   },
-  "hazards": []
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {}
 }

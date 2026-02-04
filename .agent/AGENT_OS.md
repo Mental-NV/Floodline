@@ -329,7 +329,7 @@ Use scripts to reduce per-item command drift:
 - [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M0 -IncludeFormat`](../scripts/ci.ps1)
 - [`powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M1`](../scripts/ci.ps1)
 
-**Reserved switches (placeholders):** `-Golden`, `-Replay`, `-ValidateLevels`, `-Unity`  
+**Reserved switches (placeholders):** `-Golden`, `-Replay`, `-ValidateLevels`, `-CampaignSolutions`, `-Unity`  
 These flags should become enforcing gates only after the related projects/tests/tools exist.
 
 

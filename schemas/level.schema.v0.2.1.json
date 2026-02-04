@@ -1,0 +1,606 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "level.schema.v0.2.1.json",
+  "title": "Floodline Level Schema v0.2.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "bounds",
+    "initialVoxels",
+    "objectives",
+    "rotation",
+    "bag",
+    "hazards",
+    "abilities",
+    "constraints"
+  ],
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "bounds": {
+      "$ref": "#/$defs/int3Positive"
+    },
+    "initialVoxels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/voxelData"
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/objective"
+      }
+    },
+    "rotation": {
+      "$ref": "#/$defs/rotationConfig"
+    },
+    "bag": {
+      "$ref": "#/$defs/bagConfig"
+    },
+    "hazards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hazard"
+      }
+    },
+    "abilities": {
+      "$ref": "#/$defs/abilitiesConfig"
+    },
+    "constraints": {
+      "$ref": "#/$defs/constraintsConfig"
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "schemaVersion",
+        "seed"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "int3NonNegative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "z": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "int3Positive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "z": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "occupancyType": {
+      "type": "string",
+      "enum": [
+        "Empty",
+        "Solid",
+        "Wall",
+        "Bedrock",
+        "Water",
+        "Ice",
+        "Porous",
+        "Drain"
+      ]
+    },
+    "drainScope": {
+      "type": "string",
+      "enum": [
+        "Self",
+        "Adj6",
+        "Adj26"
+      ]
+    },
+    "drainConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ratePerResolve",
+        "scope"
+      ],
+      "properties": {
+        "ratePerResolve": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/drainScope"
+        }
+      }
+    },
+    "voxelData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pos",
+        "type"
+      ],
+      "properties": {
+        "pos": {
+          "$ref": "#/$defs/int3NonNegative"
+        },
+        "type": {
+          "$ref": "#/$defs/occupancyType"
+        },
+        "materialId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "drain": {
+          "$ref": "#/$defs/drainConfig"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "Drain"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "drain"
+            ]
+          }
+        }
+      ]
+    },
+    "objective": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/objectiveDrainWater"
+        },
+        {
+          "$ref": "#/$defs/objectiveReachHeight"
+        },
+        {
+          "$ref": "#/$defs/objectiveBuildPlateau"
+        },
+        {
+          "$ref": "#/$defs/objectiveStayUnderWeight"
+        },
+        {
+          "$ref": "#/$defs/objectiveSurviveRotations"
+        }
+      ]
+    },
+    "objectiveDrainWater": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "DRAIN_WATER"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "targetUnits"
+          ],
+          "properties": {
+            "targetUnits": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "objectiveReachHeight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "REACH_HEIGHT"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "height"
+          ],
+          "properties": {
+            "height": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "objectiveBuildPlateau": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "BUILD_PLATEAU"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "area",
+            "worldLevel"
+          ],
+          "properties": {
+            "area": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "worldLevel": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "objectiveStayUnderWeight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "STAY_UNDER_WEIGHT"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxMass"
+          ],
+          "properties": {
+            "maxMass": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "objectiveSurviveRotations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "SURVIVE_ROTATIONS"
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rotations"
+          ],
+          "properties": {
+            "rotations": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "rotationConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxRotations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tiltBudget": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cooldownTicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowedDirections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gravityDirection"
+          },
+          "minItems": 1
+        },
+        "allowedPieceRotationAxes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rotationAxis"
+          }
+        }
+      }
+    },
+    "gravityDirection": {
+      "type": "string",
+      "enum": [
+        "Down",
+        "North",
+        "South",
+        "East",
+        "West"
+      ]
+    },
+    "rotationAxis": {
+      "type": "string",
+      "enum": [
+        "Yaw",
+        "Pitch",
+        "Roll"
+      ]
+    },
+    "bagConfig": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bagFixedSequence"
+        },
+        {
+          "$ref": "#/$defs/bagWeighted"
+        }
+      ]
+    },
+    "bagFixedSequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "sequence"
+      ],
+      "properties": {
+        "type": {
+          "const": "FIXED_SEQUENCE"
+        },
+        "sequence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "bagWeighted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "weights"
+      ],
+      "properties": {
+        "type": {
+          "const": "WEIGHTED"
+        },
+        "weights": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "hazard": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hazardWindGust"
+        }
+      ]
+    },
+    "hazardWindGust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "enabled",
+        "params"
+      ],
+      "properties": {
+        "type": {
+          "const": "WIND_GUST"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "params": {
+          "$ref": "#/$defs/windGustParams"
+        }
+      }
+    },
+    "windGustParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intervalTicks",
+        "pushStrength",
+        "directionMode"
+      ],
+      "properties": {
+        "intervalTicks": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pushStrength": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "directionMode": {
+          "$ref": "#/$defs/windDirectionMode"
+        },
+        "firstGustOffsetTicks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fixedDirection": {
+          "$ref": "#/$defs/windDirection"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "directionMode": {
+                "const": "FIXED"
+              }
+            },
+            "required": [
+              "directionMode"
+            ]
+          },
+          "then": {
+            "required": [
+              "fixedDirection"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "fixedDirection"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "windDirectionMode": {
+      "type": "string",
+      "enum": [
+        "ALTERNATE_EW",
+        "FIXED",
+        "RANDOM_SEEDED"
+      ]
+    },
+    "windDirection": {
+      "type": "string",
+      "enum": [
+        "EAST",
+        "WEST",
+        "NORTH",
+        "SOUTH"
+      ]
+    },
+    "abilitiesConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "holdEnabled",
+        "stabilizeCharges"
+      ],
+      "properties": {
+        "holdEnabled": {
+          "type": "boolean"
+        },
+        "stabilizeCharges": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "constraintsConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxWorldHeight": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxMass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "waterForbiddenWorldHeightMin": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "noRestingOnWater": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
+

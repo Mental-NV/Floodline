@@ -10,5 +10,7 @@ public record Level(
     List<ObjectiveConfig> Objectives,
     RotationConfig Rotation,
     BagConfig Bag,
-    List<HazardConfig> Hazards
+    List<HazardConfig> Hazards,
+    AbilitiesConfig? Abilities = null,
+    ConstraintsConfig? Constraints = null
 );

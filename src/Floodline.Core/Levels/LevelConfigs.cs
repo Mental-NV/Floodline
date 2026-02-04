@@ -65,6 +65,24 @@ public record BagConfig(
 );
 
 /// <summary>
+/// Per-level ability configuration (toggles + charge counts).
+/// </summary>
+public record AbilitiesConfig(
+    bool HoldEnabled = false,
+    int StabilizeCharges = 0
+);
+
+/// <summary>
+/// Per-level constraint configuration (fail-state thresholds and enforcement toggles).
+/// </summary>
+public record ConstraintsConfig(
+    int? MaxWorldHeight = null,
+    int? MaxMass = null,
+    int? WaterForbiddenWorldHeightMin = null,
+    bool NoRestingOnWater = false
+);
+
+/// <summary>
 /// Generic configuration for an objective.
 /// </summary>
 public record ObjectiveConfig(
@@ -77,5 +95,6 @@ public record ObjectiveConfig(
 /// </summary>
 public record HazardConfig(
     string Type,
-    Dictionary<string, object> Params
+    bool Enabled = true,
+    Dictionary<string, object>? Params = null
 );

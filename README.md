@@ -42,7 +42,7 @@ powershell -File ./scripts/ci.ps1 -Scope M0 -IncludeFormat
 powershell -File ./scripts/ci.ps1 -Scope M1
 ```
 
-Note: `-Golden`, `-Replay`, `-ValidateLevels`, `-Unity` switches exist as reserved placeholders and should be implemented when the corresponding tooling/tests land.
+Note: `-Golden`, `-Replay`, `-ValidateLevels`, `-CampaignSolutions`, `-Unity` switches exist as reserved placeholders and should be implemented when the corresponding tooling/tests land.
 
 ## Starting the autonomous run
 

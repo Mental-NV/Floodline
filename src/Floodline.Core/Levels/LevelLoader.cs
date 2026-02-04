@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -29,15 +30,13 @@ public static class LevelLoader
 
         try
         {
-            // First pass: check for any floating point numbers in the entire JSON if needed, 
-            // but the requirement says "any time/duration stored as integer ticks; reject floats".
-            // We can check this by parsing to JsonDocument and inspecting.
             using (JsonDocument doc = JsonDocument.Parse(json))
             {
                 ValidateNoFloats(doc.RootElement, "");
             }
 
             Level level = JsonSerializer.Deserialize<Level>(json, Options) ?? throw new ArgumentException("Failed to deserialize level.");
+            level = NormalizeLevel(level);
 
             ValidateLevel(level);
 
@@ -47,6 +46,29 @@ public static class LevelLoader
         {
             throw new ArgumentException($"Invalid JSON format: {ex.Message}", ex);
         }
+    }
+
+    private static Level NormalizeLevel(Level level)
+    {
+        AbilitiesConfig abilities = level.Abilities ?? new AbilitiesConfig();
+        ConstraintsConfig constraints = level.Constraints ?? new ConstraintsConfig();
+
+        List<HazardConfig> hazards = level.Hazards ?? [];
+        for (int i = 0; i < hazards.Count; i++)
+        {
+            HazardConfig hazard = hazards[i];
+            if (hazard.Params is null)
+            {
+                hazards[i] = hazard with { Params = [] };
+            }
+        }
+
+        return level with
+        {
+            Abilities = abilities,
+            Constraints = constraints,
+            Hazards = hazards
+        };
     }
 
     private static void ValidateNoFloats(JsonElement element, string path)
@@ -106,6 +128,36 @@ public static class LevelLoader
         if (string.IsNullOrWhiteSpace(level.Meta.SchemaVersion))
         {
             throw new ArgumentException("Level schemaVersion is missing.");
+        }
+
+        if (level.Abilities is null)
+        {
+            throw new ArgumentException("Level abilities configuration is missing.");
+        }
+
+        if (level.Abilities.StabilizeCharges < 0)
+        {
+            throw new ArgumentException("stabilizeCharges must be >= 0.");
+        }
+
+        if (level.Constraints is null)
+        {
+            throw new ArgumentException("Level constraints configuration is missing.");
+        }
+
+        if (level.Constraints.MaxWorldHeight is < 0)
+        {
+            throw new ArgumentException("maxWorldHeight must be >= 0.");
+        }
+
+        if (level.Constraints.MaxMass is < 0)
+        {
+            throw new ArgumentException("maxMass must be >= 0.");
+        }
+
+        if (level.Constraints.WaterForbiddenWorldHeightMin is < 0)
+        {
+            throw new ArgumentException("waterForbiddenWorldHeightMin must be >= 0.");
         }
 
         if (level.Bounds.X <= 0 || level.Bounds.Y <= 0 || level.Bounds.Z <= 0)

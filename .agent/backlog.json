@@ -1085,10 +1085,10 @@
       "rationale": "Campaign authoring by an autonomous agent must fail fast on unknown objective/hazard types and missing required params; schema constraints reduce semantic-validator burden and prevent runtime surprises.",
       "sizeHint": "M",
       "deliverables": [
-        "Add schemas/level.schema.v0.2.1.json (keep v0.2.0 unchanged) with objective/hazard definitions constrained by oneOf/if-then: known types only, required integer params enforced where applicable",
+        "Add schemas/level.schema.v0.2.1.json (keep v0.2.0 unchanged) with typed objectives/hazards constrained by oneOf/if-then (known types only) and new top-level abilities/constraints config",
         "Add schemas/campaign.schema.v0.2.1.json (keep v0.2.0 unchanged) if needed for tighter campaign validation (paths, id rules); otherwise document why v0.2.0 is sufficient",
-        "Typed objectives: DRAIN_WATER, REACH_HEIGHT, BUILD_PLATEAU, SURVIVE_ROTATIONS (and any other MVP objective types referenced by Content Pack)",
-        "Typed hazards/constraints: WIND_GUST, HOLD, STABILIZE, WATER_FORBIDDEN, WEIGHT_LIMIT, NO_RESTING_ON_WATER (and any other MVP hazards referenced by Content Pack)",
+        "Typed objectives: DRAIN_WATER, REACH_HEIGHT, BUILD_PLATEAU, STAY_UNDER_WEIGHT, SURVIVE_ROTATIONS (and any other MVP objective types referenced by Content Pack)",
+        "Typed hazards: WIND_GUST (enabled + typed params per Simulation_Rules_v0_2.md Wind Hazard spec)",
         "Update validator default schema version to latest (0.2.1) and update fixtures/tests accordingly"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
@@ -1144,6 +1144,7 @@
       "deliverables": [
         "Simulation uses level.bag for piece selection (FIXED_SEQUENCE consumes sequence; WEIGHTED draws by deterministic PRNG) and removes the random-Enum placeholder",
         "Define and implement a deterministic bag token format usable in JSON (e.g., PIECE_ID or PIECE_ID:MATERIAL) to support Reinforced/Heavy bags without inventing ad-hoc per-level code",
+        "Next preview/look-ahead must not advance gameplay PRNG: implement peek by cloning PRNG state (or equivalent deterministic method)",
         "Determinism: piece bag uses a deterministic stream; hazard RNG uses a separate deterministic stream (seeded derivation) as required by Wind spec",
         "Unit tests: FIXED_SEQUENCE yields expected piece sequence; WEIGHTED is stable given seed and weights; invalid tokens rejected by loader/validator"
       ],
@@ -1169,7 +1170,7 @@
       "rationale": "Hold is introduced in campaign level 6 and is part of the canonical rules; it must be deterministic and encoded in replays and determinism hashes.",
       "sizeHint": "L",
       "deliverables": [
-        "Add Hold input command and implement hold slot behavior: swap current piece with hold slot, reset held piece to spawn orientation, enforce once-per-drop restriction",
+        "Add Hold input command and implement hold slot behavior (gated by abilities.holdEnabled): swap current piece with hold slot, reset held piece to spawn orientation, enforce once-per-drop restriction",
         "Replay: bump replay/input encoding as needed to support Hold; ensure record->replay parity remains a CI gate",
         "Determinism hash includes hold slot state and per-piece hold-used flag",
         "Unit tests for hold behavior, restriction, and replay determinism parity"
@@ -1251,7 +1252,7 @@
       "deliverables": [
         "Represent anchored voxels in Core grid state (e.g., Voxel includes anchored flag) and include anchoring in determinism hash as required by contract-policy",
         "Reinforced material behavior: voxels become anchored permanently on lock",
-        "Stabilize ability: input to arm/cancel, consumes stabilizeCharges, anchors locked piece temporarily for N successful rotations (default 2) and decrements on successful world rotation events only",
+        "Stabilize ability: input to arm/cancel, consumes abilities.stabilizeCharges, anchors locked piece temporarily for N successful rotations (default 2) and decrements on successful world rotation events only",
         "Solid settling respects anchored voxels: any connected component containing anchored voxel is immovable (drop distance 0)",
         "Unit tests for anchored immovability and stabilize duration decrement/expiry"
       ],
@@ -1277,8 +1278,8 @@
       "rationale": "Campaign constraints must be enforceable and testable without a human: fail states provide deterministic completion criteria and prevent invalid ‘wins’ under constraints.",
       "sizeHint": "L",
       "deliverables": [
-        "Implement fail states per Simulation_Rules_v0_2.md §11: WEIGHT_EXCEEDED, WATER_FORBIDDEN, and any configured overflow/tilt-budget failures",
-        "Implement NO_RESTING_ON_WATER constraint evaluation at end-of-resolve when configured",
+        "Implement fail states per Simulation_Rules_v0_2.md §11: WEIGHT_EXCEEDED (constraints.maxMass), WATER_FORBIDDEN (constraints.waterForbiddenWorldHeightMin), OVERFLOW (constraints.maxWorldHeight), and any configured overflow/tilt-budget failures",
+        "Implement NO_RESTING_ON_WATER (constraints.noRestingOnWater) evaluation at end-of-resolve when configured",
         "Expose/track canonical metrics needed for constraints/UI/hashing (mass, water forbidden count/flag, shift/lost totals where applicable) and include in determinism hash policy minimums",
         "Unit tests for each fail state/constraint trigger and non-trigger cases"
       ],
@@ -1319,6 +1320,61 @@
       }
     },
     {
+      "id": "FL-0420",
+      "epic": "E4",
+      "milestone": "M4",
+      "title": "Freeze + Drain Placement: define MVP semantics (Change Proposal + schema)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0410"
+      ],
+      "requirementRef": "/.agent/change-proposals/CP-0002-freeze-and-drain-placement-semantics.md",
+      "rationale": "The campaign plan references freeze and player drain placement, but the canonical specs do not define deterministic activation/targeting/charges/replay encoding. This must be defined before Core implementation and campaign authoring.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Finalize CP-0002 (Decision status Accepted) and fold the chosen rules into the canonical specs (Input_Feel / Simulation_Rules / Water_Algorithm as appropriate)",
+        "Add schemas/level.schema.v0.2.2.json defining the required per-level fields for Freeze and Drain Placement (integer-only, deterministic)",
+        "Update CLI validator default schema version to 0.2.2 and add fixtures/tests for the new fields"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0421",
+      "epic": "E1",
+      "milestone": "M4",
+      "title": "Core: Freeze ability + Drain placement (charges + replay encoding)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0420",
+        "FL-0415",
+        "FL-0113"
+      ],
+      "requirementRef": "/.agent/change-proposals/CP-0002-freeze-and-drain-placement-semantics.md",
+      "rationale": "Campaign levels 16–20 depend on freeze and drain placement as deterministic, replayable mechanics. Implement these in Core/CLI before authoring campaign content and solutions.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Implement Freeze per accepted CP: input/trigger model, charge consumption, deterministic target selection, ICE duration semantics, and Level config integration",
+        "Implement Drain Placement per accepted CP: charge consumption, deterministic placement/params, and Level config integration",
+        "Replay/determinism: encode new commands/events; bump replay/input encoding as needed; keep record→replay parity as a CI gate",
+        "Unit tests for charge consumption, targeting/placement semantics, and replay determinism parity"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Replay"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FL-0419",
       "epic": "E4",
       "milestone": "M4",
@@ -1327,7 +1383,8 @@
       "dependsOn": [
         "FL-0403",
         "FL-0402",
-        "FL-0418"
+        "FL-0418",
+        "FL-0421"
       ],
       "requirementRef": "/docs/content/Content_Pack_v0_2.md#campaign-plan-30",
       "rationale": "Autonomous level authoring must be mechanically verifiable. Requiring a committed solution per level lets CI prove each level is winnable and prevents content regressions.",
@@ -1506,7 +1563,7 @@
         "Create 5 schema-valid level JSONs: Lv21 Weight Limit, Lv22 Heavy Pieces, Lv23 Skyline Footprint, Lv24 First Gust, Lv25 Stabilize",
         "Update campaign manifest to include Lv21–Lv25",
         "Add 5 committed solution artifacts (inputs or replay) matching the per-level solution convention so CI can prove each level is winnable",
-        "Represent weight limit as a fail-state hazard (WEIGHT_LIMIT) per Simulation Rules; keep primary objective as REACH_HEIGHT; represent heavy bias via bag weights/material tokens (as supported by Core)",
+        "Represent weight limit via constraints.maxMass (fail-state WEIGHT_EXCEEDED) per Simulation Rules; keep primary objective as REACH_HEIGHT; represent heavy bias via bag weights/material tokens (as supported by Core)",
         "Wind: encode WIND_GUST hazard with integer tick params (intervalTicks, pushStrength, directionMode, firstGustOffsetTicks) in a schema-compatible way",
         "Lv23 uses reduced field size (8×8) as specified; ensure bounds reflect this",
         "Extend golden-smoke coverage to include Lv21–Lv25"
@@ -1537,12 +1594,66 @@
         "Update campaign manifest to include Lv26–Lv30 (campaign now has Lv1–Lv30 complete in order)",
         "Add 5 committed solution artifacts (inputs or replay) matching the per-level solution convention so CI can prove each level is winnable",
         "Ensure alternating wind and tighter intervals are expressed deterministically and tick-only; keep wind predictable/telegraphed intent via hazard params",
-        "Encode Lv30 as REACH_HEIGHT(30) objective plus WEIGHT_LIMIT(≤400) hazard (constraint), matching the Content Pack intent",
+        "Encode Lv30 as REACH_HEIGHT(30) objective plus constraints.maxMass=400 (fail-state WEIGHT_EXCEEDED), matching the Content Pack intent",
         "Extend golden-smoke coverage to include Lv26–Lv30"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0520",
+      "epic": "E4",
+      "milestone": "M5",
+      "title": "Stars/Score: define MVP model + schema (Change Proposal)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0410"
+      ],
+      "requirementRef": "/.agent/change-proposals/CP-0003-stars-and-scoring.md",
+      "rationale": "Campaign star hooks and the Unity HUD require a deterministic, machine-verifiable star/score model. Defining the MVP condition set and encoding it in schema prevents ad-hoc per-level rules and enables autonomous validation.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Finalize CP-0003 (Decision status Accepted) and define the supported MVP star condition types (deterministic, Core-metric based)",
+        "Add schemas/level.schema.v0.2.3.json (or latest) encoding star criteria in a typed, integer-only format",
+        "Update validator to validate star criteria with actionable JSON pointers"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0521",
+      "epic": "E1",
+      "milestone": "M5",
+      "title": "Core/CLI: stars + score evaluation (for campaign + HUD)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0520",
+        "FL-0417"
+      ],
+      "requirementRef": "/.agent/change-proposals/CP-0003-stars-and-scoring.md",
+      "rationale": "Once the star/score model is defined in schema, Core must compute it deterministically so Unity can present it without inventing gameplay logic.",
+      "sizeHint": "L",
+      "deliverables": [
+        "Core: compute star attainment (1/2/3) deterministically from objectives + supported star conditions; keep evaluation order stable",
+        "Core: compute score deterministically (if enabled for MVP) and expose it in the simulation state snapshot",
+        "CLI: print score + star status in summary output for parity/debugging",
+        "Unit tests for star condition evaluation and score determinism; update determinism hash/replay versions if new fields are hashed/serialized"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
         "commandsRun": [],
@@ -1664,7 +1775,8 @@
       "title": "Unity HUD (gravity, objectives, next/hold, score/stars, timers)",
       "status": "New",
       "dependsOn": [
-        "FL-0503"
+        "FL-0503",
+        "FL-0521"
       ],
       "requirementRef": "/docs/GDD_Core_v0_2.md#101-hud",
       "rationale": "Implement the must-have HUD so the player can read gravity, objectives, upcoming pieces, budgets, and time-based hazards (wind) without ambiguity, while keeping Core determinism untouched.",
