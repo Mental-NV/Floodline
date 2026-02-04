@@ -1575,6 +1575,34 @@
       }
     },
     {
+      "id": "FL-0429",
+      "epic": "E4",
+      "milestone": "M4",
+      "title": "Docs: canonical consistency sweep (input actions, fail states, stars, encoding)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0420"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md",
+      "rationale": "Keep canonical docs aligned with accepted MVP semantics to reduce autonomous drift and tooling ambiguity.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Input_Feel_v0_2.md: add FreezeAbility/DrainPlacementAbility to per-tick action order consistent with Simulation_Rules",
+        "Simulation_Rules_v0_2.md: clarify NO_RESTING_ON_WATER as a fail state (or explicitly mark as objective/constraint) and align with constraints wording",
+        "Content_Pack_v0_2.md: update star hook examples to only use supported MVP star condition types (MAX_PIECES_USED / MAX_ROTATIONS_USED / MAX_SHIFT_VOXELS_TOTAL / MAX_LOST_VOXELS_TOTAL)",
+        "AGENT_OS.md: fix canonical artifact count text to match the actual list",
+        "Normalize canonical docs to UTF-8 without BOM to avoid encoding artifacts in tooling"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FL-0419",
       "epic": "E4",
       "milestone": "M4",
