@@ -1543,8 +1543,9 @@
       "epic": "E2",
       "milestone": "M4",
       "title": "Golden suite: lock delay + reset limits",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-04T23:33:32Z",
+      "doneAt": "2026-02-04T23:40:51Z",
       "dependsOn": [
         "FL-0414",
         "FL-0200"
@@ -1567,7 +1568,8 @@
         ],
         "notes": [
           "Generated lock delay golden fixtures with FLOODLINE_UPDATE_GOLDENS=1 dotnet test C:\\Projects\\Floodline\\Floodline.sln -c Release --filter FullyQualifiedName~LockDelayGoldenTests.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/59"
+          "PR: https://github.com/Mental-NV/Floodline/pull/59",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/59"
         ]
       }
     },
