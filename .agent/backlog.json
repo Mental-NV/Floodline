@@ -1894,7 +1894,8 @@
       "title": "Unity input feel implementation (per Input_Feel_v0_2)",
       "status": "New",
       "dependsOn": [
-        "FL-0500"
+        "FL-0500",
+        "FL-0508"
       ],
       "requirementRef": "/docs/specs/Input_Feel_v0_2.md",
       "rationale": "Implement deterministic input sampling/buffering in Unity that produces the exact per-tick command stream expected by Core, and lock it down with a runtime-recorded test that passes in both Editor and headless/batchmode builds.",
@@ -2079,6 +2080,34 @@
         "Scene baseline: one representative scene/prefab setup that demonstrates the intended look on a sample level; environment kept non-distracting (e.g., skybox/clouds) per GDD direction",
         "Documentation: a short dev note describing the material mapping + lighting constraints so future work doesn’t drift",
         "Non-interference rule: visuals must not change simulation inputs/outputs; all lighting/material choices are presentation-only"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0508",
+      "epic": "E5",
+      "milestone": "M5",
+      "title": "Unity MVP constraints pack (style + placeholders + acceptance tests)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0500"
+      ],
+      "requirementRef": "/docs/GDD_Core_v0_2.md",
+      "rationale": "Unity M5 work is asset-heavy and subjective; a constraints/placeholder pack with explicit tests keeps autonomous progress deterministic and unblocked by missing assets.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Create docs/Unity_MVP_Constraints.md defining style constraints (materials/colors), UI layout rules, and audio stub policy",
+        "Add placeholder assets under the Unity project (materials, sprites/icons, audio clips) with deterministic naming and folder structure",
+        "Provide a basic HUD layout guide or prefab reference tied to the constraints doc",
+        "Add Unity EditMode/PlayMode tests that verify all required placeholder assets exist and are referenced (fail on missing assets)",
+        "Document the acceptance tests and how to run them alongside the constraints"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
