@@ -1182,10 +1182,13 @@
       ],
       "evidence": {
         "commandsRun": [
-          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels"
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels",
+          "git push -u origin feat/FL-0403-campaign-scaffold",
+          "gh pr create --title \"FL-0403: campaign scaffold conventions\" --body \"## Summary\n- add campaign authoring conventions to Content Pack\n- confirm manifest path/ordering and validation command\n\n## Testing\n- powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels\""
         ],
         "notes": [
-          "Added campaign authoring conventions to Content Pack and confirmed campaign manifest path/ordering policy."
+          "Added campaign authoring conventions to Content Pack and confirmed campaign manifest path/ordering policy.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/48"
         ]
       }
     },
