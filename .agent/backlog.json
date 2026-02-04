@@ -1384,6 +1384,169 @@
       }
     },
     {
+      "id": "FL-0422",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: Hold (once per drop) determinism",
+      "status": "New",
+      "dependsOn": [
+        "FL-0413",
+        "FL-0200"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#12-rng-bags-and-hold",
+      "rationale": "Hold behavior affects piece order and can silently break determinism; golden fixtures lock down swap rules and restrictions.",
+      "sizeHint": "S",
+      "deliverables": [
+        "Golden fixtures covering hold swap, once-per-drop restriction, and spawn orientation reset",
+        "Include a fixture that mixes hold with rotation or soft drop to verify deterministic state snapshots",
+        "At least one negative test for hold disabled or invalid hold usage"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0423",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: lock delay + reset limits",
+      "status": "New",
+      "dependsOn": [
+        "FL-0414",
+        "FL-0200"
+      ],
+      "requirementRef": "/docs/specs/Input_Feel_v0_2.md#lock-behavior",
+      "rationale": "Lock delay and reset limits can change determinism without visible symptoms; golden fixtures ensure tick-accurate behavior stays stable.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Golden fixtures for grounded→ungrounded transitions, delay countdown, and reset limit enforcement",
+        "Fixture verifying hard drop immediate lock vs soft drop",
+        "At least one negative test for reset cap or invalid delay handling"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0424",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: rotation constraints + tilt budget",
+      "status": "New",
+      "dependsOn": [
+        "FL-0415",
+        "FL-0200"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#3-world-rotation-snap-90",
+      "rationale": "Rotation constraints and tilt budget affect the legal input stream; golden tests ensure acceptance/rejection and counters stay deterministic.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Golden fixtures for allowedDirections, cooldownTicks, maxRotations, and tiltBudget acceptance/rejection with counter updates",
+        "Fixture that exhausts tilt budget and verifies no rotation is applied",
+        "At least one negative test for illegal rotation attempts"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0425",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: wind hazard + Stabilize anchoring",
+      "status": "New",
+      "dependsOn": [
+        "FL-0418",
+        "FL-0416",
+        "FL-0200"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md",
+      "rationale": "Wind and Stabilize introduce new deterministic forces and anchoring rules; goldens protect against subtle drift in movement and settling.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Golden fixtures for WIND_GUST scheduling/direction/pushStrength, including heavy-material reduction and collision stopping",
+        "Golden fixtures for Stabilize anchoring: anchored components immovable and temporary anchors expire after N rotations",
+        "At least one negative test for wind with no active piece or stabilize disabled"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0426",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: constraints + fail states (overflow/weight/water/no-resting)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0417",
+        "FL-0200"
+      ],
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#fail-states",
+      "rationale": "Constraints are the win/lose gate for authored levels; golden tests prevent silent changes to failure thresholds or timing.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Golden fixtures that trigger OVERFLOW, WEIGHT_EXCEEDED, WATER_FORBIDDEN, and NO_RESTING_ON_WATER",
+        "Include at least one non-fail fixture to assert pass conditions",
+        "At least one negative test for invalid constraint configuration if applicable"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "FL-0427",
+      "epic": "E2",
+      "milestone": "M4",
+      "title": "Golden suite: abilities (Freeze + Drain Placement)",
+      "status": "New",
+      "dependsOn": [
+        "FL-0421",
+        "FL-0200"
+      ],
+      "requirementRef": "/.agent/change-proposals/CP-0002-freeze-and-drain-placement-semantics.md",
+      "rationale": "Ability semantics affect resolve order and determinism; golden fixtures lock down freeze/drain placement behavior once CP-0002 is accepted.",
+      "sizeHint": "M",
+      "deliverables": [
+        "Golden fixtures for Freeze arming, targeting, ICE duration/thaw reflow, and water displacement interactions",
+        "Golden fixtures for Drain Placement arming, pivot conversion, and deterministic drain effects",
+        "At least one negative test for ability use with zero charges or disabled ability"
+      ],
+      "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
+      "validation": [
+        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+      ],
+      "evidence": {
+        "commandsRun": [],
+        "notes": []
+      }
+    },
+    {
       "id": "FL-0419",
       "epic": "E4",
       "milestone": "M4",
