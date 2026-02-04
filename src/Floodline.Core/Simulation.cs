@@ -400,6 +400,12 @@ public sealed class Simulation
             WaterRemovedTotal,
             RotationsExecuted);
 
+        if (CheckConstraints())
+        {
+            _status = SimulationStatus.Lost;
+            return;
+        }
+
         if (Objectives.AllCompleted)
         {
             _status = SimulationStatus.Won;
@@ -651,6 +657,140 @@ public sealed class Simulation
 
         _ = WaterSolver.Settle(Grid, _movement.Gravity, thawed, blockedCells);
     }
+
+    private bool CheckConstraints()
+    {
+        ConstraintsConfig? constraints = _level.Constraints;
+        if (constraints is null)
+        {
+            return false;
+        }
+
+        if (constraints.MaxMass is int maxMass && GetTotalMass(Grid) > maxMass)
+        {
+            return true;
+        }
+
+        if (constraints.WaterForbiddenWorldHeightMin is int minHeight && HasWaterAtOrAboveWorldHeight(minHeight, Grid))
+        {
+            return true;
+        }
+
+        if (constraints.NoRestingOnWater && HasRestingOnWater(Grid, _movement.Gravity))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool HasWaterAtOrAboveWorldHeight(int minHeight, Grid grid)
+    {
+        int sizeX = grid.Size.X;
+        int sizeY = grid.Size.Y;
+        int sizeZ = grid.Size.Z;
+
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = minHeight; y < sizeY; y++)
+            {
+                for (int z = 0; z < sizeZ; z++)
+                {
+                    if (grid.GetVoxel(new Int3(x, y, z)).Type == OccupancyType.Water)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool HasRestingOnWater(Grid grid, GravityDirection gravity)
+    {
+        Int3 gravityVector = GravityTable.GetVector(gravity);
+        int sizeX = grid.Size.X;
+        int sizeY = grid.Size.Y;
+        int sizeZ = grid.Size.Z;
+
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                for (int z = 0; z < sizeZ; z++)
+                {
+                    Int3 pos = new(x, y, z);
+                    Voxel voxel = grid.GetVoxel(pos);
+                    if (!IsSolidForConstraints(voxel.Type))
+                    {
+                        continue;
+                    }
+
+                    Int3 below = pos + gravityVector;
+                    if (!grid.TryGetVoxel(below, out Voxel support))
+                    {
+                        continue;
+                    }
+
+                    if (support.Type == OccupancyType.Water)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static int GetTotalMass(Grid grid)
+    {
+        int total = 0;
+        int sizeX = grid.Size.X;
+        int sizeY = grid.Size.Y;
+        int sizeZ = grid.Size.Z;
+
+        for (int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                for (int z = 0; z < sizeZ; z++)
+                {
+                    Voxel voxel = grid.GetVoxel(new Int3(x, y, z));
+                    if (voxel.Type != OccupancyType.Solid)
+                    {
+                        continue;
+                    }
+
+                    total += GetMaterialMass(voxel.MaterialId);
+                }
+            }
+        }
+
+        return total;
+    }
+
+    private static int GetMaterialMass(string? materialId)
+    {
+        if (string.IsNullOrWhiteSpace(materialId))
+        {
+            return 1;
+        }
+
+        string normalized = materialId.Trim().ToUpperInvariant();
+        return normalized switch
+        {
+            "HEAVY" => 2,
+            "STANDARD" => 1,
+            "REINFORCED" => 1,
+            _ => 1
+        };
+    }
+
+    private static bool IsSolidForConstraints(OccupancyType type) =>
+        type is OccupancyType.Solid or OccupancyType.Wall or OccupancyType.Bedrock or OccupancyType.Ice
+            or OccupancyType.Drain or OccupancyType.Porous;
 
     private bool IsGrounded() =>
         ActivePiece is not null && !ActivePiece.CanAdvance(Grid, _movement.Gravity);

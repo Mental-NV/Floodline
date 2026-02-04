@@ -1346,12 +1346,13 @@
           ]
         }
       },
-    {
-      "id": "FL-0417",
-      "epic": "E1",
-      "milestone": "M4",
-      "title": "Core: constraints + fail states (WEIGHT_EXCEEDED/WATER_FORBIDDEN/NO_RESTING_ON_WATER)",
-      "status": "New",
+      {
+        "id": "FL-0417",
+        "epic": "E1",
+        "milestone": "M4",
+        "title": "Core: constraints + fail states (WEIGHT_EXCEEDED/WATER_FORBIDDEN/NO_RESTING_ON_WATER)",
+        "status": "InProgress",
+        "startedAt": "2026-02-04T21:36:43Z",
       "dependsOn": [
         "FL-0416"
       ],
@@ -1365,14 +1366,21 @@
         "Unit tests for each fail state/constraint trigger and non-trigger cases"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
-      "validation": [
-        "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
-      ],
-      "evidence": {
-        "commandsRun": [],
-        "notes": []
-      }
-    },
+        "validation": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+        ],
+        "evidence": {
+          "commandsRun": [
+            "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+          ],
+          "notes": [
+            "Implemented WEIGHT_EXCEEDED (total mass > maxMass), WATER_FORBIDDEN (any water at worldHeight >= min), and NO_RESTING_ON_WATER checks after resolve.",
+            "Constraint evaluation runs after objective calculation and before win check to ensure fail states override success.",
+            "Inspected ConstraintsConfig/Voxel/SolidSettler/ObjectiveEvaluator patterns to align mass + solid checks beyond spec reference.",
+            "PR: https://github.com/Mental-NV/Floodline/pull/54"
+          ]
+        }
+      },
     {
       "id": "FL-0418",
       "epic": "E1",
