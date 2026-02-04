@@ -11,6 +11,7 @@ You are an autonomous coding agent working inside a git repo on Windows. Build F
 4) /docs/specs/Water_Algorithm_v0_2.md
 5) /docs\content\Content_Pack_v0_2.md
 6) /.agent/contract-policy.md
+7) /.agent/change-proposals/**.md
 7) /.agent/backlog.json
 8) /.agent/AGENT_OS.md
 

@@ -35,6 +35,8 @@
 6) [`contract-policy.md`](contract-policy.md)  
    Canonical change/versioning rules for autonomous work (scope control, follow-ups, compatibility).
 
+7) Change proposal documents under .agent\change-proposals\*
+
 7) [`AGENT_OS.md`](AGENT_OS.md) (this file)  
    The only canonical agent workflow + gates + milestone order.
 
