@@ -1122,7 +1122,7 @@
         "FL-0410",
         "FL-0401"
       ],
-      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#objectives",
+      "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#objectives; /src/Floodline.Cli/Validation/LevelValidator.cs; /src/Floodline.Cli/Validation/LevelValidationResult.cs; /src/Floodline.Cli/Validation/LevelValidationError.cs; /src/Floodline.Core/Levels/Level.cs; /src/Floodline.Core/Levels/LevelConfigs.cs; /src/Floodline.Core/Levels/LevelLoader.cs; /schemas/level.schema.v0.2.1.json; /tests/Floodline.Cli.Tests/CliAppTests.cs; /tests/Floodline.Cli.Tests/TestPaths.cs",
       "rationale": "Schema validation alone cannot fully validate gameplay meaning (e.g., piece IDs, supported direction modes, param relationships); semantic validation is required for safe autonomous content production.",
       "sizeHint": "M",
       "deliverables": [
