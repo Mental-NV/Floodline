@@ -172,7 +172,7 @@ Every new backlog item MUST include:
 - `id`, `title`, `milestone`, `status`, `dependsOn`
 - `requirementRef` (exact GDD section anchor preferred; or failing test reference)
 - `rationale`
-- `validation.commands` (prefer the scripts in [`scripts/`](../scripts/))
+- `validation` (array of commands; prefer the scripts in [`scripts/`](../scripts/))
 - `definitionOfDoneRef` (usually [`AGENT_OS.md#dod`](#dod))
 - evidence fields (`evidence.commandsRun`, `evidence.notes`)
 
@@ -256,7 +256,7 @@ Prohibitions:
 
 ### Step 3 — Implement + verify
 - Implement only what the item requires (no opportunistic refactors).
-- Run the item’s `validation.commands` exactly (prefer `scripts/ci.ps1`).
+- Run the item’s `validation` commands exactly (prefer `scripts/ci.ps1`).
 - Record commands + results into evidence.
 
 ### Step 4 — Publishing (PR open)

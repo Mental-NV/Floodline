@@ -31,7 +31,8 @@
       "rationale",
       "validation",
       "definitionOfDoneRef"
-    ]
+    ],
+    "validationFormat": "validation is an array of command strings"
   },
   "items": [
     {
