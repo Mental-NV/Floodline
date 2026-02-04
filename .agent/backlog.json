@@ -1270,15 +1270,16 @@
           ]
         }
       },
-    {
-      "id": "FL-0415",
-      "epic": "E1",
-      "milestone": "M4",
-      "title": "Core: enforce rotation constraints (cooldown/maxRotations/tiltBudget/allowed dirs)",
-      "status": "New",
-      "dependsOn": [
-        "FL-0414"
-      ],
+      {
+        "id": "FL-0415",
+        "epic": "E1",
+        "milestone": "M4",
+        "title": "Core: enforce rotation constraints (cooldown/maxRotations/tiltBudget/allowed dirs)",
+        "status": "InProgress",
+        "startedAt": "2026-02-04T20:59:48Z",
+        "dependsOn": [
+          "FL-0414"
+        ],
       "requirementRef": "/docs/specs/Simulation_Rules_v0_2.md#3-world-rotation-snap-90",
       "rationale": "Campaign levels rely on rotation scarcity (cooldown, max rotations, tilt budget) and direction restrictions. These must be enforced deterministically in Core, not approximated in Unity.",
       "sizeHint": "M",
