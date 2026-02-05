@@ -1884,8 +1884,19 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L01_First_Stack.json --inputs %TEMP%/floodline-input-L01_First_Stack.txt --record levels/solutions/L01_First_Stack.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L02_First_Tilt.json --inputs %TEMP%/floodline-input-L02_First_Tilt.txt --record levels/solutions/L02_First_Tilt.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L03_Four_Winds.json --inputs %TEMP%/floodline-input-L03_Four_Winds.txt --record levels/solutions/L03_Four_Winds.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L04_Unsupported.json --inputs %TEMP%/floodline-input-L04_Unsupported.txt --record levels/solutions/L04_Unsupported.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L05_Parking_Lot.json --inputs %TEMP%/floodline-input-L05_Parking_Lot.txt --record levels/solutions/L05_Parking_Lot.replay.json",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
+        ],
+        "notes": [
+          "Mapped unsupported campaign hooks to schema/Core-supported fields: Lv1 'place 8 pieces' represented as REACH_HEIGHT 7 with flat O2 sequence; unsupported star hooks (holes/overhangs/plateau-survives-tilts) omitted or approximated with supported star conditions.",
+          "Recorded replay solutions for L01-L05 via CLI using temp input scripts.",
+          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md."
+        ]
       }
     },
     {

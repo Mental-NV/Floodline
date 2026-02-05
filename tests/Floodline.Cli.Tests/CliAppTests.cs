@@ -226,6 +226,16 @@ public class CliAppTests
                      error.RuleId.StartsWith("schema.", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void CampaignValidator_Validates_Current_Campaign()
+    {
+        string campaignPath = TestPaths.GetLevelPath("campaign.v0.2.0.json");
+
+        LevelValidationResult result = CampaignValidator.ValidateFile(campaignPath);
+
+        Assert.True(result.IsValid, $"Campaign validation failed: {string.Join(", ", result.Errors)}");
+    }
+
     private static string ExtractHash(string output)
     {
         foreach (string line in output.Split(Environment.NewLine))
