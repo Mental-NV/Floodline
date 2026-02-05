@@ -1,0 +1,10 @@
+# FloodlineConstraintSnapshot v0.1
+scenario: overflow
+constraints: maxWorldHeight=2 maxMass=none waterForbiddenMin=none noRestingOnWater=false
+gravity: Down
+status: Lost
+ticks: 0
+piecesLocked: 0
+activePiece: id=O2 orientation=0 origin=3,5,3
+cells: 1
+cell: 3,5,3 type=Bedrock material=none

@@ -128,6 +128,24 @@ public class LevelLoaderTests
         ArgumentException ex = Assert.Throws<ArgumentException>(() => LevelLoader.Load(json));
         Assert.Contains("Hazard type is missing", ex.Message);
     }
+
+    [Fact]
+    public void LoadNegativeConstraintThrowsArgumentException()
+    {
+        string json = @"{
+            ""meta"": { ""id"": ""fail"", ""title"": ""fail"", ""schemaVersion"": ""0.2.0"", ""seed"": 1 },
+            ""bounds"": { ""x"": 10, ""y"": 10, ""z"": 10 },
+            ""initialVoxels"": [],
+            ""objectives"": [],
+            ""rotation"": { },
+            ""bag"": { ""type"": ""Fixed"", ""sequence"": [""O2""] },
+            ""hazards"": [],
+            ""constraints"": { ""maxMass"": -1 }
+        }";
+
+        ArgumentException ex = Assert.Throws<ArgumentException>(() => LevelLoader.Load(json));
+        Assert.Contains("maxMass must be >= 0.", ex.Message);
+    }
 }
 
 

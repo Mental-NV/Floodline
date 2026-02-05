@@ -1,0 +1,13 @@
+# FloodlineConstraintSnapshot v0.1
+scenario: weight_exceeded
+constraints: maxWorldHeight=none maxMass=1 waterForbiddenMin=none noRestingOnWater=false
+gravity: Down
+status: Lost
+ticks: 1
+piecesLocked: 1
+activePiece: id=I4 orientation=0 origin=5,19,5
+cells: 4
+cell: 2,0,5 type=Solid material=STANDARD
+cell: 3,0,5 type=Solid material=STANDARD
+cell: 4,0,5 type=Solid material=STANDARD
+cell: 5,0,5 type=Solid material=STANDARD

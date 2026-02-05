@@ -1668,8 +1668,13 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "$env:FLOODLINE_UPDATE_GOLDENS='1'; dotnet test tests/Floodline.Core.Tests/Floodline.Core.Tests.csproj -c Release --filter \"FullyQualifiedName~Floodline.Core.Tests.Golden.ConstraintFailStateGoldenTests\"",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
+        ],
+        "notes": [
+          "Added constraint fail-state golden snapshots (overflow, weight, water forbidden, no resting) plus a passing case and a negative constraint validation test."
+        ]
       }
     },
     {

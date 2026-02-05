@@ -1,0 +1,19 @@
+# FloodlineConstraintSnapshot v0.1
+scenario: water_forbidden
+constraints: maxWorldHeight=none maxMass=none waterForbiddenMin=1 noRestingOnWater=false
+gravity: Down
+status: Lost
+ticks: 1
+piecesLocked: 1
+activePiece: id=I4 orientation=0 origin=5,19,5
+cells: 10
+cell: 0,1,1 type=Bedrock material=none
+cell: 1,0,1 type=Bedrock material=none
+cell: 1,1,0 type=Bedrock material=none
+cell: 1,1,1 type=Water material=none
+cell: 1,1,2 type=Bedrock material=none
+cell: 2,0,5 type=Solid material=STANDARD
+cell: 2,1,1 type=Bedrock material=none
+cell: 3,0,5 type=Solid material=STANDARD
+cell: 4,0,5 type=Solid material=STANDARD
+cell: 5,0,5 type=Solid material=STANDARD

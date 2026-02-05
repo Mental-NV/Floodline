@@ -1,0 +1,13 @@
+# FloodlineConstraintSnapshot v0.1
+scenario: pass
+constraints: maxWorldHeight=none maxMass=20 waterForbiddenMin=10 noRestingOnWater=true
+gravity: Down
+status: InProgress
+ticks: 1
+piecesLocked: 1
+activePiece: id=O2 orientation=0 origin=5,19,5
+cells: 4
+cell: 4,0,5 type=Solid material=STANDARD
+cell: 4,0,6 type=Solid material=STANDARD
+cell: 5,0,5 type=Solid material=STANDARD
+cell: 5,0,6 type=Solid material=STANDARD
