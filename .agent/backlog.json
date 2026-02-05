@@ -1649,7 +1649,8 @@
       "epic": "E2",
       "milestone": "M4",
       "title": "Golden suite: constraints + fail states (overflow/weight/water/no-resting)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-05T00:28:18Z",
       "dependsOn": [
         "FL-0417",
         "FL-0200"
