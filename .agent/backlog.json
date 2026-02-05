@@ -1613,7 +1613,8 @@
       "epic": "E2",
       "milestone": "M4",
       "title": "Golden suite: wind hazard + Stabilize anchoring",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-05T00:04:03Z",
       "dependsOn": [
         "FL-0418",
         "FL-0416",
