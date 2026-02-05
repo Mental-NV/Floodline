@@ -24,6 +24,26 @@
     {
       "id": "L05_Parking_Lot",
       "path": "levels/campaign/L05_Parking_Lot.json"
+    },
+    {
+      "id": "L06_Hold_It",
+      "path": "levels/campaign/L06_Hold_It.json"
+    },
+    {
+      "id": "L07_Reinforced_Intro",
+      "path": "levels/campaign/L07_Reinforced_Intro.json"
+    },
+    {
+      "id": "L08_Tilt_Budget",
+      "path": "levels/campaign/L08_Tilt_Budget.json"
+    },
+    {
+      "id": "L09_Cavity_Bonus",
+      "path": "levels/campaign/L09_Cavity_Bonus.json"
+    },
+    {
+      "id": "L10_Foundation_Exam",
+      "path": "levels/campaign/L10_Foundation_Exam.json"
     }
   ]
 }

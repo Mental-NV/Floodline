@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "id": "L10_Foundation_Exam",
+    "title": "Foundation Exam",
+    "schemaVersion": "0.2.3",
+    "seed": 1010
+  },
+  "bounds": {
+    "x": 10,
+    "y": 16,
+    "z": 10
+  },
+  "initialVoxels": [
+    { "pos": { "x": 4, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 0, "z": 6 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 6 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 0, "z": 6 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 1, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 6 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 6 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 1, "z": 6 }, "type": "Solid" }
+  ],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": {
+        "height": 14
+      }
+    },
+    {
+      "type": "BUILD_PLATEAU",
+      "params": {
+        "area": 9,
+        "worldLevel": 2
+      }
+    }
+  ],
+  "rotation": {
+    "tiltBudget": 8,
+    "allowedDirections": [
+      "Down",
+      "East",
+      "West"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "I3",
+      "I3",
+      "I3",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {},
+  "stars": {
+    "star3": [
+      {
+        "type": "MAX_SHIFT_VOXELS_TOTAL",
+        "params": {
+          "count": 6
+        }
+      }
+    ]
+  }
+}

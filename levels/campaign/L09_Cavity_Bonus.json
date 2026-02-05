@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "id": "L09_Cavity_Bonus",
+    "title": "Cavity Bonus",
+    "schemaVersion": "0.2.3",
+    "seed": 1009
+  },
+  "bounds": {
+    "x": 10,
+    "y": 16,
+    "z": 10
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": {
+        "height": 10
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {},
+  "stars": {
+    "star3": [
+      {
+        "type": "MAX_PIECES_USED",
+        "params": {
+          "count": 12
+        }
+      }
+    ]
+  }
+}
