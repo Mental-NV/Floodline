@@ -1,0 +1,380 @@
+{
+  "meta": {
+    "id": "L15_Dont_Build_on_Water",
+    "title": "Don't Build on Water",
+    "schemaVersion": "0.2.3",
+    "seed": 1015
+  },
+  "bounds": {
+    "x": 10,
+    "y": 16,
+    "z": 10
+  },
+  "initialVoxels": [
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 6
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 7
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 8
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 0,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 0,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 0,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 0,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 0,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 0,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 0,
+        "z": 6
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 0,
+        "z": 7
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 0,
+        "z": 8
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 0,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 1,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 1,
+        "z": 6
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 1,
+        "z": 7
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 1,
+        "z": 8
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 0,
+        "y": 1,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 1,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 1,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 1,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 1,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 1,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 1,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 1,
+        "z": 5
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 1,
+        "z": 6
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 1,
+        "z": 7
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 1,
+        "z": 8
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 4,
+        "y": 1,
+        "z": 9
+      },
+      "type": "Solid"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": 6
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": 7
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 1,
+        "y": 0,
+        "z": 8
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 0,
+        "z": 6
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 0,
+        "z": 7
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 2,
+        "y": 0,
+        "z": 8
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 0,
+        "z": 6
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 0,
+        "z": 7
+      },
+      "type": "Water"
+    },
+    {
+      "pos": {
+        "x": 3,
+        "y": 0,
+        "z": 8
+      },
+      "type": "Water"
+    }
+  ],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": {
+        "height": 10
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2",
+      "O2"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {
+    "noRestingOnWater": true
+  }
+}

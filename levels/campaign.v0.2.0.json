@@ -44,6 +44,26 @@
     {
       "id": "L10_Foundation_Exam",
       "path": "levels/campaign/L10_Foundation_Exam.json"
+    },
+    {
+      "id": "L11_First_Basin",
+      "path": "levels/campaign/L11_First_Basin.json"
+    },
+    {
+      "id": "L12_Meet_the_Drain",
+      "path": "levels/campaign/L12_Meet_the_Drain.json"
+    },
+    {
+      "id": "L13_Dig_a_Channel",
+      "path": "levels/campaign/L13_Dig_a_Channel.json"
+    },
+    {
+      "id": "L14_Two_Basins",
+      "path": "levels/campaign/L14_Two_Basins.json"
+    },
+    {
+      "id": "L15_Dont_Build_on_Water",
+      "path": "levels/campaign/L15_Dont_Build_on_Water.json"
     }
   ]
 }

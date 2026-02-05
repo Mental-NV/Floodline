@@ -1,0 +1,1 @@
+{"meta":{"replayVersion":"0.1.2","rulesVersion":"0.2.1","levelId":"L13_Dig_a_Channel","levelHash":"0.1.0:55141f337da0ab8f92c4d1336bd3434aef654a3aa480b92cde5e54bff1f11cd2","seed":1013,"tickRate":60,"platform":"Microsoft Windows 10.0.26200","inputEncoding":"command-v2"},"inputs":[{"tick":0,"command":"HardDrop"},{"tick":1,"command":"HardDrop"},{"tick":2,"command":"HardDrop"}]}
