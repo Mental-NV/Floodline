@@ -133,8 +133,8 @@ On spawn, camera recenters to keep the active piece and the top of the structure
   - Tilt forward/back: 1 / 2
   - Tilt left/right: 3 / 4
 - Stabilize (ability): V (if level enables)
-- Freeze (ability): B (if level enables)
-- Drain placement (ability): N (if level enables)
+- FreezeAbility (ability): B (if level enables)
+- DrainPlacementAbility (ability): N (if level enables)
 - Camera snap: F1–F4
 
 (Rebinding supported via Unity Input System.)

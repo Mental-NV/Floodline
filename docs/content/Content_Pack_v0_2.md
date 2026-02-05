@@ -212,16 +212,16 @@ Introduces weight limits, footprint constraints, wind forcing, stabilization, an
 #### Level Table
 | Lv | Title | New teach beat | Primary objective | Constraints / Star hooks |
 |---:|---|---|---|---|
-| 1 | First Stack | Basic move/rotate piece, lock | Place 8 pieces without overflow | No world rotation; ★2 ≤10 holes, ★3 no overhangs |
-| 2 | First Tilt | World rotation (E/W) | Reach height 6 | Max rotations 3; ★3 shift voxels = 0 |
-| 3 | Four Winds | Add N/S rotation | Reach height 8 | Cooldown 1.5s; ★2 ≤2 tilts |
-| 4 | Unsupported | Overhangs fall during resolve | Survive 2 tilts with ≤5 voxels lost | Prebuilt overhang demo; ★3 loss ≤1 |
-| 5 | Parking Lot | Flatness matters | Build plateau 3×3 at elev=2 | ★2 ≤10 pieces, ★3 plateau survives 2 tilts |
-| 6 | Hold It | Introduce Hold | Reach height 10 | Hold on; ★2 hold used ≤2 |
-| 7 | Reinforced Intro | Reinforced pieces for bridging | Build bridge gap length 3 | Bag includes reinforced; ★3 bridge survives 2 tilts |
-| 8 | Tilt Budget | Rotation scarcity | Reach height 12 | Tilt budget 6; ★3 finish with ≥2 left |
-| 9 | Cavity Bonus | Enclosure (air pocket) | Enclose 1 cavity | ★2 cavity + height 10, ★3 ≤12 pieces |
-| 10 | Foundation Exam | Combine concepts | Height 14 AND plateau 3×3 | Tilt budget 8; ★3 shift voxels ≤6 |
+| 1 | First Stack | Basic move/rotate piece, lock | Place 8 pieces without overflow | No world rotation; ★2 MAX_PIECES_USED ≤10, ★3 MAX_SHIFT_VOXELS_TOTAL = 0 |
+| 2 | First Tilt | World rotation (E/W) | Reach height 6 | Max rotations 3; ★3 MAX_SHIFT_VOXELS_TOTAL = 0 |
+| 3 | Four Winds | Add N/S rotation | Reach height 8 | Cooldown 1.5s; ★2 MAX_ROTATIONS_USED ≤2 |
+| 4 | Unsupported | Overhangs fall during resolve | Survive 2 tilts with ≤5 voxels lost | Prebuilt overhang demo; ★3 MAX_LOST_VOXELS_TOTAL ≤1 |
+| 5 | Parking Lot | Flatness matters | Build plateau 3×3 at elev=2 | ★2 MAX_PIECES_USED ≤10, ★3 MAX_SHIFT_VOXELS_TOTAL ≤2 |
+| 6 | Hold It | Introduce Hold | Reach height 10 | Hold on; ★2 MAX_PIECES_USED ≤12 |
+| 7 | Reinforced Intro | Reinforced pieces for bridging | Build bridge gap length 3 | Bag includes reinforced; ★3 MAX_ROTATIONS_USED ≤2 |
+| 8 | Tilt Budget | Rotation scarcity | Reach height 12 | Tilt budget 6; ★3 MAX_ROTATIONS_USED ≤4 |
+| 9 | Cavity Bonus | Enclosure (air pocket) | Enclose 1 cavity | ★2 MAX_ROTATIONS_USED ≤3, ★3 MAX_PIECES_USED ≤12 |
+| 10 | Foundation Exam | Combine concepts | Height 14 AND plateau 3×3 | Tilt budget 8; ★3 MAX_SHIFT_VOXELS_TOTAL ≤6 |
 
 #### Notes for Chapter 1
 - **Lv1–3:** rotation introduced with low penalty.
@@ -236,16 +236,16 @@ Introduces weight limits, footprint constraints, wind forcing, stabilization, an
 #### Level Table
 | Lv | Title | New teach beat | Primary objective | Constraints / Star hooks |
 |---:|---|---|---|---|
-| 11 | First Basin | Water exists; cannot support | Place 6 pieces; end stable | Starter pool under shelf; ★3 shift voxels 0 |
-| 12 | Meet the Drain | Drain tile behavior | Drain 10 units | One drain preplaced; ★2 ≤12 pieces |
-| 13 | Dig a Channel | Guide flow with terrain | Drain 18 units | Tilt allowed E/W; ★3 ≤4 tilts |
-| 14 | Two Basins | Basins connect + level | Drain 20 units | Must connect basins; ★3 no water above elev=1 |
-| 15 | Don’t Build on Water | Support rule enforcement | Reach height 10 | ★3 “no resting on water” at end-of-resolve |
-| 16 | Freeze 101 | Freeze introduces temporary support | Drain 20 units | Freeze charges 1; ★3 freeze unused |
-| 17 | Temporary Bridge | Freeze as tactical bridge | Create crossing then drain | Fixed piece seq; ★3 ≤1 tilt |
-| 18 | Drain Placement | Player places drain block | Drain 25 units | Drain placement charges 1; ★2 ≤18 pieces |
-| 19 | Forbidden Zone | Flood constraint | Drain 30 units | Lose if water elev≥3; ★3 ≤6 tilts |
-| 20 | Floodplain Exam | Combine drain + freeze + planning | Drain 40 AND height 12 | Tilt budget 10; ★3 loss ≤8 & ≤22 pieces |
+| 11 | First Basin | Water exists; cannot support | Place 6 pieces; end stable | Starter pool under shelf; ★3 MAX_SHIFT_VOXELS_TOTAL = 0 |
+| 12 | Meet the Drain | Drain tile behavior | Drain 10 units | One drain preplaced; ★2 MAX_PIECES_USED ≤12 |
+| 13 | Dig a Channel | Guide flow with terrain | Drain 18 units | Tilt allowed E/W; ★3 MAX_ROTATIONS_USED ≤4 |
+| 14 | Two Basins | Basins connect + level | Drain 20 units | Must connect basins; ★3 MAX_SHIFT_VOXELS_TOTAL ≤4 |
+| 15 | Don’t Build on Water | Support rule enforcement | Reach height 10 | Constraint: NO_RESTING_ON_WATER; ★3 MAX_SHIFT_VOXELS_TOTAL ≤2 |
+| 16 | Freeze 101 | Freeze introduces temporary support | Drain 20 units | Freeze charges 1; ★3 MAX_PIECES_USED ≤16 |
+| 17 | Temporary Bridge | Freeze as tactical bridge | Create crossing then drain | Fixed piece seq; ★3 MAX_ROTATIONS_USED ≤1 |
+| 18 | Drain Placement | Player places drain block | Drain 25 units | Drain placement charges 1; ★2 MAX_PIECES_USED ≤18 |
+| 19 | Forbidden Zone | Flood constraint | Drain 30 units | Lose if water elev≥3; ★3 MAX_ROTATIONS_USED ≤6 |
+| 20 | Floodplain Exam | Combine drain + freeze + planning | Drain 40 AND height 12 | Tilt budget 10; ★3 MAX_LOST_VOXELS_TOTAL ≤8 & MAX_PIECES_USED ≤22 |
 
 #### Notes for Chapter 2
 - Emphasize: **water is deterministic** and will always settle to lowest reachable cells.
@@ -260,16 +260,16 @@ Introduces weight limits, footprint constraints, wind forcing, stabilization, an
 #### Level Table
 | Lv | Title | New teach beat | Primary objective | Constraints / Star hooks |
 |---:|---|---|---|---|
-| 21 | Weight Limit | Total mass constraint | Reach height 18 | Max weight 250; ★3 finish ≤220 |
-| 22 | Heavy Pieces | Heavy material tradeoff | Reach height 20 | Bag biased heavy; ★3 ≤1 major collapse |
-| 23 | Skyline Footprint | Small base footprint | Reach height 18 | Field 8×8; ★3 plateau 3×3 also |
-| 24 | First Gust | Wind forcing begins | Reach height 20 | Wind interval 12s; ★3 ≤4 tilts |
-| 25 | Stabilize | Stabilize ability intro | Reach height 22 | Stabilize charges 1; ★3 no stabilize used |
-| 26 | Cantilever | Overhang design under wind | Build overhang length 4 survives 2 tilts | Max weight 280; ★3 ≤14 pieces |
-| 27 | Tight Budget | Scarce rotation under pressure | Reach height 24 | Tilt budget 6; ★3 finish with ≥2 left |
-| 28 | Alternating Wind | Predictable wind patterns | Reach height 26 | Wind alternates E/W; ★3 shift voxels 0 |
-| 29 | Wet Foundation | Water returns as foundation hazard | Reach height 26 under weight | Small base puddles; ★3 no resting on water at end |
-| 30 | High-Rise Exam | Full mastery | Height 30 AND weight ≤400 | Wind stronger; tilt budget 10; ★3 ≤26 pieces & loss ≤10 |
+| 21 | Weight Limit | Total mass constraint | Reach height 18 | Max weight 250; ★3 MAX_PIECES_USED ≤20 |
+| 22 | Heavy Pieces | Heavy material tradeoff | Reach height 20 | Bag biased heavy; ★3 MAX_SHIFT_VOXELS_TOTAL ≤6 |
+| 23 | Skyline Footprint | Small base footprint | Reach height 18 | Field 8×8; ★3 MAX_PIECES_USED ≤16 |
+| 24 | First Gust | Wind forcing begins | Reach height 20 | Wind interval 12s; ★3 MAX_ROTATIONS_USED ≤4 |
+| 25 | Stabilize | Stabilize ability intro | Reach height 22 | Stabilize charges 1; ★3 MAX_PIECES_USED ≤18 |
+| 26 | Cantilever | Overhang design under wind | Build overhang length 4 survives 2 tilts | Max weight 280; ★3 MAX_PIECES_USED ≤14 |
+| 27 | Tight Budget | Scarce rotation under pressure | Reach height 24 | Tilt budget 6; ★3 MAX_ROTATIONS_USED ≤4 |
+| 28 | Alternating Wind | Predictable wind patterns | Reach height 26 | Wind alternates E/W; ★3 MAX_SHIFT_VOXELS_TOTAL = 0 |
+| 29 | Wet Foundation | Water returns as foundation hazard | Reach height 26 under weight | Small base puddles; Constraint: NO_RESTING_ON_WATER; ★3 MAX_SHIFT_VOXELS_TOTAL ≤4 |
+| 30 | High-Rise Exam | Full mastery | Height 30 AND weight ≤400 | Wind stronger; tilt budget 10; ★3 MAX_PIECES_USED ≤26 & MAX_LOST_VOXELS_TOTAL ≤10 |
 
 #### Notes for Chapter 3
 - Wind must be **predictable** (patterned) and signposted (arrow + countdown).
