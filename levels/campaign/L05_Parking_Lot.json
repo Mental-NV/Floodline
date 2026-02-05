@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "id": "L05_Parking_Lot",
+    "title": "Parking Lot",
+    "schemaVersion": "0.2.3",
+    "seed": 1005
+  },
+  "bounds": {
+    "x": 10,
+    "y": 12,
+    "z": 10
+  },
+  "initialVoxels": [
+    { "pos": { "x": 3, "y": 0, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 0, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 3, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 3, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 3, "y": 1, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 3 }, "type": "Solid" },
+    { "pos": { "x": 3, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 4 }, "type": "Solid" },
+    { "pos": { "x": 3, "y": 1, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 4, "y": 1, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 5, "y": 1, "z": 5 }, "type": "Solid" }
+  ],
+  "objectives": [
+    {
+      "type": "BUILD_PLATEAU",
+      "params": {
+        "area": 9,
+        "worldLevel": 2
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down",
+      "East",
+      "West"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "I3"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {},
+  "stars": {
+    "star2": [
+      {
+        "type": "MAX_PIECES_USED",
+        "params": {
+          "count": 10
+        }
+      }
+    ],
+    "star3": [
+      {
+        "type": "MAX_ROTATIONS_USED",
+        "params": {
+          "count": 2
+        }
+      }
+    ]
+  }
+}

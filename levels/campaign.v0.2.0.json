@@ -6,8 +6,24 @@
   },
   "levels": [
     {
-      "id": "minimal",
-      "path": "levels/minimal_level.json"
+      "id": "L01_First_Stack",
+      "path": "levels/campaign/L01_First_Stack.json"
+    },
+    {
+      "id": "L02_First_Tilt",
+      "path": "levels/campaign/L02_First_Tilt.json"
+    },
+    {
+      "id": "L03_Four_Winds",
+      "path": "levels/campaign/L03_Four_Winds.json"
+    },
+    {
+      "id": "L04_Unsupported",
+      "path": "levels/campaign/L04_Unsupported.json"
+    },
+    {
+      "id": "L05_Parking_Lot",
+      "path": "levels/campaign/L05_Parking_Lot.json"
     }
   ]
 }

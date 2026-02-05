@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "L01_First_Stack",
+    "title": "First Stack",
+    "schemaVersion": "0.2.3",
+    "seed": 1001
+  },
+  "bounds": {
+    "x": 10,
+    "y": 12,
+    "z": 10
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": {
+        "height": 7
+      }
+    }
+  ],
+  "rotation": {
+    "maxRotations": 0,
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "O2"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {}
+}
