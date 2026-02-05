@@ -1719,8 +1719,9 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Campaign solutions: document format + template + CLI runner",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-05T09:23:12Z",
+      "doneAt": "2026-02-05T09:33:43Z",
       "dependsOn": [
         "FL-0403",
         "FL-0300"
@@ -1745,7 +1746,8 @@
         "notes": [
           "Initial ci.ps1 run failed due to CA1865 in CliApp; fixed StartsWith check and reran successfully.",
           "Assumption: opened/edited CLI and Core files required by deliverables even though requirementRef points to Content_Pack_v0_2.md.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/64"
+          "PR: https://github.com/Mental-NV/Floodline/pull/64",
+          "CI: build-and-test passed on PR #64."
         ]
       }
     },
