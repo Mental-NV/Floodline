@@ -1756,7 +1756,9 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Docs: canonical consistency sweep (input actions, fail states, stars, encoding)",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-05T10:42:18Z",
+      "doneAt": "2026-02-05T11:10:03Z",
       "dependsOn": [
         "FL-0420"
       ],
@@ -1971,8 +1973,21 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L11_First_Basin.json --inputs %TEMP%/floodline-input-L11_First_Basin.txt --record levels/solutions/L11_First_Basin.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L12_Meet_the_Drain.json --inputs %TEMP%/floodline-input-L12_Meet_the_Drain.txt --record levels/solutions/L12_Meet_the_Drain.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L13_Dig_a_Channel.json --inputs %TEMP%/floodline-input-L13_Dig_a_Channel.txt --record levels/solutions/L13_Dig_a_Channel.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L14_Two_Basins.json --inputs %TEMP%/floodline-input-L14_Two_Basins.txt --record levels/solutions/L14_Two_Basins.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L15_Dont_Build_on_Water.json --inputs %TEMP%/floodline-input-L15_Dont_Build_on_Water.txt --record levels/solutions/L15_Dont_Build_on_Water.replay.json",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
+        ],
+        "notes": [
+          "Approximations due to schema/Core limits: Lv11 uses REACH_HEIGHT 5 to represent 'place 6 pieces'; Lv14 omits the 'no water above elev=1' star hook (unsupported); Lv15 enforces no-resting-on-water via constraints.noRestingOnWater (fail-state) instead of a star.",
+          "Lv14 uses dual drains (one per basin) to guarantee deterministic drainage across both basins.",
+          "Assumption: opened/edited schema, CLI, and existing campaign files required for authoring/validation even though requirementRef points to Content_Pack_v0_2.md.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/68",
+          "Merged PR: https://github.com/Mental-NV/Floodline/pull/68"
+        ]
       }
     },
     {

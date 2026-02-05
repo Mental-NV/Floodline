@@ -1,0 +1,1 @@
+{"meta":{"replayVersion":"0.1.2","rulesVersion":"0.2.1","levelId":"L14_Two_Basins","levelHash":"0.1.0:8644bba069cc67527b10125d65b357d33c1c0644e6bbdbb4037e938907c11d3a","seed":1014,"tickRate":60,"platform":"Microsoft Windows 10.0.26200","inputEncoding":"command-v2"},"inputs":[{"tick":0,"command":"HardDrop"},{"tick":1,"command":"HardDrop"}]}
