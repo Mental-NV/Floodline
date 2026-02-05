@@ -256,7 +256,7 @@ Prohibitions:
 
 ### Step 0 — Preflight (each session)
 - Start from a fresh, clean `main` synced to `origin/main`.
-- Read the 8 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog).
+- Read the 9 canonical artifacts (Core GDD, Input Feel, Simulation Rules, Water Algorithm, Content Pack, contract policy, AGENT_OS, backlog, change proposals).
 - Confirm there is at most one active item (`InProgress`).
 - Run: `powershell -ExecutionPolicy Bypass -File ./scripts/preflight.ps1`
 

@@ -1756,7 +1756,7 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Docs: canonical consistency sweep (input actions, fail states, stars, encoding)",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-05T10:42:18Z",
       "dependsOn": [
         "FL-0420"
@@ -1768,17 +1768,26 @@
         "Input_Feel_v0_2.md: add FreezeAbility/DrainPlacementAbility to per-tick action order consistent with Simulation_Rules",
         "Simulation_Rules_v0_2.md: clarify NO_RESTING_ON_WATER as a fail state (or explicitly mark as objective/constraint) and align with constraints wording",
         "Content_Pack_v0_2.md: update star hook examples to only use supported MVP star condition types (MAX_PIECES_USED / MAX_ROTATIONS_USED / MAX_SHIFT_VOXELS_TOTAL / MAX_LOST_VOXELS_TOTAL)",
-        "AGENT_OS.md: fix canonical artifact count text to match the actual list",
+          "AGENT_OS.md: fix canonical artifact count text to match the actual list"
       ],
       "definitionOfDoneRef": "/.agent/AGENT_OS.md#dod",
       "validation": [
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
-      "evidence": {
-        "commandsRun": [],
-        "notes": []
-      }
-    },
+        "evidence": {
+          "commandsRun": [
+            "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
+          ],
+          "notes": [
+            "Input_Feel: updated input defaults naming to FreezeAbility/DrainPlacementAbility.",
+            "Simulation_Rules: clarified NO_RESTING_ON_WATER as a constraint-triggered fail state and added to Fail States.",
+            "Content_Pack: replaced unsupported star hook examples with MAX_* star condition types and moved no-resting-on-water to a constraint.",
+            "AGENT_OS: corrected canonical artifact count text to 9 (includes change proposals).",
+            "Assumption: star hook thresholds were updated to supported MAX_* types as illustrative placeholders.",
+            "Fixed invalid trailing comma in backlog.json to restore valid JSON parsing."
+          ]
+        }
+      },
     {
       "id": "FL-0419",
       "epic": "E4",

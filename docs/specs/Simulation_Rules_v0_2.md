@@ -380,12 +380,13 @@ Metrics are computed at end-of-resolve unless noted.
 - `STAY_UNDER_WEIGHT(maxMass)` mass = sum of placed voxels weighted by material mass
 - `SURVIVE_ROTATIONS(k)` count of successful rotations executed
 
-### 10.4 “No Resting On Water”
-If a level enforces “no voxel resting on water”:
+### 10.4 Constraint: NO_RESTING_ON_WATER (MVP)
+If a level enables the `NO_RESTING_ON_WATER` constraint:
 - Evaluate at end-of-resolve:
-  - For every solid voxel `c`, if cell `c+g` is `WATER`, the condition fails.
+  - For every solid voxel `c`, if cell `c+g` is `WATER`, the constraint fails.
+- A failure triggers the `NO_RESTING_ON_WATER` fail state (see Section 11).
 
-(If you need stricter “ever happened” behavior, track a boolean flag when detected during resolve.)
+(If you need stricter "ever happened" behavior, track a boolean flag when detected during resolve.)
 
 ### 10.5 Stars and Score (MVP)
 **Stars**
@@ -412,6 +413,7 @@ Lose immediately if any condition becomes true after resolve:
 - `TILT_BUDGET_EXCEEDED`: budget < 0 (rotation input rejected before this in normal flow)
 - `WEIGHT_EXCEEDED`: total placed mass > maxMass
 - `WATER_FORBIDDEN`: water in forbidden zone (if configured)
+- `NO_RESTING_ON_WATER`: any solid voxel resting on water (if configured)
 
 Win when all primary objectives are satisfied (checked after resolve).
 
