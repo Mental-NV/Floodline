@@ -1784,7 +1784,8 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Campaign winnability proofs: solution inputs + CI gate (-CampaignSolutions)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-05T09:36:42Z",
       "dependsOn": [
         "FL-0403",
         "FL-0402",
