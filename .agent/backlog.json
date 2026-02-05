@@ -1673,7 +1673,8 @@
           "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -Golden"
         ],
         "notes": [
-          "Added constraint fail-state golden snapshots (overflow, weight, water forbidden, no resting) plus a passing case and a negative constraint validation test."
+          "Added constraint fail-state golden snapshots (overflow, weight, water forbidden, no resting) plus a passing case and a negative constraint validation test.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/62"
         ]
       }
     },
