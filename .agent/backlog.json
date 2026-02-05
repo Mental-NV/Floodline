@@ -1895,7 +1895,8 @@
         "notes": [
           "Mapped unsupported campaign hooks to schema/Core-supported fields: Lv1 'place 8 pieces' represented as REACH_HEIGHT 7 with flat O2 sequence; unsupported star hooks (holes/overhangs/plateau-survives-tilts) omitted or approximated with supported star conditions.",
           "Recorded replay solutions for L01-L05 via CLI using temp input scripts.",
-          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md."
+          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/66"
         ]
       }
     },
