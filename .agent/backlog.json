@@ -1939,7 +1939,8 @@
         "notes": [
           "Mapped unsupported campaign hooks to schema/Core-supported fields: Lv7 bridge objective represented as BUILD_PLATEAU area 3; Lv9 cavity objective represented as REACH_HEIGHT 10; hold usage/bridge-survives-tilts/cavity+height hooks omitted or approximated with supported star conditions; Lv8 tilt budget star hook approximated with MAX_ROTATIONS_USED 4.",
           "Recorded replay solutions for L06-L10 via CLI using temp input scripts.",
-          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md."
+          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md.",
+          "PR: https://github.com/Mental-NV/Floodline/pull/67"
         ]
       }
     },
