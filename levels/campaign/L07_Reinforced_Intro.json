@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "id": "L07_Reinforced_Intro",
+    "title": "Reinforced Intro",
+    "schemaVersion": "0.2.3",
+    "seed": 1007
+  },
+  "bounds": {
+    "x": 10,
+    "y": 16,
+    "z": 10
+  },
+  "initialVoxels": [
+    { "pos": { "x": 5, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 6, "y": 0, "z": 5 }, "type": "Solid" },
+    { "pos": { "x": 7, "y": 0, "z": 5 }, "type": "Solid" }
+  ],
+  "objectives": [
+    {
+      "type": "BUILD_PLATEAU",
+      "params": {
+        "area": 3,
+        "worldLevel": 1
+      }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [
+      "Down"
+    ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [
+      "I3:REINFORCED"
+    ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {}
+}

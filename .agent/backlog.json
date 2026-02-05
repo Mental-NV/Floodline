@@ -1928,8 +1928,19 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L06_Hold_It.json --inputs %TEMP%/floodline-input-L06_Hold_It.txt --record levels/solutions/L06_Hold_It.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L07_Reinforced_Intro.json --inputs %TEMP%/floodline-input-L07_Reinforced_Intro.txt --record levels/solutions/L07_Reinforced_Intro.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L08_Tilt_Budget.json --inputs %TEMP%/floodline-input-L08_Tilt_Budget.txt --record levels/solutions/L08_Tilt_Budget.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L09_Cavity_Bonus.json --inputs %TEMP%/floodline-input-L09_Cavity_Bonus.txt --record levels/solutions/L09_Cavity_Bonus.replay.json",
+          "dotnet run --project src/Floodline.Cli/Floodline.Cli.csproj --configuration Release -- --level levels/campaign/L10_Foundation_Exam.json --inputs %TEMP%/floodline-input-L10_Foundation_Exam.txt --record levels/solutions/L10_Foundation_Exam.replay.json",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels -CampaignSolutions"
+        ],
+        "notes": [
+          "Mapped unsupported campaign hooks to schema/Core-supported fields: Lv7 bridge objective represented as BUILD_PLATEAU area 3; Lv9 cavity objective represented as REACH_HEIGHT 10; hold usage/bridge-survives-tilts/cavity+height hooks omitted or approximated with supported star conditions; Lv8 tilt budget star hook approximated with MAX_ROTATIONS_USED 4.",
+          "Recorded replay solutions for L06-L10 via CLI using temp input scripts.",
+          "Assumption: opened/edited schema, CLI, and test files required by deliverables even though requirementRef points to Content_Pack_v0_2.md."
+        ]
       }
     },
     {
