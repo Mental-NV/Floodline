@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "replayVersion": "0.1.2",
+    "rulesVersion": "0.2.1",
+    "levelId": "LEVEL_ID_HERE",
+    "levelHash": "LEVEL_HASH_HERE",
+    "seed": 0,
+    "tickRate": 60,
+    "platform": "TEMPLATE",
+    "inputEncoding": "command-v2"
+  },
+  "inputs": [
+    { "tick": 0, "command": "MoveLeft" },
+    { "tick": 1, "command": "HardDrop" },
+    { "tick": 2, "command": "None" }
+  ]
+}

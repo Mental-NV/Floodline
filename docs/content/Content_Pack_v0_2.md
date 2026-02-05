@@ -318,4 +318,12 @@ This plan is intended to be authored into actual JSON levels using the level tem
 - Manifest ordering is canonical: keep `levels[]` in ascending level number order.
 - Validation: `powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4 -ValidateLevels`.
 
+### Campaign Solution Replays (MVP)
+- Canonical solution files are replay JSON files produced by the CLI (`--record`) and stored at `levels/solutions/{levelId}.replay.json`.
+- `meta.replayVersion` must match the current replay format version (currently `0.1.2`).
+- `meta.rulesVersion` must match the current rules version (currently `0.2.1`).
+- `meta.tickRate` must be `60`; replay inputs are per-tick commands with contiguous ticks starting at `0`.
+- `meta.inputEncoding` must be `command-v2`.
+- CLI runner (strict): `Floodline.Cli --level <levelPath> --solution <solutionPath>`; fails on invalid replay format or if the simulation does not finish with `Status=Won`.
+
 *End of 30-Level Campaign Plan v0.2*

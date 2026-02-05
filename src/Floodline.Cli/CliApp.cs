@@ -32,9 +32,11 @@ public static class CliApp
         string? campaignPath = null;
         string? recordPath = null;
         string? replayPath = null;
+        string? solutionPath = null;
         int? ticks = null;
         bool validateOnly = false;
         bool validateCampaign = false;
+        bool requireWin = false;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -78,6 +80,14 @@ public static class CliApp
                     }
 
                     break;
+                case "--solution":
+                    requireWin = true;
+                    if (TryReadOptionalValue(args, ref i, out string? solutionValue))
+                    {
+                        solutionPath = solutionValue;
+                    }
+
+                    break;
                 case "--ticks":
                 case "-t":
                     if (!TryReadValue(args, ref i, out string? ticksValue))
@@ -115,9 +125,10 @@ public static class CliApp
                 !string.IsNullOrWhiteSpace(inputsPath) ||
                 !string.IsNullOrWhiteSpace(recordPath) ||
                 !string.IsNullOrWhiteSpace(replayPath) ||
+                requireWin ||
                 ticks.HasValue)
             {
-                return Fail(error, "--validate-campaign cannot be combined with --level, --inputs, --ticks, --record, or --replay.");
+                return Fail(error, "--validate-campaign cannot be combined with --level, --inputs, --ticks, --record, --replay, or --solution.");
             }
 
             LevelValidationResult validation = CampaignValidator.ValidateFile(campaignPath);
@@ -145,19 +156,27 @@ public static class CliApp
             return Fail(error, $"Level file not found: {levelPath}");
         }
 
-        if (!string.IsNullOrWhiteSpace(recordPath) && !string.IsNullOrWhiteSpace(replayPath))
+        bool usingSolution = requireWin;
+        bool usingReplay = usingSolution || !string.IsNullOrWhiteSpace(replayPath);
+
+        if (usingSolution && !string.IsNullOrWhiteSpace(replayPath))
         {
-            return Fail(error, "Choose either --record or --replay, not both.");
+            return Fail(error, "--solution cannot be combined with --replay.");
         }
 
-        if (!string.IsNullOrWhiteSpace(replayPath) && !string.IsNullOrWhiteSpace(inputsPath))
+        if (!string.IsNullOrWhiteSpace(recordPath) && usingReplay)
         {
-            return Fail(error, "--inputs cannot be used with --replay (replay uses recorded inputs).");
+            return Fail(error, "Choose either --record or --replay/--solution, not both.");
         }
 
-        if (!string.IsNullOrWhiteSpace(replayPath) && ticks.HasValue)
+        if (usingReplay && !string.IsNullOrWhiteSpace(inputsPath))
         {
-            return Fail(error, "--ticks cannot be used with --replay (replay uses recorded ticks).");
+            return Fail(error, "--inputs cannot be used with --replay/--solution (replay uses recorded inputs).");
+        }
+
+        if (usingReplay && ticks.HasValue)
+        {
+            return Fail(error, "--ticks cannot be used with --replay/--solution (replay uses recorded ticks).");
         }
 
         if (validateOnly)
@@ -165,9 +184,10 @@ public static class CliApp
             if (!string.IsNullOrWhiteSpace(inputsPath) ||
                 !string.IsNullOrWhiteSpace(recordPath) ||
                 !string.IsNullOrWhiteSpace(replayPath) ||
+                requireWin ||
                 ticks.HasValue)
             {
-                return Fail(error, "--validate cannot be combined with --inputs, --ticks, --record, or --replay.");
+                return Fail(error, "--validate cannot be combined with --inputs, --ticks, --record, --replay, or --solution.");
             }
 
             LevelValidationResult validation = LevelValidator.ValidateFile(levelPath);
@@ -199,20 +219,32 @@ public static class CliApp
             return Fail(error, $"Failed to load level: {ex.Message}");
         }
 
+        string? resolvedReplayPath = replayPath;
+        if (requireWin)
+        {
+            resolvedReplayPath = solutionPath;
+            if (string.IsNullOrWhiteSpace(resolvedReplayPath))
+            {
+                resolvedReplayPath = Path.Combine("levels", "solutions", $"{level.Meta.Id}.replay.json");
+            }
+        }
+
         List<InputCommand> commands;
         int ticksToRun;
         int seed;
-        if (!string.IsNullOrWhiteSpace(replayPath))
+        if (!string.IsNullOrWhiteSpace(resolvedReplayPath))
         {
-            if (!File.Exists(replayPath))
+            if (!File.Exists(resolvedReplayPath))
             {
-                return Fail(error, $"Replay file not found: {replayPath}");
+                return Fail(error, requireWin
+                    ? $"Solution replay not found: {resolvedReplayPath}"
+                    : $"Replay file not found: {resolvedReplayPath}");
             }
 
             ReplayFile replay;
             try
             {
-                string replayJson = File.ReadAllText(replayPath);
+                string replayJson = File.ReadAllText(resolvedReplayPath);
                 replay = ReplaySerializer.Deserialize(replayJson);
             }
             catch (Exception ex)
@@ -356,6 +388,11 @@ public static class CliApp
             }
         }
 
+        if (requireWin && simulation.State.Status != SimulationStatus.Won)
+        {
+            return Fail(error, $"Solution did not win: status {simulation.State.Status} after {ticksExecuted} ticks.");
+        }
+
         WriteSummary(output, simulation);
         return 0;
     }
@@ -409,6 +446,7 @@ public static class CliApp
         output.WriteLine("Usage:");
         output.WriteLine("  Floodline.Cli --level <path> [--inputs <path>] [--ticks <count>] [--record <path>]");
         output.WriteLine("  Floodline.Cli --level <path> --replay <path>");
+        output.WriteLine("  Floodline.Cli --level <path> --solution [path]");
         output.WriteLine("  Floodline.Cli --validate-campaign [--campaign <path>]");
         output.WriteLine();
         output.WriteLine("Options:");
@@ -417,6 +455,7 @@ public static class CliApp
         output.WriteLine("  --campaign      Path to campaign JSON file (defaults to levels/campaign.v0.2.0.json).");
         output.WriteLine("  --record        Write a replay file for the run.");
         output.WriteLine("  --replay        Replay from a replay file (ignores --inputs/--ticks).");
+        output.WriteLine("  --solution      Run a replay solution (defaults to levels/solutions/{levelId}.replay.json).");
         output.WriteLine("  --ticks, -t     Total ticks to simulate (defaults to number of input commands).");
         output.WriteLine("  --validate      Validate the level JSON and exit.");
         output.WriteLine("  --validate-campaign  Validate campaign JSON and referenced levels.");
@@ -446,6 +485,27 @@ public static class CliApp
         }
 
         value = args[next];
+        index = next;
+        return true;
+    }
+
+    private static bool TryReadOptionalValue(string[] args, ref int index, out string? value)
+    {
+        int next = index + 1;
+        if (next >= args.Length)
+        {
+            value = null;
+            return false;
+        }
+
+        string candidate = args[next];
+        if (candidate.Length > 0 && candidate[0] == '-')
+        {
+            value = null;
+            return false;
+        }
+
+        value = candidate;
         index = next;
         return true;
     }
