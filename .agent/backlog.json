@@ -1719,7 +1719,8 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Campaign solutions: document format + template + CLI runner",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-05T09:23:12Z",
       "dependsOn": [
         "FL-0403",
         "FL-0300"
