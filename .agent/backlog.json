@@ -2253,7 +2253,9 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity input feel implementation (per Input_Feel_v0_2)",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-06T17:15:00Z",
+      "doneAt": "2026-02-06T18:00:00Z",
       "dependsOn": [
         "FL-0500",
         "FL-0508"
@@ -2275,8 +2277,23 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "git push -u origin feat/FL-0501-input-feel",
+          "gh pr create --title 'FL-0501: Unity input feel implementation per Input_Feel_v0_2' --body '...'",
+          "gh pr merge 81 --merge --delete-branch"
+        ],
+        "notes": [
+          "Implemented InputSource interface with DeviceInputSource and ScriptedInputSource implementations",
+          "InputBuffer class with DAS/ARR logic (10 ticks initial delay, 2 ticks repeat rate)",
+          "InputMapper converts raw input to Core InputCommand enum values (one per tick)",
+          "InputManager orchestrates sampling, buffering, and command generation with injectable sources",
+          "GameLoader.cs integrated with InputManager for live input handling",
+          "PlayMode integration tests with DAS/ARR validation and direction change testing",
+          "Test fixtures: input_move_right_das.json with expected command sequences",
+          "Local CI: M5 scope passed (build OK, 215 tests passed, replay parity OK, formatting OK)",
+          "GitHub Actions CI: completed with status success (1m39s elapsed)",
+          "PR #81 merged to main with 987 insertions across 10 files"
+        ]
       }
     },
     {
