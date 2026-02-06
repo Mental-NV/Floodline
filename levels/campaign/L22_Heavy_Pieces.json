@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "id": "L22_Heavy_Pieces",
+    "title": "Heavy Pieces",
+    "schemaVersion": "0.2.3",
+    "seed": 3022
+  },
+  "bounds": {
+    "x": 10,
+    "y": 20,
+    "z": 10
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": { "height": 7 }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [ "Down" ]
+  },
+  "bag": {
+    "type": "WEIGHTED",
+    "weights": {
+      "O2:HEAVY": 5,
+      "I3:HEAVY": 4,
+      "L3:HEAVY": 3,
+      "O2": 1,
+      "I3": 1
+    }
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {},
+  "stars": {}
+}

@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "id": "L23_Skyline_Footprint",
+    "title": "Skyline Footprint",
+    "schemaVersion": "0.2.3",
+    "seed": 3023
+  },
+  "bounds": {
+    "x": 8,
+    "y": 20,
+    "z": 8
+  },
+  "initialVoxels": [],
+  "objectives": [
+    {
+      "type": "REACH_HEIGHT",
+      "params": { "height": 5 }
+    }
+  ],
+  "rotation": {
+    "allowedDirections": [ "Down" ]
+  },
+  "bag": {
+    "type": "FIXED_SEQUENCE",
+    "sequence": [ "O2","O2","I3","O2","L3","O2","I3","O2" ]
+  },
+  "hazards": [],
+  "abilities": {
+    "holdEnabled": false,
+    "stabilizeCharges": 0
+  },
+  "constraints": {},
+  "stars": {}
+}
