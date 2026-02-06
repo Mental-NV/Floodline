@@ -2112,8 +2112,9 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Author Campaign Chapter 3B levels (Lv 26–30) + finalize 30-level manifest",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-06T00:57:04.6851136Z",
+      "doneAt": "2026-02-06T01:03:41.5832698Z",
       "dependsOn": [
         "FL-0408"
       ],
