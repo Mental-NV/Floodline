@@ -2175,15 +2175,8 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [
-          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
-        ],
-        "notes": [
-          "Blocked: CI -Unity gate failed because the Unity parity gate is not implemented (see backlog item FL-0503).",
-          "What failed: scripts/ci.ps1 threw '-Unity is not implemented yet. Implement Unity parity gate first (see backlog FL-0503)'.",
-          "Options: (A) Implement FL-0503 (Unity parity gate) before attempting -Unity validation; (B) Adjust FL-0508 validation to not require -Unity until parity gate exists.",
-          "Recommendation: Implement FL-0503 first to enable CI Unity parity checks; add acceptance tests and parity fixture there."
-        ]
+        "commandsRun": [],
+        "notes": []
       }
     },
     {
@@ -2219,9 +2212,7 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity project scaffold + Core integration (no Core->Unity refs)",
-      "status": "Done",
-      "startedAt": "2026-02-06T15:20:00Z",
-      "doneAt": "2026-02-06T14:33:09.0284684Z",
+      "status": "New",
       "dependsOn": [
         "FL-0409"
       ],
@@ -2238,19 +2229,8 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
-        "commandsRun": [
-          "git checkout -b feat/FL-0500-unity-scaffold",
-          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5",
-          "git commit -m \"FL-0500: add minimal Unity scaffold (placeholder asmdef + assets marker)\"",
-          "git push -u origin feat/FL-0500-unity-scaffold",
-          "gh pr create --title \"FL-0500: Unity project scaffold + Core integration (no Core->Unity refs)\" --body \"Adds minimal Unity scaffold placeholder; CI M5 passed locally.\""
-        ],
-        "notes": [
-          "CI (M5 scope) passed locally: locked restore, build, tests, golden, replay parity, formatting.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/76",
-          "Remote CI passed; merging PR now.",
-          "Merged PR: https://github.com/Mental-NV/Floodline/pull/76"
-        ]
+        "commandsRun": [],
+        "notes": []
       }
     },
     {
@@ -2461,8 +2441,7 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity MVP constraints pack (style + placeholders + acceptance tests)",
-      "status": "InProgress",
-      "startedAt": "2026-02-06T14:34:34.7807045Z",
+      "status": "New",
       "dependsOn": [
         "FL-0500"
       ],
