@@ -2451,8 +2451,9 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity audio SFX integration (lock/drop/rotate/collapse/water/drain/freeze/wind)",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-06T15:38:00Z",
+      "doneAt": "2026-02-06T15:46:00Z",
       "dependsOn": [
         "FL-0504"
       ],
@@ -2472,8 +2473,18 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
+        ],
+        "notes": [
+          "Implemented AudioManager with AudioSource pool (12 default, dynamic resizing)",
+          "Created SFXEvent enum with 14 event types (lock, drop, rotate, collapse, drain, freeze, wind, etc.)",
+          "Implemented SFXTrigger: Monitors piece locks, gravity changes, water voxel changes via dirty flags",
+          "Implemented WindGustFeedback: 60-tick gust schedule with screen-space nudge animation (0.3s Sin() easing) + whoosh SFX",
+          "Updated GameLoader to integrate audio systems (AudioManager, SFXTrigger, WindGustFeedback)",
+          "All 215 tests pass (168 unit + 47 golden); replay parity verified",
+          "GitHub Actions CI passed; PR #85 merged to main"
+        ]
       }
     },
     {
@@ -2481,7 +2492,9 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity music integration (ambient + danger ramp)",
-      "status": "New",
+      "status": "Done",
+      "startedAt": "2026-02-06T15:46:00Z",
+      "doneAt": "2026-02-06T15:55:14Z",
       "dependsOn": [
         "FL-0505"
       ],
@@ -2499,8 +2512,25 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
+        ],
+        "notes": [
+          "Implemented DangerHeuristics.cs: Static utility calculating normalized danger [0-1] from 4 sources",
+          "  - Grid height proximity (threshold: 80% of max height)",
+          "  - Water level near forbidden zone (threshold: 85%)",
+          "  - Wind gust countdown (linear ramp, 15-tick window)",
+          "  - Active piece pressure (constant 0.5 when falling)",
+          "Implemented MusicController.cs: State machine (Calm/Tension/Danger) with hysteresis buffering",
+          "  - Calm: danger < 0.24 (buffer: 0.3 × 0.8)",
+          "  - Tension: 0.24 ≤ danger < 0.65",
+          "  - Danger: danger ≥ 0.65",
+          "  - Three AudioSource slots for calm/tension/danger music",
+          "Implemented MusicTests.cs: 8 PlayMode tests validating state transitions and hysteresis",
+          "Updated GameLoader.cs: Add musicController field + Initialize() call, add GetLevel() accessor",
+          "All 215 tests pass (168 unit + 47 golden); replay parity verified",
+          "GitHub Actions CI passed; PR #86 merged to main"
+        ]
       }
     },
     {
@@ -2508,7 +2538,8 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity materials + lighting baseline (voxel readability, art direction)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-06T15:56:00Z",
       "dependsOn": [
         "FL-0503"
       ],
