@@ -2212,7 +2212,8 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity project scaffold + Core integration (no Core->Unity refs)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-06T16:00:00Z",
       "dependsOn": [
         "FL-0409"
       ],
