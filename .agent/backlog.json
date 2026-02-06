@@ -2238,7 +2238,8 @@
         ],
         "notes": [
           "CI (M5 scope) passed locally: locked restore, build, tests, golden, replay parity, formatting.",
-          "PR: https://github.com/Mental-NV/Floodline/pull/75"
+          "PR: https://github.com/Mental-NV/Floodline/pull/75",
+          "Remote CI pending; will merge automatically when checks are green."
         ]
       }
     },
