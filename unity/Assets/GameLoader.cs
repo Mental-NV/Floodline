@@ -27,6 +27,7 @@ namespace Floodline.Client
         private AudioManager audioManager;
         private SFXTrigger sfxTrigger;
         private WindGustFeedback windGustFeedback;
+        private MusicController musicController;
 
         private void Start()
         {
@@ -115,11 +116,17 @@ namespace Floodline.Client
                 windObj.transform.parent = transform;
                 windGustFeedback = windObj.AddComponent<WindGustFeedback>();
 
+                // Initialize music controller
+                var musicObj = new GameObject("MusicController");
+                musicObj.transform.parent = transform;
+                musicController = musicObj.AddComponent<MusicController>();
+
                 // Perform initialization on all systems
                 gridRenderer.UpdateGridVisualization(simulation);
                 hudManager.Initialize(simulation, level);
                 sfxTrigger.Initialize(simulation, level, audioManager);
                 windGustFeedback.Initialize(simulation, audioManager, hudManager.GetHUDRoot());
+                musicController.Initialize(simulation, level);
 
                 Debug.Log($"Simulation initialized: level={level.Meta.Id}, seed={seed}, status={simulation.Status}");
             }
@@ -149,6 +156,11 @@ namespace Floodline.Client
         /// Public accessor for the simulation (used by other systems like Renderer)
         /// </summary>
         public Simulation GetSimulation() => simulation;
+
+        /// <summary>
+        /// Public accessor for the level (used by other systems like MusicController and tests)
+        /// </summary>
+        public Level GetLevel() => level;
 
         private void LogSimulationResult()
         {
