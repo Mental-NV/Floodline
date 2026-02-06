@@ -181,12 +181,16 @@ namespace Floodline.Client
 
         /// <summary>
         /// Get material for a voxel based on its type and material ID
-        /// Maps to placeholder materials from FL-0508 constraints pack
+        /// Uses MaterialPalette with VoxelMaterialMapper for consistent visual mapping
         /// </summary>
         private Material GetMaterialForVoxel(Voxel voxel)
         {
-            // TODO: Map voxel.MaterialId to specific materials
-            // For now, use default
+            // Try to get material from palette
+            Material mat = VoxelMaterialMapper.GetMaterial(voxel);
+            if (mat != null)
+                return mat;
+
+            // Fallback to default if palette not available
             return defaultMaterial ?? new Material(Shader.Find("Standard"));
         }
 
