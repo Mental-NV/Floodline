@@ -2062,8 +2062,9 @@
       "epic": "E4",
       "milestone": "M4",
       "title": "Author Campaign Chapter 3A levels (Lv 21–25)",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-06T00:52:05.2433953Z",
+      "doneAt": "2026-02-06T00:56:33.1470873Z",
       "dependsOn": [
         "FL-0407"
       ],
