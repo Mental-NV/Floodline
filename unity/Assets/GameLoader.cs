@@ -19,9 +19,11 @@ namespace Floodline.Client
         private uint seed = 0;
 
         private Simulation simulation;
+        private Level level;
         private InputManager inputManager;
         private CameraManager cameraManager;
         private GridRenderer gridRenderer;
+        private HUDManager hudManager;
 
         private void Start()
         {
@@ -70,7 +72,7 @@ namespace Floodline.Client
                 }
 
                 string levelJson = System.IO.File.ReadAllText(fullLevelPath);
-                var level = LevelLoader.Load(levelJson, levelPath);
+                level = LevelLoader.Load(levelJson, levelPath);
 
                 // Create a deterministic PRNG seeded from the command-line arg or default
                 var prng = new Pcg32(seed);
@@ -90,8 +92,14 @@ namespace Floodline.Client
                 gridRenderObj.transform.parent = transform;
                 gridRenderer = gridRenderObj.AddComponent<GridRenderer>();
 
-                // Initial grid render
+                // Initialize HUD management
+                var hudObj = new GameObject("HUD");
+                hudObj.transform.parent = transform;
+                hudManager = hudObj.AddComponent<HUDManager>();
+
+                // Perform initialization on all systems
                 gridRenderer.UpdateGridVisualization(simulation);
+                hudManager.Initialize(simulation, level);
 
                 Debug.Log($"Simulation initialized: level={level.Meta.Id}, seed={seed}, status={simulation.Status}");
             }
