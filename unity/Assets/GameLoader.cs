@@ -24,6 +24,9 @@ namespace Floodline.Client
         private CameraManager cameraManager;
         private GridRenderer gridRenderer;
         private HUDManager hudManager;
+        private AudioManager audioManager;
+        private SFXTrigger sfxTrigger;
+        private WindGustFeedback windGustFeedback;
 
         private void Start()
         {
@@ -97,9 +100,26 @@ namespace Floodline.Client
                 hudObj.transform.parent = transform;
                 hudManager = hudObj.AddComponent<HUDManager>();
 
+                // Initialize audio management
+                var audioObj = new GameObject("AudioManager");
+                audioObj.transform.parent = transform;
+                audioManager = audioObj.AddComponent<AudioManager>();
+
+                // Initialize SFX triggering
+                var sfxObj = new GameObject("SFXTrigger");
+                sfxObj.transform.parent = transform;
+                sfxTrigger = sfxObj.AddComponent<SFXTrigger>();
+
+                // Initialize wind gust feedback
+                var windObj = new GameObject("WindGustFeedback");
+                windObj.transform.parent = transform;
+                windGustFeedback = windObj.AddComponent<WindGustFeedback>();
+
                 // Perform initialization on all systems
                 gridRenderer.UpdateGridVisualization(simulation);
                 hudManager.Initialize(simulation, level);
+                sfxTrigger.Initialize(simulation, level, audioManager);
+                windGustFeedback.Initialize(simulation, audioManager, hudManager.GetHUDRoot());
 
                 Debug.Log($"Simulation initialized: level={level.Meta.Id}, seed={seed}, status={simulation.Status}");
             }

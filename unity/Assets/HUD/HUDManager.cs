@@ -51,6 +51,14 @@ namespace Floodline.Client
             UpdateAllDisplays();
         }
 
+        /// <summary>
+        /// Gets the RectTransform of this HUD GameObject (for screen-space feedback effects).
+        /// </summary>
+        public RectTransform GetHUDRoot()
+        {
+            return GetComponent<RectTransform>() ?? transform as RectTransform;
+        }
+
         private void LateUpdate()
         {
             // Update HUD every frame after simulation tick
