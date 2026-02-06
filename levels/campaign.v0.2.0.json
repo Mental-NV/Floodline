@@ -86,5 +86,26 @@
       "id": "L20_Floodplain_Exam",
       "path": "levels/campaign/L20_Floodplain_Exam.json"
     }
+    ,
+    {
+      "id": "L21_Weight_Limit",
+      "path": "levels/campaign/L21_Weight_Limit.json"
+    },
+    {
+      "id": "L22_Heavy_Pieces",
+      "path": "levels/campaign/L22_Heavy_Pieces.json"
+    },
+    {
+      "id": "L23_Skyline_Footprint",
+      "path": "levels/campaign/L23_Skyline_Footprint.json"
+    },
+    {
+      "id": "L24_First_Gust",
+      "path": "levels/campaign/L24_First_Gust.json"
+    },
+    {
+      "id": "L25_Stabilize",
+      "path": "levels/campaign/L25_Stabilize.json"
+    }
   ]
 }
