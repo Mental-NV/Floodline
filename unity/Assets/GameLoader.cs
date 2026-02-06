@@ -121,6 +121,16 @@ namespace Floodline.Client
                 musicObj.transform.parent = transform;
                 musicController = musicObj.AddComponent<MusicController>();
 
+                // Initialize material palette (for voxel rendering)
+                var paletteObj = new GameObject("MaterialPalette");
+                paletteObj.transform.parent = transform;
+                paletteObj.AddComponent<MaterialPalette>();
+
+                // Initialize lighting setup
+                var lightingObj = new GameObject("LightingSetup");
+                lightingObj.transform.parent = transform;
+                lightingObj.AddComponent<LightingSetup>();
+
                 // Perform initialization on all systems
                 gridRenderer.UpdateGridVisualization(simulation);
                 hudManager.Initialize(simulation, level);
