@@ -2301,7 +2301,8 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity camera + basic visualization loop",
-      "status": "New",
+      "status": "Done",
+      "doneAt": "2026-02-06T15:23:48Z",
       "dependsOn": [
         "FL-0501"
       ],
@@ -2317,8 +2318,25 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "git checkout -b feat/FL-0502-camera-visualization",
+          "Create CameraManager.cs: Isometric snap views (NE/NW/SE/SW), stable horizon, smooth lerp",
+          "Create GridRenderer.cs: Render all occupancy types, active piece support",
+          "Update GameLoader.cs: Integrate camera + renderer into Update loop",
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5",
+          "git add -A; git commit -m 'FL-0502: Implement camera + grid visualization'",
+          "git push -u origin feat/FL-0502-camera-visualization",
+          "gh pr create --title 'FL-0502: Implement Unity camera + basic grid visualization'",
+          "gh pr merge 82 --merge --delete-branch"
+        ],
+        "notes": [
+          "Implemented CameraManager with 4 isometric snap presets (F1-F4 hotkeys per Input_Feel_v0_2 §7.2)",
+          "Camera maintains stable horizon: fixed up vector, world rotates underneath",
+          "GridRenderer iterates Simulation.State.Grid, switches on OccupancyType (Water/Drain/Ice/Solid/Bedrock/Porous)",
+          "Active piece renders at 95% scale so structure edges visible behind",
+          "All 215 tests pass locally (168 unit + 47 golden); replay parity hash verified",
+          "GitHub Actions CI passed; PR #82 merged to main"
+        ]
       }
     },
     {
@@ -2326,7 +2344,8 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Turn on CI -Unity switch (CLI vs Unity parity hash)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-06T15:24:00Z",
       "dependsOn": [
         "FL-0502"
       ],

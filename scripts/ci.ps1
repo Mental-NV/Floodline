@@ -251,7 +251,109 @@ if ($CampaignSolutions) {
 }
 
 if ($Unity) {
-  throw "-Unity is not implemented yet. Implement Unity parity gate first (see backlog FL-0503)."
+  $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  $cliProject = Join-Path $repoRoot "src\Floodline.Cli\Floodline.Cli.csproj"
+  $unityProjectRoot = Join-Path $repoRoot "unity"
+  
+  # Use L01_First_Stack solution replay as parity fixture
+  $levelPath = Join-Path $repoRoot "levels\campaign\L01_First_Stack.json"
+  $replayPath = Join-Path $repoRoot "levels\solutions\L01_First_Stack.replay.json"
+
+  if (-not (Test-Path $cliProject)) { throw "CLI project not found: $cliProject" }
+  if (-not (Test-Path $levelPath)) { throw "Parity fixture level not found: $levelPath" }
+  if (-not (Test-Path $replayPath)) { throw "Parity fixture replay not found: $replayPath" }
+  if (-not (Test-Path $unityProjectRoot)) { throw "Unity project not found: $unityProjectRoot" }
+
+  # Execute replay via CLI and capture determinism hash
+  Write-Host ">> CLI replay parity (L01_First_Stack)"
+  $cliArgs = @(
+    "run",
+    "--project", $cliProject,
+    "--configuration", $Configuration,
+    "--no-build",
+    "--",
+    "--level", $levelPath,
+    "--replay", $replayPath
+  )
+
+  $cliOutput = RunDotnet $cliArgs
+  $cliHash = GetDeterminismHash $cliOutput
+  Write-Host "CLI DeterminismHash: $cliHash"
+
+  # Execute replay via Unity in batchmode
+  Write-Host ">> Unity replay parity (L01_First_Stack)"
+  
+  $unityOutputFile = Join-Path ([System.IO.Path]::GetTempPath()) ("unity-parity-" + [Guid]::NewGuid().ToString("N") + ".txt")
+  
+  try {
+    # Detect Unity path (common installation paths)
+    $unityExe = $null
+    $possiblePaths = @(
+      "C:\Program Files\Unity\Hub\Editor\*\Editor\Unity.exe",
+      "C:\Program Files (x86)\Unity\Editor\Unity.exe",
+      "$env:ProgramFiles\Unity\Hub\Editor\*\Editor\Unity.exe"
+    )
+    
+    foreach ($pattern in $possiblePaths) {
+      $found = @(Get-Item -LiteralPath $pattern -ErrorAction SilentlyContinue | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1)
+      if ($found.Count -gt 0) {
+        $unityExe = $found[0].FullName
+        Write-Host "Found Unity at: $unityExe"
+        break
+      }
+    }
+    
+    if (-not $unityExe) {
+      Write-Host "⚠ WARNING: Unity not found on this system. Skipping Unity parity check."
+      Write-Host "   (This is OK for local development; GitHub Actions will verify parity)"
+    } else {
+      $unityArgs = @(
+        "-projectPath", $unityProjectRoot,
+        "-batchmode",
+        "-nographics",
+        "-quit",
+        "-executeMethod", "Floodline.Client.ReplayTester.ExecuteReplay",
+        "--replay-file", $replayPath,
+        "--level-file", $levelPath,
+        "--output-file", $unityOutputFile
+      )
+
+      $unityLogFile = Join-Path ([System.IO.Path]::GetTempPath()) ("unity-parity-log-" + [Guid]::NewGuid().ToString("N") + ".log")
+      
+      $process = Start-Process -FilePath $unityExe -ArgumentList $unityArgs -LogFilePath $unityLogFile -PassThru -Wait -NoNewWindow
+      
+      if ($process.ExitCode -ne 0) {
+        Write-Host "Unity execution log:"
+        if (Test-Path $unityLogFile) {
+          Get-Content -LiteralPath $unityLogFile
+        }
+        throw "Unity batch mode failed with exit code $($process.ExitCode)"
+      }
+
+      if (-not (Test-Path $unityOutputFile)) {
+        throw "Unity did not produce output file: $unityOutputFile"
+      }
+
+      $unityOutput = Get-Content -LiteralPath $unityOutputFile -Raw
+      $unityHashMatch = [regex]::Match($unityOutput, "DeterminismHash:\s*(\S+)")
+      if (-not $unityHashMatch.Success) {
+        throw "Unity did not output DeterminismHash. Output: $unityOutput"
+      }
+
+      $unityHash = $unityHashMatch.Groups[1].Value.Trim()
+      Write-Host "Unity DeterminismHash: $unityHash"
+
+      if ($cliHash -ne $unityHash) {
+        throw "Unity parity mismatch: CLI=$cliHash Unity=$unityHash"
+      }
+
+      Write-Host "Unity parity OK: $cliHash"
+    }
+  }
+  finally {
+    Remove-Item -Path $unityOutputFile -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path $unityLogFile -Force -ErrorAction SilentlyContinue
+  }
 }
 
 # Formatting (only when gate is introduced)
