@@ -6,9 +6,9 @@ using Floodline.Core.Levels;
 namespace Floodline.Client
 {
     /// <summary>
-    /// Minimal bootstrap loader for a Floodline level.
-    /// Loads a level JSON, creates a simulation, and integrates input management.
-    /// For M5, this is the proof that Unity can import and execute Core with deterministic input mapping.
+    /// Bootstrap loader for a Floodline level.
+    /// Loads a level JSON, creates a simulation, and integrates input, camera, and rendering.
+    /// Orchestrates the main game loop: Input → Simulation.Tick → Render.
     /// </summary>
     public class GameLoader : MonoBehaviour
     {
@@ -20,6 +20,8 @@ namespace Floodline.Client
 
         private Simulation simulation;
         private InputManager inputManager;
+        private CameraManager cameraManager;
+        private GridRenderer gridRenderer;
 
         private void Start()
         {
@@ -35,6 +37,15 @@ namespace Floodline.Client
 
                 // Tick the simulation with the generated command
                 simulation.Tick(command);
+
+                // Update grid visualization to reflect new state
+                if (gridRenderer != null)
+                {
+                    gridRenderer.UpdateGridVisualization(simulation);
+                }
+
+                // Handle camera snap view input (F1-F4 per Input_Feel_v0_2)
+                HandleCameraInput();
 
                 if (simulation.Status != SimulationStatus.Playing)
                 {
@@ -71,6 +82,17 @@ namespace Floodline.Client
                 inputManager = gameObject.AddComponent<InputManager>();
                 inputManager.InputSource = gameObject.AddComponent<DeviceInputSource>();
 
+                // Initialize camera management
+                cameraManager = gameObject.AddComponent<CameraManager>();
+
+                // Initialize grid rendering
+                var gridRenderObj = new GameObject("GridRenderer");
+                gridRenderObj.transform.parent = transform;
+                gridRenderer = gridRenderObj.AddComponent<GridRenderer>();
+
+                // Initial grid render
+                gridRenderer.UpdateGridVisualization(simulation);
+
                 Debug.Log($"Simulation initialized: level={level.Meta.Id}, seed={seed}, status={simulation.Status}");
             }
             catch (Exception ex)
@@ -78,6 +100,27 @@ namespace Floodline.Client
                 Debug.LogError($"Failed to load simulation: {ex.Message}\n{ex.StackTrace}");
             }
         }
+
+        private void HandleCameraInput()
+        {
+            if (cameraManager == null)
+                return;
+
+            // F1-F4: Camera snap views (NE, NW, SE, SW per Input_Feel_v0_2 §7.2)
+            if (Input.GetKeyDown(KeyCode.F1))
+                cameraManager.SnapTo(CameraManager.SnapView.NE);
+            else if (Input.GetKeyDown(KeyCode.F2))
+                cameraManager.SnapTo(CameraManager.SnapView.NW);
+            else if (Input.GetKeyDown(KeyCode.F3))
+                cameraManager.SnapTo(CameraManager.SnapView.SE);
+            else if (Input.GetKeyDown(KeyCode.F4))
+                cameraManager.SnapTo(CameraManager.SnapView.SW);
+        }
+
+        /// <summary>
+        /// Public accessor for the simulation (used by other systems like Renderer)
+        /// </summary>
+        public Simulation GetSimulation() => simulation;
 
         private void LogSimulationResult()
         {
@@ -90,3 +133,4 @@ namespace Floodline.Client
         }
     }
 }
+
