@@ -2175,8 +2175,15 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M4"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
+        ],
+        "notes": [
+          "Blocked: CI -Unity gate failed because the Unity parity gate is not implemented (see backlog item FL-0503).",
+          "What failed: scripts/ci.ps1 threw '-Unity is not implemented yet. Implement Unity parity gate first (see backlog FL-0503)'.",
+          "Options: (A) Implement FL-0503 (Unity parity gate) before attempting -Unity validation; (B) Adjust FL-0508 validation to not require -Unity until parity gate exists.",
+          "Recommendation: Implement FL-0503 first to enable CI Unity parity checks; add acceptance tests and parity fixture there."
+        ]
       }
     },
     {
