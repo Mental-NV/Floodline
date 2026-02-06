@@ -2212,7 +2212,8 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity project scaffold + Core integration (no Core->Unity refs)",
-      "status": "New",
+      "status": "InProgress",
+      "startedAt": "2026-02-06T15:20:00Z",
       "dependsOn": [
         "FL-0409"
       ],
@@ -2229,7 +2230,9 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5"
       ],
       "evidence": {
-        "commandsRun": [],
+        "commandsRun": [
+          "git checkout -b feat/FL-0500-unity-scaffold"
+        ],
         "notes": []
       }
     },
