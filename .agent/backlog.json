@@ -2456,8 +2456,9 @@
       "epic": "E5",
       "milestone": "M5",
       "title": "Unity MVP constraints pack (style + placeholders + acceptance tests)",
-      "status": "InProgress",
+      "status": "Done",
       "startedAt": "2026-02-06T16:35:00Z",
+      "doneAt": "2026-02-06T17:10:30Z",
       "dependsOn": [
         "FL-0500"
       ],
@@ -2476,8 +2477,17 @@
         "powershell -ExecutionPolicy Bypass -File ./scripts/ci.ps1 -Scope M5 -Unity"
       ],
       "evidence": {
-        "commandsRun": [],
-        "notes": []
+        "commandsRun": [
+          "git push -u origin feat/FL-0508-constraints-pack",
+          "gh pr create --title 'FL-0508: Unity MVP constraints pack + placeholder assets' --body '...'",
+          "gh pr merge 80 --merge --delete-branch"
+        ],
+        "notes": [
+          "Feature branch pushed successfully; PR #80 created",
+          "GitHub Actions CI: completed with status success (1m30s elapsed)",
+          "PR #80 merged to main with 10 files changed (712 insertions, 1 deletion)",
+          "Local CI validation: M5 scope passed (build OK, 215 tests passed, replay parity OK, formatting OK)"
+        ]
       }
     },
     {
