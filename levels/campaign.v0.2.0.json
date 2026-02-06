@@ -107,5 +107,26 @@
       "id": "L25_Stabilize",
       "path": "levels/campaign/L25_Stabilize.json"
     }
+    ,
+    {
+      "id": "L26_Cantilever",
+      "path": "levels/campaign/L26_Cantilever.json"
+    },
+    {
+      "id": "L27_Tight_Budget",
+      "path": "levels/campaign/L27_Tight_Budget.json"
+    },
+    {
+      "id": "L28_Alternating_Wind",
+      "path": "levels/campaign/L28_Alternating_Wind.json"
+    },
+    {
+      "id": "L29_Wet_Foundation",
+      "path": "levels/campaign/L29_Wet_Foundation.json"
+    },
+    {
+      "id": "L30_High_Rise_Exam",
+      "path": "levels/campaign/L30_High_Rise_Exam.json"
+    }
   ]
 }

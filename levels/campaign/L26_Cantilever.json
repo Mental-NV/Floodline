@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "id": "L26_Cantilever",
+    "title": "Cantilever",
+    "schemaVersion": "0.2.3",
+    "seed": 3026
+  },
+  "bounds": { "x": 10, "y": 22, "z": 10 },
+  "initialVoxels": [],
+  "objectives": [ { "type": "REACH_HEIGHT", "params": { "height": 7 } } ],
+  "rotation": { "allowedDirections": [ "Down" ] },
+  "bag": { "type": "FIXED_SEQUENCE", "sequence": ["O2","I3","O2","L3","O2","T3","O2","I4","O2","O2"] },
+  "hazards": [],
+  "abilities": { "holdEnabled": false, "stabilizeCharges": 0 },
+  "constraints": { "maxMass": 280 },
+  "stars": {}
+}
