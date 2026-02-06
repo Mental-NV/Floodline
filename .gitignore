@@ -23,3 +23,20 @@ project.assets.json
 ## [User Tools]
 *.ps1.user
 debug_*.ps1
+
+# [Unity]
+Library/
+Temp/
+Obj/
+Logs/
+MemoryCaptures/
+Builds/
+UserSettings/
+*.unitypackage
+unity/.vs/
+unity/.idea/
+unity/.gradle/
+unity/*.csproj
+unity/*.sln
+unity/*.user
+unity/*.DotSettings*
